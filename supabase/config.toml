@@ -1,7 +1,7 @@
 project_id = "yzoycpiebfrvqsoocgxq"
 
 [functions.generate-background]
-verify_jwt = true
+verify_jwt = false
 
 [functions.ai-canvas-control]
-verify_jwt = true
+verify_jwt = false
