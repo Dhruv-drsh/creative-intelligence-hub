@@ -14,7 +14,176 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      brand_kits: {
+        Row: {
+          accent_color: string | null
+          created_at: string
+          font_body: string | null
+          font_heading: string | null
+          guidelines: string | null
+          id: string
+          logo_url: string | null
+          name: string
+          primary_color: string | null
+          secondary_color: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          accent_color?: string | null
+          created_at?: string
+          font_body?: string | null
+          font_heading?: string | null
+          guidelines?: string | null
+          id?: string
+          logo_url?: string | null
+          name: string
+          primary_color?: string | null
+          secondary_color?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          accent_color?: string | null
+          created_at?: string
+          font_body?: string | null
+          font_heading?: string | null
+          guidelines?: string | null
+          id?: string
+          logo_url?: string | null
+          name?: string
+          primary_color?: string | null
+          secondary_color?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      projects: {
+        Row: {
+          brand_kit_id: string | null
+          canvas_data: Json
+          compliance_score: number
+          created_at: string
+          format_height: number
+          format_id: string
+          format_width: number
+          id: string
+          name: string
+          thumbnail_url: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          brand_kit_id?: string | null
+          canvas_data?: Json
+          compliance_score?: number
+          created_at?: string
+          format_height?: number
+          format_id?: string
+          format_width?: number
+          id?: string
+          name?: string
+          thumbnail_url?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          brand_kit_id?: string | null
+          canvas_data?: Json
+          compliance_score?: number
+          created_at?: string
+          format_height?: number
+          format_id?: string
+          format_width?: number
+          id?: string
+          name?: string
+          thumbnail_url?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "projects_brand_kit_id_fkey"
+            columns: ["brand_kit_id"]
+            isOneToOne: false
+            referencedRelation: "brand_kits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      templates: {
+        Row: {
+          canvas_data: Json
+          category: string
+          created_at: string
+          description: string | null
+          format_height: number
+          format_width: number
+          id: string
+          is_public: boolean
+          name: string
+          thumbnail_url: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          canvas_data?: Json
+          category?: string
+          created_at?: string
+          description?: string | null
+          format_height?: number
+          format_width?: number
+          id?: string
+          is_public?: boolean
+          name: string
+          thumbnail_url?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          canvas_data?: Json
+          category?: string
+          created_at?: string
+          description?: string | null
+          format_height?: number
+          format_width?: number
+          id?: string
+          is_public?: boolean
+          name?: string
+          thumbnail_url?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
