@@ -7,10 +7,12 @@ import {
   ZoomIn, ZoomOut, MousePointer2, Square, Circle as CircleIcon,
   Type, Image, Trash2, Copy, Layers, Upload, Send, Settings,
   Check, AlertTriangle, X, Menu, Eye as EyeIcon, Palette, Wand2, Save, Loader2,
-  PenTool, Zap, FileText, Triangle, Star, ArrowRight
+  PenTool, Zap, FileText, Triangle, Star, ArrowRight, Grid3X3, Dna, Bold, Italic
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import { ComplianceScore } from "@/components/ui/ComplianceScore";
 import { AIIndicator } from "@/components/ui/AIIndicator";
@@ -22,6 +24,9 @@ import { ExportDialog } from "@/components/ExportDialog";
 import { AIBackgroundGenerator } from "@/components/AIBackgroundGenerator";
 import { AttentionHeatmap } from "@/components/AttentionHeatmap";
 import { CopywritingEngine } from "@/components/CopywritingEngine";
+import { CreativeMultiverse } from "@/components/CreativeMultiverse";
+import { CampaignSetCreator } from "@/components/CampaignSetCreator";
+import { BrandDNAExtractor } from "@/components/BrandDNAExtractor";
 import { useCreativeStore } from "@/store/creativeStore";
 import { useComplianceEngine, type ComplianceCheck } from "@/hooks/useComplianceEngine";
 import { useAICanvasControl } from "@/hooks/useAICanvasControl";
@@ -30,6 +35,7 @@ import { useFormatResize } from "@/hooks/useFormatResize";
 import { useCanvasHistory } from "@/hooks/useCanvasHistory";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { useAutoCorrection } from "@/hooks/useAutoCorrection";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -125,8 +131,20 @@ const CreativeBuilder = () => {
   const [showExportDialog, setShowExportDialog] = useState(false);
   const [showAIBackground, setShowAIBackground] = useState(false);
   const [showCopywriting, setShowCopywriting] = useState(false);
+  const [showMultiverse, setShowMultiverse] = useState(false);
+  const [showCampaignCreator, setShowCampaignCreator] = useState(false);
+  const [showBrandDNA, setShowBrandDNA] = useState(false);
   const [searchParams] = useSearchParams();
   const [isEditingName, setIsEditingName] = useState(false);
+  
+  // Selected object formatting state
+  const [selectedObject, setSelectedObject] = useState<any>(null);
+  const [selectedFillColor, setSelectedFillColor] = useState("#6366F1");
+  const [selectedStrokeColor, setSelectedStrokeColor] = useState("#6366F1");
+  const [selectedStrokeWidth, setSelectedStrokeWidth] = useState(2);
+  const [selectedFontSize, setSelectedFontSize] = useState(28);
+  const [selectedFontFamily, setSelectedFontFamily] = useState("Inter");
+  const [selectedFontWeight, setSelectedFontWeight] = useState("600");
 
   const {
     currentFormat,
@@ -275,6 +293,11 @@ const CreativeBuilder = () => {
     canvas.on("object:modified", () => updateCompliance());
     canvas.on("object:added", () => updateCompliance());
     canvas.on("object:removed", () => updateCompliance());
+    
+    // Listen for selection changes to update formatting controls
+    canvas.on("selection:created", (e) => updateSelectedObjectState(e.selected?.[0]));
+    canvas.on("selection:updated", (e) => updateSelectedObjectState(e.selected?.[0]));
+    canvas.on("selection:cleared", () => setSelectedObject(null));
 
     setFabricCanvas(canvas);
     setPreviousFormat(currentFormat);
@@ -293,6 +316,75 @@ const CreativeBuilder = () => {
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Update selected object state for formatting controls
+  const updateSelectedObjectState = (obj: any) => {
+    if (!obj) {
+      setSelectedObject(null);
+      return;
+    }
+    setSelectedObject(obj);
+    
+    // Update fill/stroke for shapes
+    if (obj.fill) setSelectedFillColor(obj.fill.toString());
+    if (obj.stroke) setSelectedStrokeColor(obj.stroke?.toString() || "#000000");
+    if (obj.strokeWidth) setSelectedStrokeWidth(obj.strokeWidth);
+    
+    // Update font properties for text
+    if (obj.type === "i-text" || obj.type === "text" || obj.type === "textbox") {
+      if (obj.fontSize) setSelectedFontSize(obj.fontSize);
+      if (obj.fontFamily) setSelectedFontFamily(obj.fontFamily);
+      if (obj.fontWeight) setSelectedFontWeight(obj.fontWeight?.toString() || "400");
+    }
+  };
+
+  // Update object fill color
+  const updateFillColor = (color: string) => {
+    if (!fabricCanvas || !selectedObject) return;
+    setSelectedFillColor(color);
+    selectedObject.set("fill", color);
+    fabricCanvas.renderAll();
+  };
+
+  // Update object stroke color
+  const updateStrokeColor = (color: string) => {
+    if (!fabricCanvas || !selectedObject) return;
+    setSelectedStrokeColor(color);
+    selectedObject.set("stroke", color);
+    fabricCanvas.renderAll();
+  };
+
+  // Update object stroke width
+  const updateStrokeWidth = (width: number) => {
+    if (!fabricCanvas || !selectedObject) return;
+    setSelectedStrokeWidth(width);
+    selectedObject.set("strokeWidth", width);
+    fabricCanvas.renderAll();
+  };
+
+  // Update text font size
+  const updateFontSize = (size: number) => {
+    if (!fabricCanvas || !selectedObject) return;
+    setSelectedFontSize(size);
+    selectedObject.set("fontSize", size);
+    fabricCanvas.renderAll();
+  };
+
+  // Update text font family
+  const updateFontFamily = (family: string) => {
+    if (!fabricCanvas || !selectedObject) return;
+    setSelectedFontFamily(family);
+    selectedObject.set("fontFamily", family);
+    fabricCanvas.renderAll();
+  };
+
+  // Update text font weight
+  const updateFontWeight = (weight: string) => {
+    if (!fabricCanvas || !selectedObject) return;
+    setSelectedFontWeight(weight);
+    selectedObject.set("fontWeight", weight);
+    fabricCanvas.renderAll();
+  };
 
   // Handle tool clicks
   const handleToolClick = useCallback((tool: typeof activeTool) => {
@@ -678,6 +770,51 @@ const CreativeBuilder = () => {
           fabricCanvas.renderAll();
         }}
       />
+      <CreativeMultiverse
+        open={showMultiverse}
+        onOpenChange={setShowMultiverse}
+        onApplyVariation={async (canvasData) => {
+          if (!fabricCanvas) return;
+          fabricCanvas.clear();
+          fabricCanvas.backgroundColor = "#ffffff";
+          await fabricCanvas.loadFromJSON(canvasData);
+          fabricCanvas.renderAll();
+          updateCompliance();
+        }}
+        canvasState={fabricCanvas?.toJSON()}
+      />
+      <CampaignSetCreator
+        open={showCampaignCreator}
+        onOpenChange={setShowCampaignCreator}
+        onApplyVariation={async (canvasData, width, height) => {
+          if (!fabricCanvas) return;
+          const matchingFormat = availableFormats.find(f => f.width === width && f.height === height);
+          if (matchingFormat) {
+            setCurrentFormat(matchingFormat);
+            setPreviousFormat(matchingFormat);
+          }
+          fabricCanvas.clear();
+          fabricCanvas.backgroundColor = "#ffffff";
+          await fabricCanvas.loadFromJSON(canvasData);
+          fabricCanvas.renderAll();
+          updateCompliance();
+        }}
+        canvasState={fabricCanvas?.toJSON()}
+      />
+      <BrandDNAExtractor
+        open={showBrandDNA}
+        onOpenChange={setShowBrandDNA}
+        onApplyBrandKit={(brandKit) => {
+          handleBrandKitSelected({
+            name: brandKit.name,
+            primary_color: brandKit.primary_color,
+            secondary_color: brandKit.secondary_color,
+            accent_color: brandKit.accent_color,
+            font_heading: brandKit.font_heading,
+            font_body: brandKit.font_body,
+          });
+        }}
+      />
 
       {/* Top Bar - Enhanced */}
       <header className="h-16 border-b border-border/30 glass flex items-center justify-between px-5 shrink-0 backdrop-blur-xl">
@@ -874,6 +1011,36 @@ const CreativeBuilder = () => {
                       >
                         <FileText className="w-4 h-4 mr-3" />
                         AI Copywriting
+                      </Button>
+
+                      <Button
+                        variant="ai-outline"
+                        size="sm"
+                        className="w-full justify-start h-11"
+                        onClick={() => setShowMultiverse(true)}
+                      >
+                        <Grid3X3 className="w-4 h-4 mr-3" />
+                        Creative Multiverse
+                      </Button>
+
+                      <Button
+                        variant="ai-outline"
+                        size="sm"
+                        className="w-full justify-start h-11"
+                        onClick={() => setShowCampaignCreator(true)}
+                      >
+                        <Layers className="w-4 h-4 mr-3" />
+                        Campaign Set Creator
+                      </Button>
+
+                      <Button
+                        variant="ai-outline"
+                        size="sm"
+                        className="w-full justify-start h-11"
+                        onClick={() => setShowBrandDNA(true)}
+                      >
+                        <Dna className="w-4 h-4 mr-3" />
+                        Brand DNA Extractor
                       </Button>
                     </div>
 
@@ -1225,146 +1392,273 @@ const CreativeBuilder = () => {
               animate={{ width: 340, opacity: 1 }}
               exit={{ width: 0, opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="border-l border-border/30 bg-gradient-to-b from-card/80 to-card/40 flex flex-col shrink-0 overflow-hidden backdrop-blur-sm"
+              className="border-l border-border/30 bg-gradient-to-b from-card/80 to-card/40 flex flex-col shrink-0 backdrop-blur-sm"
             >
-              {/* Compliance Section - Enhanced */}
-              <div className="p-5 border-b border-border/30 shrink-0">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-semibold text-foreground">Compliance</h3>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="ai-outline"
-                      size="sm"
-                      onClick={() => {
-                        autoFixAll();
-                        updateCompliance();
-                      }}
-                      className="text-xs h-7 px-3"
-                    >
-                      <Zap className="w-3 h-3 mr-1.5" />
-                      Auto-Fix
-                    </Button>
-                    <ComplianceScore score={calculatedScore} size="sm" showLabel={false} />
+              <ScrollArea className="flex-1">
+                {/* Object Formatting Section */}
+                {selectedObject && (
+                  <div className="p-5 border-b border-border/30">
+                    <h3 className="text-sm font-semibold text-foreground mb-4">Object Properties</h3>
+                    
+                    {/* Color Controls for Shapes */}
+                    {(selectedObject.type === "rect" || selectedObject.type === "circle" || selectedObject.type === "polygon" || selectedObject.type === "path") && (
+                      <div className="space-y-4">
+                        <div>
+                          <label className="text-xs text-muted-foreground mb-2 block">Fill Color</label>
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="color"
+                              value={selectedFillColor}
+                              onChange={(e) => updateFillColor(e.target.value)}
+                              className="w-10 h-10 rounded-lg cursor-pointer border border-border/50"
+                            />
+                            <Input
+                              value={selectedFillColor}
+                              onChange={(e) => updateFillColor(e.target.value)}
+                              className="flex-1 h-10 bg-muted/30 border-border/50 text-xs font-mono"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="text-xs text-muted-foreground mb-2 block">Stroke Color</label>
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="color"
+                              value={selectedStrokeColor}
+                              onChange={(e) => updateStrokeColor(e.target.value)}
+                              className="w-10 h-10 rounded-lg cursor-pointer border border-border/50"
+                            />
+                            <Input
+                              value={selectedStrokeColor}
+                              onChange={(e) => updateStrokeColor(e.target.value)}
+                              className="flex-1 h-10 bg-muted/30 border-border/50 text-xs font-mono"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="text-xs text-muted-foreground mb-2 block">Stroke Width: {selectedStrokeWidth}px</label>
+                          <Slider
+                            value={[selectedStrokeWidth]}
+                            onValueChange={([val]) => updateStrokeWidth(val)}
+                            min={0}
+                            max={20}
+                            step={1}
+                            className="w-full"
+                          />
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Text Controls */}
+                    {(selectedObject.type === "i-text" || selectedObject.type === "text" || selectedObject.type === "textbox") && (
+                      <div className="space-y-4">
+                        <div>
+                          <label className="text-xs text-muted-foreground mb-2 block">Text Color</label>
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="color"
+                              value={selectedFillColor}
+                              onChange={(e) => updateFillColor(e.target.value)}
+                              className="w-10 h-10 rounded-lg cursor-pointer border border-border/50"
+                            />
+                            <Input
+                              value={selectedFillColor}
+                              onChange={(e) => updateFillColor(e.target.value)}
+                              className="flex-1 h-10 bg-muted/30 border-border/50 text-xs font-mono"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="text-xs text-muted-foreground mb-2 block">Font Family</label>
+                          <Select value={selectedFontFamily} onValueChange={updateFontFamily}>
+                            <SelectTrigger className="w-full bg-muted/30 border-border/50">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="Inter">Inter</SelectItem>
+                              <SelectItem value="Arial">Arial</SelectItem>
+                              <SelectItem value="Helvetica">Helvetica</SelectItem>
+                              <SelectItem value="Georgia">Georgia</SelectItem>
+                              <SelectItem value="Times New Roman">Times New Roman</SelectItem>
+                              <SelectItem value="Courier New">Courier New</SelectItem>
+                              <SelectItem value="Roboto">Roboto</SelectItem>
+                              <SelectItem value="Open Sans">Open Sans</SelectItem>
+                              <SelectItem value="Montserrat">Montserrat</SelectItem>
+                              <SelectItem value="Playfair Display">Playfair Display</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <label className="text-xs text-muted-foreground mb-2 block">Font Size: {selectedFontSize}px</label>
+                          <Slider
+                            value={[selectedFontSize]}
+                            onValueChange={([val]) => updateFontSize(val)}
+                            min={8}
+                            max={120}
+                            step={1}
+                            className="w-full"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs text-muted-foreground mb-2 block">Font Weight</label>
+                          <div className="flex gap-2">
+                            {["300", "400", "600", "700", "900"].map((weight) => (
+                              <Button
+                                key={weight}
+                                variant={selectedFontWeight === weight ? "ai" : "outline"}
+                                size="sm"
+                                className="flex-1 text-xs"
+                                onClick={() => updateFontWeight(weight)}
+                              >
+                                {weight === "300" ? "Light" : weight === "400" ? "Normal" : weight === "600" ? "Semi" : weight === "700" ? "Bold" : "Black"}
+                              </Button>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                </div>
-                <div className="space-y-2">
-                  {complianceChecks.map((check) => (
-                    <div 
-                      key={check.id} 
-                      className={cn(
-                        "compliance-item",
-                        check.status === "pass" && "pass",
-                        check.status === "warning" && "warning",
-                        check.status === "fail" && "fail"
-                      )}
-                    >
-                      {check.status === "pass" ? (
-                        <Check className="w-4 h-4 text-success shrink-0 mt-0.5" />
-                      ) : check.status === "warning" ? (
-                        <AlertTriangle className="w-4 h-4 text-warning shrink-0 mt-0.5" />
-                      ) : (
-                        <X className="w-4 h-4 text-destructive shrink-0 mt-0.5" />
-                      )}
-                      <div className="flex-1 min-w-0">
-                        <span className="text-xs font-medium text-foreground block">{check.label}</span>
-                        <span className="text-[10px] text-muted-foreground block truncate" title={check.message}>
-                          {check.message}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* AI Chat - Enhanced */}
-              <div className="flex-1 flex flex-col min-h-0">
-                <div className="p-5 border-b border-border/30 shrink-0">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent to-highlight flex items-center justify-center">
-                      <Sparkles className="w-4 h-4 text-accent-foreground" />
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-semibold text-foreground">AI Assistant</h3>
-                      <p className="text-[10px] text-muted-foreground">Tell me how to improve your creative</p>
+                )}
+                
+                {/* Compliance Section - Enhanced */}
+                <div className="p-5 border-b border-border/30">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-sm font-semibold text-foreground">Compliance</h3>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="ai-outline"
+                        size="sm"
+                        onClick={() => {
+                          autoFixAll();
+                          updateCompliance();
+                        }}
+                        className="text-xs h-7 px-3"
+                      >
+                        <Zap className="w-3 h-3 mr-1.5" />
+                        Auto-Fix
+                      </Button>
+                      <ComplianceScore score={calculatedScore} size="sm" showLabel={false} />
                     </div>
                   </div>
-                </div>
-
-                {/* Messages */}
-                <div className="flex-1 overflow-y-auto p-5 space-y-4">
-                  {aiMessages.length === 0 ? (
-                    <div className="text-center py-8">
-                      <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent/20 to-highlight/20 flex items-center justify-center mx-auto mb-4">
-                        <Sparkles className="w-7 h-7 text-accent" />
-                      </div>
-                      <p className="text-sm text-muted-foreground mb-4">Try commands like:</p>
-                      <div className="flex flex-wrap gap-2 justify-center">
-                        {["Make it more premium", "Add festive elements", "Increase product size", "Make it minimal"].map((cmd, i) => (
-                          <button
-                            key={i}
-                            onClick={() => setChatMessage(cmd)}
-                            className="command-chip"
-                          >
-                            {cmd}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  ) : (
-                    aiMessages.map((msg, i) => (
-                      <div
-                        key={i}
+                  <div className="space-y-2">
+                    {complianceChecks.map((check) => (
+                      <div 
+                        key={check.id} 
                         className={cn(
-                          "text-sm",
-                          msg.role === "user" ? "chat-bubble-user ml-8" : "chat-bubble-ai mr-8"
+                          "compliance-item",
+                          check.status === "pass" && "pass",
+                          check.status === "warning" && "warning",
+                          check.status === "fail" && "fail"
                         )}
                       >
-                        {msg.content}
+                        {check.status === "pass" ? (
+                          <Check className="w-4 h-4 text-success shrink-0 mt-0.5" />
+                        ) : check.status === "warning" ? (
+                          <AlertTriangle className="w-4 h-4 text-warning shrink-0 mt-0.5" />
+                        ) : (
+                          <X className="w-4 h-4 text-destructive shrink-0 mt-0.5" />
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <span className="text-xs font-medium text-foreground block">{check.label}</span>
+                          <span className="text-[10px] text-muted-foreground block truncate" title={check.message}>
+                            {check.message}
+                          </span>
+                        </div>
                       </div>
-                    ))
-                  )}
-                  {aiStatus === "thinking" && (
-                    <div className="chat-bubble-ai mr-8">
-                      <div className="flex items-center gap-2">
-                        <motion.div animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity, ease: "linear" }}>
-                          <Sparkles className="w-4 h-4 text-accent" />
-                        </motion.div>
-                        <span className="text-sm text-muted-foreground">Analyzing your design...</span>
-                      </div>
-                    </div>
-                  )}
-                  {aiStatus === "generating" && (
-                    <div className="chat-bubble-ai mr-8">
-                      <div className="flex items-center gap-2">
-                        <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ duration: 0.5, repeat: Infinity }}>
-                          <Sparkles className="w-4 h-4 text-accent" />
-                        </motion.div>
-                        <span className="text-sm text-muted-foreground">Applying changes...</span>
-                      </div>
-                    </div>
-                  )}
+                    ))}
+                  </div>
                 </div>
 
-                {/* Input - Enhanced */}
-                <div className="p-5 border-t border-border/30 shrink-0">
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={chatMessage}
-                      onChange={(e) => setChatMessage(e.target.value)}
-                      onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
-                      placeholder="Describe changes..."
-                      className="ai-input flex-1"
-                    />
-                    <Button
-                      variant="ai"
-                      size="icon"
-                      onClick={handleSendMessage}
-                      disabled={!chatMessage.trim() || aiStatus !== "idle"}
-                    >
-                      <Send className="w-4 h-4" />
-                    </Button>
+                {/* AI Chat - Enhanced */}
+                <div className="flex flex-col">
+                  <div className="p-5 border-b border-border/30">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent to-highlight flex items-center justify-center">
+                        <Sparkles className="w-4 h-4 text-accent-foreground" />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-semibold text-foreground">AI Assistant</h3>
+                        <p className="text-[10px] text-muted-foreground">Tell me how to improve your creative</p>
+                      </div>
+                    </div>
                   </div>
+
+                  {/* Messages */}
+                  <div className="p-5 space-y-4">
+                    {aiMessages.length === 0 ? (
+                      <div className="text-center py-8">
+                        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent/20 to-highlight/20 flex items-center justify-center mx-auto mb-4">
+                          <Sparkles className="w-7 h-7 text-accent" />
+                        </div>
+                        <p className="text-sm text-muted-foreground mb-4">Try commands like:</p>
+                        <div className="flex flex-wrap gap-2 justify-center">
+                          {["Make it more premium", "Add festive elements", "Increase product size", "Make it minimal"].map((cmd, i) => (
+                            <button
+                              key={i}
+                              onClick={() => setChatMessage(cmd)}
+                              className="command-chip"
+                            >
+                              {cmd}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    ) : (
+                      aiMessages.map((msg, i) => (
+                        <div
+                          key={i}
+                          className={cn(
+                            "text-sm",
+                            msg.role === "user" ? "chat-bubble-user ml-8" : "chat-bubble-ai mr-8"
+                          )}
+                        >
+                          {msg.content}
+                        </div>
+                      ))
+                    )}
+                    {aiStatus === "thinking" && (
+                      <div className="chat-bubble-ai mr-8">
+                        <div className="flex items-center gap-2">
+                          <motion.div animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity, ease: "linear" }}>
+                            <Sparkles className="w-4 h-4 text-accent" />
+                          </motion.div>
+                          <span className="text-sm text-muted-foreground">Analyzing your design...</span>
+                        </div>
+                      </div>
+                    )}
+                    {aiStatus === "generating" && (
+                      <div className="chat-bubble-ai mr-8">
+                        <div className="flex items-center gap-2">
+                          <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ duration: 0.5, repeat: Infinity }}>
+                            <Sparkles className="w-4 h-4 text-accent" />
+                          </motion.div>
+                          <span className="text-sm text-muted-foreground">Applying changes...</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </ScrollArea>
+              
+              {/* Input - Enhanced - Fixed at bottom */}
+              <div className="p-5 border-t border-border/30 shrink-0 bg-card/80 backdrop-blur-sm">
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={chatMessage}
+                    onChange={(e) => setChatMessage(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
+                    placeholder="Describe changes..."
+                    className="ai-input flex-1"
+                  />
+                  <Button
+                    variant="ai"
+                    size="icon"
+                    onClick={handleSendMessage}
+                    disabled={!chatMessage.trim() || aiStatus !== "idle"}
+                  >
+                    <Send className="w-4 h-4" />
+                  </Button>
                 </div>
               </div>
             </motion.aside>
