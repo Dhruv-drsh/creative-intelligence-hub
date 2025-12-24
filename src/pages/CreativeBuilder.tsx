@@ -357,18 +357,107 @@ const CreativeBuilder = () => {
     }
   };
 
-  // Handle template selection
-  const handleTemplateSelected = (template: { name: string; format_width: number; format_height: number }) => {
-    toast.success(`Loaded template: ${template.name}`);
+  // Handle template selection - load canvas_data onto canvas
+  const handleTemplateSelected = async (template: { 
+    name: string; 
+    format_width: number; 
+    format_height: number;
+    canvas_data: unknown;
+  }) => {
+    if (!fabricCanvas) return;
+    
     setShowTemplateGallery(false);
-    // Template loading would apply canvas_data here
+    
+    try {
+      // Find matching format or use template dimensions
+      const matchingFormat = availableFormats.find(
+        f => f.width === template.format_width && f.height === template.format_height
+      );
+      
+      if (matchingFormat) {
+        setCurrentFormat(matchingFormat);
+        setPreviousFormat(matchingFormat);
+      }
+      
+      // Clear canvas and load template data
+      fabricCanvas.clear();
+      fabricCanvas.backgroundColor = "#ffffff";
+      
+      const canvasData = template.canvas_data as { objects?: unknown[]; background?: string };
+      
+      if (canvasData && typeof canvasData === 'object' && canvasData.objects) {
+        await fabricCanvas.loadFromJSON(canvasData);
+        fabricCanvas.renderAll();
+      }
+      
+      toast.success(`Loaded template: ${template.name}`);
+      updateCompliance();
+    } catch (error) {
+      console.error("Failed to load template:", error);
+      toast.error("Failed to load template");
+    }
   };
 
-  // Handle brand kit selection
-  const handleBrandKitSelected = (brandKit: { name: string; primary_color: string; font_heading: string }) => {
-    toast.success(`Applied brand kit: ${brandKit.name}`);
+  // Handle brand kit selection - apply colors and fonts to canvas objects
+  const handleBrandKitSelected = (brandKit: { 
+    name: string; 
+    primary_color: string; 
+    secondary_color: string;
+    accent_color: string;
+    font_heading: string;
+    font_body: string;
+  }) => {
+    if (!fabricCanvas) return;
+    
     setShowBrandKitManager(false);
-    // Would apply colors/fonts to canvas
+    
+    const objects = fabricCanvas.getObjects();
+    let updatedCount = 0;
+    
+    objects.forEach((obj) => {
+      // Apply colors to shapes
+      if (obj.type === 'rect' || obj.type === 'circle') {
+        const currentFill = obj.fill?.toString() || '';
+        
+        // Update fill colors based on current color type
+        if (currentFill.includes('22C55E') || currentFill.includes('green')) {
+          obj.set('fill', brandKit.primary_color);
+          updatedCount++;
+        } else if (currentFill.includes('38BDF8') || currentFill.includes('blue')) {
+          obj.set('fill', brandKit.secondary_color);
+          updatedCount++;
+        } else if (currentFill.includes('F59E0B') || currentFill.includes('orange')) {
+          obj.set('fill', brandKit.accent_color);
+          updatedCount++;
+        }
+        
+        // Update stroke colors
+        const currentStroke = obj.stroke?.toString() || '';
+        if (currentStroke.includes('22C55E') || currentStroke.includes('green')) {
+          obj.set('stroke', brandKit.primary_color);
+        } else if (currentStroke.includes('38BDF8') || currentStroke.includes('blue')) {
+          obj.set('stroke', brandKit.secondary_color);
+        }
+      }
+      
+      // Apply fonts to text objects
+      if (obj.type === 'i-text' || obj.type === 'text' || obj.type === 'textbox') {
+        const textObj = obj as { fontSize?: number; fontFamily?: string; set: (key: string, value: string) => void };
+        const fontSize = textObj.fontSize || 16;
+        
+        // Larger text gets heading font, smaller gets body font
+        if (fontSize >= 20) {
+          textObj.set('fontFamily', brandKit.font_heading);
+        } else {
+          textObj.set('fontFamily', brandKit.font_body);
+        }
+        updatedCount++;
+      }
+    });
+    
+    fabricCanvas.renderAll();
+    toast.success(`Applied "${brandKit.name}" to ${updatedCount} objects`);
+    updateCompliance();
   };
 
   return (
