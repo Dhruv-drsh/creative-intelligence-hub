@@ -35,6 +35,9 @@ import { ColorPsychology } from "@/components/ColorPsychology";
 import { CollaborativeWorkflows } from "@/components/CollaborativeWorkflows";
 import { DirectPublishing } from "@/components/DirectPublishing";
 import { KeyboardShortcutsTooltip } from "@/components/KeyboardShortcutsTooltip";
+import { DraggableLayers } from "@/components/DraggableLayers";
+import { OnboardingTutorial } from "@/components/OnboardingTutorial";
+import { ColorPaletteGenerator } from "@/components/ColorPaletteGenerator";
 import { useCreativeStore } from "@/store/creativeStore";
 import { useComplianceEngine, type ComplianceCheck } from "@/hooks/useComplianceEngine";
 import { useAICanvasControl } from "@/hooks/useAICanvasControl";
@@ -149,6 +152,11 @@ const CreativeBuilder = () => {
   const [showColorPsychology, setShowColorPsychology] = useState(false);
   const [showCollaborative, setShowCollaborative] = useState(false);
   const [showDirectPublishing, setShowDirectPublishing] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(() => {
+    // Show onboarding if user hasn't completed it before
+    const hasCompletedOnboarding = localStorage.getItem('creato-onboarding-completed');
+    return !hasCompletedOnboarding;
+  });
   const [searchParams] = useSearchParams();
   const [isEditingName, setIsEditingName] = useState(false);
   
@@ -1366,52 +1374,10 @@ const CreativeBuilder = () => {
                 )}
 
                 {leftPanelTab === "layers" && (
-                  <div className="space-y-2">
-                    <h3 className="section-title">Canvas Objects</h3>
-                    {fabricCanvas?.getObjects().length ? (
-                      fabricCanvas.getObjects().map((obj, i) => {
-                        const isActive = fabricCanvas.getActiveObject() === obj;
-                        const objType = obj.type || "Object";
-                        const iconColors: Record<string, string> = {
-                          rect: "text-indigo-400",
-                          circle: "text-pink-400",
-                          "i-text": "text-emerald-400",
-                          text: "text-emerald-400",
-                          image: "text-amber-400",
-                        };
-                        return (
-                          <div
-                            key={i}
-                            className={cn("layer-item", isActive && "active")}
-                            onClick={() => {
-                              fabricCanvas.setActiveObject(obj);
-                              fabricCanvas.renderAll();
-                            }}
-                          >
-                            <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center bg-muted/30", iconColors[objType] || "text-muted-foreground")}>
-                              {objType === "rect" && <Square className="w-4 h-4" />}
-                              {objType === "circle" && <CircleIcon className="w-4 h-4" />}
-                              {(objType === "i-text" || objType === "text") && <Type className="w-4 h-4" />}
-                              {objType === "image" && <Image className="w-4 h-4" />}
-                              {!["rect", "circle", "i-text", "text", "image"].includes(objType) && <Layers className="w-4 h-4" />}
-                            </div>
-                            <span className="text-sm text-foreground flex-1 capitalize font-medium">
-                              {objType} {i + 1}
-                            </span>
-                            <EyeIcon className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-                          </div>
-                        );
-                      })
-                    ) : (
-                      <div className="text-center py-8">
-                        <div className="w-12 h-12 rounded-xl bg-muted/30 flex items-center justify-center mx-auto mb-3">
-                          <Layers className="w-6 h-6 text-muted-foreground" />
-                        </div>
-                        <p className="text-sm text-muted-foreground">No objects on canvas</p>
-                        <p className="text-xs text-muted-foreground mt-1">Add shapes or images to get started</p>
-                      </div>
-                    )}
-                  </div>
+                  <DraggableLayers 
+                    canvas={fabricCanvas} 
+                    onUpdate={updateCompliance}
+                  />
                 )}
 
                 {leftPanelTab === "templates" && (
@@ -1851,6 +1817,18 @@ const CreativeBuilder = () => {
                   </div>
                 </div>
 
+                {/* Color Palette Generator */}
+                <div className="p-5 border-b border-border/30">
+                  <ColorPaletteGenerator 
+                    baseColor={selectedFillColor}
+                    onColorSelect={(color) => {
+                      if (selectedObject) {
+                        updateFillColor(color);
+                      }
+                    }}
+                  />
+                </div>
+
                 {/* AI Chat - Enhanced */}
                 <div className="flex flex-col">
                   <div className="p-5 border-b border-border/30">
@@ -1947,6 +1925,15 @@ const CreativeBuilder = () => {
           )}
         </AnimatePresence>
       </div>
+
+      {/* Onboarding Tutorial */}
+      <OnboardingTutorial 
+        isOpen={showOnboarding} 
+        onClose={() => setShowOnboarding(false)}
+        onComplete={() => {
+          localStorage.setItem('creato-onboarding-completed', 'true');
+        }}
+      />
     </div>
   );
 };
