@@ -27,6 +27,8 @@ import { CopywritingEngine } from "@/components/CopywritingEngine";
 import { CreativeMultiverse } from "@/components/CreativeMultiverse";
 import { CampaignSetCreator } from "@/components/CampaignSetCreator";
 import { BrandDNAExtractor } from "@/components/BrandDNAExtractor";
+import { TypographyHarmony } from "@/components/TypographyHarmony";
+import { VisualAuditor } from "@/components/VisualAuditor";
 import { useCreativeStore } from "@/store/creativeStore";
 import { useComplianceEngine, type ComplianceCheck } from "@/hooks/useComplianceEngine";
 import { useAICanvasControl } from "@/hooks/useAICanvasControl";
@@ -134,6 +136,8 @@ const CreativeBuilder = () => {
   const [showMultiverse, setShowMultiverse] = useState(false);
   const [showCampaignCreator, setShowCampaignCreator] = useState(false);
   const [showBrandDNA, setShowBrandDNA] = useState(false);
+  const [showTypography, setShowTypography] = useState(false);
+  const [showVisualAuditor, setShowVisualAuditor] = useState(false);
   const [searchParams] = useSearchParams();
   const [isEditingName, setIsEditingName] = useState(false);
   
@@ -846,6 +850,33 @@ const CreativeBuilder = () => {
           });
         }}
       />
+      <TypographyHarmony
+        open={showTypography}
+        onOpenChange={setShowTypography}
+        onApplyFonts={(headingFont, bodyFont) => {
+          if (!fabricCanvas) return;
+          fabricCanvas.getObjects().forEach(obj => {
+            if (obj.type === 'i-text' || obj.type === 'text' || obj.type === 'textbox') {
+              const textObj = obj as { fontSize?: number; set: (key: string, value: string) => void };
+              const fontSize = textObj.fontSize || 16;
+              if (fontSize >= 20) {
+                textObj.set('fontFamily', headingFont);
+              } else {
+                textObj.set('fontFamily', bodyFont);
+              }
+            }
+          });
+          fabricCanvas.renderAll();
+          updateCompliance();
+        }}
+        currentHeadingFont={selectedFontFamily}
+        currentBodyFont={selectedFontFamily}
+      />
+      <VisualAuditor
+        open={showVisualAuditor}
+        onOpenChange={setShowVisualAuditor}
+        canvasState={fabricCanvas?.toJSON()}
+      />
 
       {/* Top Bar - Enhanced */}
       <header className="h-16 border-b border-border/30 glass flex items-center justify-between px-5 shrink-0 backdrop-blur-xl">
@@ -1072,6 +1103,26 @@ const CreativeBuilder = () => {
                       >
                         <Dna className="w-4 h-4 mr-3" />
                         Brand DNA Extractor
+                      </Button>
+
+                      <Button
+                        variant="ai-outline"
+                        size="sm"
+                        className="w-full justify-start h-11"
+                        onClick={() => setShowTypography(true)}
+                      >
+                        <Type className="w-4 h-4 mr-3" />
+                        Typography Harmony
+                      </Button>
+
+                      <Button
+                        variant="ai-outline"
+                        size="sm"
+                        className="w-full justify-start h-11"
+                        onClick={() => setShowVisualAuditor(true)}
+                      >
+                        <EyeIcon className="w-4 h-4 mr-3" />
+                        Visual Auditor
                       </Button>
                     </div>
 
