@@ -1,10 +1,11 @@
-import { useState, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Download, FileImage, FileText, Check, AlertTriangle, Loader2 } from "lucide-react";
+import { X, Download, FileImage, FileText, Check, AlertTriangle, Loader2, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import { ComplianceScore } from "@/components/ui/ComplianceScore";
-import { FormatBadge } from "@/components/ui/FormatBadge";
+import { supabase } from "@/integrations/supabase/client";
+import type { Canvas as FabricCanvas } from "fabric";
 
 interface ExportDialogProps {
   isOpen: boolean;
@@ -12,6 +13,8 @@ interface ExportDialogProps {
   canvasRef: React.RefObject<HTMLCanvasElement | null>;
   complianceScore: number;
   formatName: string;
+  fabricCanvas?: FabricCanvas | null;
+  format?: { name: string; width: number; height: number; platform: string };
 }
 
 interface ComplianceReport {
@@ -20,18 +23,36 @@ interface ComplianceReport {
   message: string;
 }
 
+interface PerformancePrediction {
+  platform: string;
+  ctr: string;
+  engagement: string;
+  attention?: number;
+}
+
+interface AIAnalysis {
+  predictions: PerformancePrediction[];
+  strengths: string[];
+  weaknesses: string[];
+  suggestions: string[];
+}
+
 export const ExportDialog = ({
   isOpen,
   onClose,
   canvasRef,
   complianceScore,
   formatName,
+  fabricCanvas,
+  format,
 }: ExportDialogProps) => {
-  const [format, setFormat] = useState<"png" | "jpeg">("png");
+  const [imageFormat, setImageFormat] = useState<"png" | "jpeg">("png");
   const [quality, setQuality] = useState(85);
   const [isExporting, setIsExporting] = useState(false);
   const [exportComplete, setExportComplete] = useState(false);
   const [exportedSize, setExportedSize] = useState<string | null>(null);
+  const [isLoadingPredictions, setIsLoadingPredictions] = useState(false);
+  const [aiAnalysis, setAiAnalysis] = useState<AIAnalysis | null>(null);
 
   // Mock compliance report
   const complianceReport: ComplianceReport[] = [
@@ -43,8 +64,55 @@ export const ExportDialog = ({
     { item: "File size", status: "pass", message: "Estimated size under 500KB" },
   ];
 
-  // Mock performance predictions
-  const performancePredictions = [
+  // Fetch AI predictions when dialog opens
+  const fetchPredictions = useCallback(async () => {
+    if (!fabricCanvas || !format) return;
+
+    setIsLoadingPredictions(true);
+    try {
+      const objects = fabricCanvas.getObjects();
+      const elements = objects.map((obj) => {
+        const bounds = obj.getBoundingRect();
+        return {
+          type: obj.type || "unknown",
+          colors: [String(obj.fill || ""), String(obj.stroke || "")].filter(Boolean),
+          position: { x: bounds.left, y: bounds.top },
+          size: { width: bounds.width, height: bounds.height },
+        };
+      });
+
+      const canvasAnalysis = {
+        elements,
+        format,
+        backgroundColor: String(fabricCanvas.backgroundColor || "#ffffff"),
+        hasLogo: objects.some(o => o.type === "image" && (o.getBoundingRect().width < 100)),
+        hasCTA: objects.some(o => o.type === "i-text" || o.type === "rect"),
+        textCount: objects.filter(o => o.type === "i-text" || o.type === "text").length,
+        imageCount: objects.filter(o => o.type === "image").length,
+        complianceScore,
+      };
+
+      const { data, error } = await supabase.functions.invoke("ai-performance-predictions", {
+        body: { canvasAnalysis },
+      });
+
+      if (!error && data) {
+        setAiAnalysis(data);
+      }
+    } catch (err) {
+      console.error("Failed to fetch predictions:", err);
+    } finally {
+      setIsLoadingPredictions(false);
+    }
+  }, [fabricCanvas, format, complianceScore]);
+
+  useEffect(() => {
+    if (isOpen && fabricCanvas && format) {
+      fetchPredictions();
+    }
+  }, [isOpen, fetchPredictions, fabricCanvas, format]);
+
+  const performancePredictions: PerformancePrediction[] = aiAnalysis?.predictions || [
     { platform: "Instagram Feed", ctr: "2.4%", engagement: "High" },
     { platform: "Facebook Feed", ctr: "1.8%", engagement: "Medium" },
     { platform: "In-Store Display", ctr: "N/A", engagement: "High" },
