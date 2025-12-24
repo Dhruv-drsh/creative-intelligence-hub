@@ -1,11 +1,13 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Search, Sparkles, Grid, Palette, Loader2 } from "lucide-react";
+import { X, Search, Sparkles, Grid, Palette, Loader2, Heart, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import { TemplateSkeleton } from "@/components/TemplateSkeleton";
 import { supabase } from "@/integrations/supabase/client";
 import { generateTemplateThumbnail, getCachedThumbnail } from "@/utils/templateThumbnailGenerator";
+import { toast } from "sonner";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface Template {
   id: string;
@@ -133,20 +135,28 @@ const TemplateThumbnail = ({
 };
 
 export const TemplateGallery = ({ isOpen, onClose, onSelectTemplate }: TemplateGalleryProps) => {
+  const { user } = useAuth();
   const [templates, setTemplates] = useState<Template[]>([]);
   const [filteredTemplates, setFilteredTemplates] = useState<Template[]>([]);
+  const [favorites, setFavorites] = useState<Set<string>>(new Set());
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (isOpen) {
       fetchTemplates();
+      if (user) fetchFavorites();
     }
-  }, [isOpen]);
+  }, [isOpen, user]);
 
   const filterTemplates = useCallback(() => {
     let filtered = [...templates];
+
+    if (showFavoritesOnly) {
+      filtered = filtered.filter((t) => favorites.has(t.id));
+    }
 
     if (activeCategory !== "all") {
       filtered = filtered.filter((t) => t.category === activeCategory);
@@ -162,11 +172,64 @@ export const TemplateGallery = ({ isOpen, onClose, onSelectTemplate }: TemplateG
     }
 
     setFilteredTemplates(filtered);
-  }, [templates, searchQuery, activeCategory]);
+  }, [templates, searchQuery, activeCategory, showFavoritesOnly, favorites]);
 
   useEffect(() => {
     filterTemplates();
   }, [filterTemplates]);
+
+  const fetchFavorites = async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from("template_favorites")
+      .select("template_id")
+      .eq("user_id", user.id);
+    
+    if (data) {
+      setFavorites(new Set(data.map(f => f.template_id)));
+    }
+  };
+
+  const toggleFavorite = async (templateId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!user) {
+      toast.error("Please sign in to save favorites");
+      return;
+    }
+
+    const isFavorite = favorites.has(templateId);
+    const newFavorites = new Set(favorites);
+
+    if (isFavorite) {
+      newFavorites.delete(templateId);
+      setFavorites(newFavorites);
+      const { error } = await supabase
+        .from("template_favorites")
+        .delete()
+        .eq("user_id", user.id)
+        .eq("template_id", templateId);
+      if (error) {
+        newFavorites.add(templateId);
+        setFavorites(newFavorites);
+        toast.error("Failed to remove favorite");
+      } else {
+        toast.success("Removed from favorites");
+      }
+    } else {
+      newFavorites.add(templateId);
+      setFavorites(newFavorites);
+      const { error } = await supabase
+        .from("template_favorites")
+        .insert({ user_id: user.id, template_id: templateId });
+      if (error) {
+        newFavorites.delete(templateId);
+        setFavorites(newFavorites);
+        toast.error("Failed to add favorite");
+      } else {
+        toast.success("Added to favorites");
+      }
+    }
+  };
 
   const fetchTemplates = async () => {
     setIsLoading(true);
@@ -249,6 +312,24 @@ export const TemplateGallery = ({ isOpen, onClose, onSelectTemplate }: TemplateG
 
               {/* Categories */}
               <div className="flex gap-2 overflow-x-auto pb-2 sm:pb-0">
+                {/* Favorites Filter */}
+                <motion.button
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.15 }}
+                  onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-300 flex items-center gap-1.5 ${
+                    showFavoritesOnly
+                      ? "bg-rose-500 text-white shadow-md"
+                      : "bg-muted/50 text-muted-foreground hover:text-foreground hover:bg-muted"
+                  }`}
+                >
+                  <Heart className={`w-4 h-4 ${showFavoritesOnly ? "fill-current" : ""}`} />
+                  Favorites
+                </motion.button>
+                
                 {categoryOptions.map((cat, index) => (
                   <motion.button
                     key={cat.value}
@@ -307,6 +388,20 @@ export const TemplateGallery = ({ isOpen, onClose, onSelectTemplate }: TemplateG
                         <div className="relative aspect-square rounded-xl overflow-hidden border-2 border-border/50 group-hover:border-accent/70 transition-all duration-300 shadow-lg group-hover:shadow-xl group-hover:shadow-accent/10">
                           {/* Template Preview with real thumbnail */}
                           <TemplateThumbnail template={template} gradient={gradient} />
+                          
+                          {/* Favorite Button */}
+                          <motion.button
+                            onClick={(e) => toggleFavorite(template.id, e)}
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            className={`absolute top-2 left-2 w-8 h-8 rounded-full flex items-center justify-center backdrop-blur-sm transition-colors z-10 ${
+                              favorites.has(template.id)
+                                ? "bg-rose-500 text-white"
+                                : "bg-background/80 text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10"
+                            }`}
+                          >
+                            <Heart className={`w-4 h-4 ${favorites.has(template.id) ? "fill-current" : ""}`} />
+                          </motion.button>
                           
                           {/* Hover Overlay */}
                           <motion.div 
