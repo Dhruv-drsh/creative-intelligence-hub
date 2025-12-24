@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import { Canvas as FabricCanvas, Rect, Circle, IText, FabricImage } from "fabric";
+import { Canvas as FabricCanvas, Rect, Circle, IText, FabricImage, Polygon, Path } from "fabric";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useSearchParams } from "react-router-dom";
 import {
@@ -7,7 +7,7 @@ import {
   ZoomIn, ZoomOut, MousePointer2, Square, Circle as CircleIcon,
   Type, Image, Trash2, Copy, Layers, Upload, Send, Settings,
   Check, AlertTriangle, X, Menu, Eye as EyeIcon, Palette, Wand2, Save, Loader2,
-  PenTool, Zap, FileText
+  PenTool, Zap, FileText, Triangle, Star, ArrowRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -45,14 +45,68 @@ const sampleAssets = [
 const shapeColors = {
   rectangle: { fill: "rgba(99, 102, 241, 0.15)", stroke: "#6366F1" }, // Indigo
   circle: { fill: "rgba(236, 72, 153, 0.15)", stroke: "#EC4899" }, // Pink
+  triangle: { fill: "rgba(245, 158, 11, 0.15)", stroke: "#F59E0B" }, // Amber
+  star: { fill: "rgba(168, 85, 247, 0.15)", stroke: "#A855F7" }, // Purple
+  arrow: { fill: "rgba(34, 197, 94, 0.15)", stroke: "#22C55E" }, // Green
   text: "#1E293B", // Slate
 };
+
+// Quick templates with actual canvas data
+const quickTemplates = [
+  { 
+    name: "Premium Minimal", 
+    color: "from-slate-600 to-zinc-800",
+    canvas_data: {
+      objects: [
+        { type: "rect", left: 0, top: 0, width: 1080, height: 1080, fill: "#F8FAFC", selectable: false },
+        { type: "i-text", left: 100, top: 200, text: "PREMIUM", fontSize: 72, fontWeight: "700", fill: "#0F172A", fontFamily: "Inter" },
+        { type: "i-text", left: 100, top: 290, text: "COLLECTION", fontSize: 48, fontWeight: "300", fill: "#64748B", fontFamily: "Inter" },
+        { type: "rect", left: 100, top: 380, width: 60, height: 4, fill: "#0F172A" },
+      ]
+    }
+  },
+  { 
+    name: "Festive Sale", 
+    color: "from-red-500 to-orange-400",
+    canvas_data: {
+      objects: [
+        { type: "rect", left: 0, top: 0, width: 1080, height: 1080, fill: "#DC2626", selectable: false },
+        { type: "i-text", left: 540, top: 300, text: "SALE", fontSize: 120, fontWeight: "900", fill: "#FFFFFF", fontFamily: "Inter", originX: "center" },
+        { type: "i-text", left: 540, top: 450, text: "UP TO 50% OFF", fontSize: 48, fontWeight: "600", fill: "#FEF3C7", fontFamily: "Inter", originX: "center" },
+        { type: "circle", left: 800, top: 100, radius: 80, fill: "#FEF3C7" },
+      ]
+    }
+  },
+  { 
+    name: "Product Focus", 
+    color: "from-blue-500 to-cyan-400",
+    canvas_data: {
+      objects: [
+        { type: "rect", left: 0, top: 0, width: 1080, height: 1080, fill: "#0EA5E9", selectable: false },
+        { type: "circle", left: 540, top: 540, radius: 300, fill: "rgba(255,255,255,0.1)", originX: "center", originY: "center" },
+        { type: "i-text", left: 540, top: 850, text: "NEW ARRIVAL", fontSize: 56, fontWeight: "700", fill: "#FFFFFF", fontFamily: "Inter", originX: "center" },
+      ]
+    }
+  },
+  { 
+    name: "Bold Typography", 
+    color: "from-purple-600 to-pink-500",
+    canvas_data: {
+      objects: [
+        { type: "rect", left: 0, top: 0, width: 1080, height: 1080, fill: "#7C3AED", selectable: false },
+        { type: "i-text", left: 100, top: 300, text: "MAKE", fontSize: 140, fontWeight: "900", fill: "#FFFFFF", fontFamily: "Inter" },
+        { type: "i-text", left: 100, top: 460, text: "IT", fontSize: 140, fontWeight: "900", fill: "#F472B6", fontFamily: "Inter" },
+        { type: "i-text", left: 100, top: 620, text: "BOLD", fontSize: 140, fontWeight: "900", fill: "#FFFFFF", fontFamily: "Inter" },
+      ]
+    }
+  },
+];
 
 const CreativeBuilder = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [fabricCanvas, setFabricCanvas] = useState<FabricCanvas | null>(null);
-  const [activeTool, setActiveTool] = useState<"select" | "rectangle" | "circle" | "text">("select");
+  const [activeTool, setActiveTool] = useState<"select" | "rectangle" | "circle" | "triangle" | "star" | "arrow" | "text">("select");
   const [chatMessage, setChatMessage] = useState("");
   const [leftPanelOpen, setLeftPanelOpen] = useState(true);
   const [rightPanelOpen, setRightPanelOpen] = useState(true);
@@ -272,6 +326,60 @@ const CreativeBuilder = () => {
       });
       fabricCanvas.add(circle);
       fabricCanvas.setActiveObject(circle);
+    } else if (tool === "triangle") {
+      const triangle = new Polygon(
+        [
+          { x: 50, y: 0 },
+          { x: 100, y: 86 },
+          { x: 0, y: 86 },
+        ],
+        {
+          left: 100,
+          top: 100,
+          fill: shapeColors.triangle.fill,
+          stroke: shapeColors.triangle.stroke,
+          strokeWidth: 2,
+        }
+      );
+      fabricCanvas.add(triangle);
+      fabricCanvas.setActiveObject(triangle);
+    } else if (tool === "star") {
+      // Create 5-pointed star
+      const starPoints = [];
+      const outerRadius = 50;
+      const innerRadius = 25;
+      for (let i = 0; i < 10; i++) {
+        const radius = i % 2 === 0 ? outerRadius : innerRadius;
+        const angle = (Math.PI / 5) * i - Math.PI / 2;
+        starPoints.push({
+          x: 50 + radius * Math.cos(angle),
+          y: 50 + radius * Math.sin(angle),
+        });
+      }
+      const star = new Polygon(starPoints, {
+        left: 100,
+        top: 100,
+        fill: shapeColors.star.fill,
+        stroke: shapeColors.star.stroke,
+        strokeWidth: 2,
+      });
+      fabricCanvas.add(star);
+      fabricCanvas.setActiveObject(star);
+    } else if (tool === "arrow") {
+      const arrow = new Path(
+        "M 0 20 L 60 20 L 60 10 L 80 25 L 60 40 L 60 30 L 0 30 Z",
+        {
+          left: 100,
+          top: 100,
+          fill: shapeColors.arrow.fill,
+          stroke: shapeColors.arrow.stroke,
+          strokeWidth: 2,
+          scaleX: 1.5,
+          scaleY: 1.5,
+        }
+      );
+      fabricCanvas.add(arrow);
+      fabricCanvas.setActiveObject(arrow);
     } else if (tool === "text") {
       const text = new IText("Your Text Here", {
         left: 100,
@@ -429,6 +537,29 @@ const CreativeBuilder = () => {
     } catch (error) {
       console.error("Failed to load template:", error);
       toast.error("Failed to load template");
+    }
+  };
+
+  // Handle quick template selection from sidebar
+  const handleQuickTemplate = async (template: { 
+    name: string; 
+    color: string;
+    canvas_data: { objects: unknown[] };
+  }) => {
+    if (!fabricCanvas) return;
+    
+    try {
+      fabricCanvas.clear();
+      fabricCanvas.backgroundColor = "#ffffff";
+      
+      await fabricCanvas.loadFromJSON(template.canvas_data);
+      fabricCanvas.renderAll();
+      
+      toast.success(`Applied: ${template.name}`);
+      updateCompliance();
+    } catch (error) {
+      console.error("Failed to apply template:", error);
+      toast.error("Failed to apply template");
     }
   };
 
@@ -897,18 +1028,18 @@ const CreativeBuilder = () => {
                     <div className="divider" />
                     <h3 className="section-title">Quick Templates</h3>
                     
-                    {[
-                      { name: "Premium Minimal", color: "from-slate-500/20 to-zinc-500/20" },
-                      { name: "Festive Sale", color: "from-red-500/20 to-orange-500/20" },
-                      { name: "Product Focus", color: "from-blue-500/20 to-cyan-500/20" },
-                      { name: "Bold Typography", color: "from-purple-500/20 to-pink-500/20" },
-                    ].map((template, i) => (
-                      <div key={i} className="panel-card group">
-                        <div className={`aspect-video bg-gradient-to-br ${template.color} rounded-lg mb-3 flex items-center justify-center`}>
-                          <span className="text-[10px] font-medium text-muted-foreground group-hover:text-foreground transition-colors">Preview</span>
+                    {quickTemplates.map((template, i) => (
+                      <button
+                        key={i}
+                        onClick={() => handleQuickTemplate(template)}
+                        className="panel-card group w-full text-left"
+                      >
+                        <div className={`aspect-video bg-gradient-to-br ${template.color} rounded-lg mb-3 flex items-center justify-center relative overflow-hidden`}>
+                          <Sparkles className="w-6 h-6 text-white/60 group-hover:text-white/90 transition-colors" />
+                          <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors" />
                         </div>
                         <span className="text-sm font-medium text-foreground">{template.name}</span>
-                      </div>
+                      </button>
                     ))}
                   </div>
                 )}
@@ -935,14 +1066,18 @@ const CreativeBuilder = () => {
               {/* Tool Buttons - Enhanced */}
               <div className="flex items-center gap-1 p-1 rounded-xl bg-secondary/30 border border-border/30">
                 {[
-                  { tool: "select" as const, icon: MousePointer2, color: "text-foreground" },
-                  { tool: "rectangle" as const, icon: Square, color: "text-indigo-400" },
-                  { tool: "circle" as const, icon: CircleIcon, color: "text-pink-400" },
-                  { tool: "text" as const, icon: Type, color: "text-emerald-400" },
-                ].map(({ tool, icon: Icon, color }) => (
+                  { tool: "select" as const, icon: MousePointer2, color: "text-foreground", label: "Select" },
+                  { tool: "rectangle" as const, icon: Square, color: "text-indigo-400", label: "Rectangle" },
+                  { tool: "circle" as const, icon: CircleIcon, color: "text-pink-400", label: "Circle" },
+                  { tool: "triangle" as const, icon: Triangle, color: "text-amber-400", label: "Triangle" },
+                  { tool: "star" as const, icon: Star, color: "text-purple-400", label: "Star" },
+                  { tool: "arrow" as const, icon: ArrowRight, color: "text-green-400", label: "Arrow" },
+                  { tool: "text" as const, icon: Type, color: "text-emerald-400", label: "Text" },
+                ].map(({ tool, icon: Icon, color, label }) => (
                   <button
                     key={tool}
                     onClick={() => handleToolClick(tool)}
+                    title={label}
                     className={cn(
                       "w-9 h-9 rounded-lg flex items-center justify-center transition-all duration-200",
                       activeTool === tool
