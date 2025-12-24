@@ -23,3 +23,9 @@ verify_jwt = false
 
 [functions.ai-brand-dna]
 verify_jwt = false
+
+[functions.ai-typography-harmony]
+verify_jwt = false
+
+[functions.ai-visual-auditor]
+verify_jwt = false
