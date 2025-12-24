@@ -6,7 +6,7 @@ import {
   Sparkles, ChevronLeft, Download, Share2, Undo2, Redo2,
   ZoomIn, ZoomOut, MousePointer2, Square, Circle as CircleIcon,
   Type, Image, Trash2, Copy, Layers, Upload, Send, Settings,
-  Check, AlertTriangle, X, Menu, Eye as EyeIcon, Palette, Wand2, Save, Loader2,
+  Check, AlertTriangle, X, Menu, Eye as EyeIcon, Palette, Wand2, Save, Loader2, Heart, TrendingUp, Users,
   PenTool, Zap, FileText, Triangle, Star, ArrowRight, Grid3X3, Dna, Bold, Italic
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -29,6 +29,11 @@ import { CampaignSetCreator } from "@/components/CampaignSetCreator";
 import { BrandDNAExtractor } from "@/components/BrandDNAExtractor";
 import { TypographyHarmony } from "@/components/TypographyHarmony";
 import { VisualAuditor } from "@/components/VisualAuditor";
+import { EmotionToDesign } from "@/components/EmotionToDesign";
+import { TrendForecast } from "@/components/TrendForecast";
+import { ColorPsychology } from "@/components/ColorPsychology";
+import { CollaborativeWorkflows } from "@/components/CollaborativeWorkflows";
+import { DirectPublishing } from "@/components/DirectPublishing";
 import { useCreativeStore } from "@/store/creativeStore";
 import { useComplianceEngine, type ComplianceCheck } from "@/hooks/useComplianceEngine";
 import { useAICanvasControl } from "@/hooks/useAICanvasControl";
@@ -138,6 +143,11 @@ const CreativeBuilder = () => {
   const [showBrandDNA, setShowBrandDNA] = useState(false);
   const [showTypography, setShowTypography] = useState(false);
   const [showVisualAuditor, setShowVisualAuditor] = useState(false);
+  const [showEmotionDesign, setShowEmotionDesign] = useState(false);
+  const [showTrendForecast, setShowTrendForecast] = useState(false);
+  const [showColorPsychology, setShowColorPsychology] = useState(false);
+  const [showCollaborative, setShowCollaborative] = useState(false);
+  const [showDirectPublishing, setShowDirectPublishing] = useState(false);
   const [searchParams] = useSearchParams();
   const [isEditingName, setIsEditingName] = useState(false);
   
@@ -877,6 +887,46 @@ const CreativeBuilder = () => {
         onOpenChange={setShowVisualAuditor}
         canvasState={fabricCanvas?.toJSON()}
       />
+      <EmotionToDesign
+        isOpen={showEmotionDesign}
+        onClose={() => setShowEmotionDesign(false)}
+        onApplyDesign={(params) => {
+          if (!fabricCanvas) return;
+          fabricCanvas.backgroundColor = params.colors.background;
+          fabricCanvas.getObjects().forEach(obj => {
+            if (obj.type === 'i-text' || obj.type === 'text' || obj.type === 'textbox') {
+              (obj as any).set('fill', params.colors.text);
+              (obj as any).set('fontFamily', params.typography.headingFont);
+            }
+          });
+          fabricCanvas.renderAll();
+          updateCompliance();
+        }}
+      />
+      <TrendForecast
+        isOpen={showTrendForecast}
+        onClose={() => setShowTrendForecast(false)}
+      />
+      <ColorPsychology
+        isOpen={showColorPsychology}
+        onClose={() => setShowColorPsychology(false)}
+        onApplyPalette={(colors) => {
+          if (!fabricCanvas) return;
+          fabricCanvas.backgroundColor = colors.primary;
+          fabricCanvas.renderAll();
+          updateCompliance();
+        }}
+      />
+      <CollaborativeWorkflows
+        isOpen={showCollaborative}
+        onClose={() => setShowCollaborative(false)}
+        projectName={projectName}
+      />
+      <DirectPublishing
+        isOpen={showDirectPublishing}
+        onClose={() => setShowDirectPublishing(false)}
+        canvasRef={canvasRef}
+      />
 
       {/* Top Bar - Enhanced */}
       <header className="h-16 border-b border-border/30 glass flex items-center justify-between px-5 shrink-0 backdrop-blur-xl">
@@ -1123,6 +1173,56 @@ const CreativeBuilder = () => {
                       >
                         <EyeIcon className="w-4 h-4 mr-3" />
                         Visual Auditor
+                      </Button>
+
+                      <Button
+                        variant="ai-outline"
+                        size="sm"
+                        className="w-full justify-start h-11"
+                        onClick={() => setShowEmotionDesign(true)}
+                      >
+                        <Heart className="w-4 h-4 mr-3" />
+                        Emotion to Design
+                      </Button>
+
+                      <Button
+                        variant="ai-outline"
+                        size="sm"
+                        className="w-full justify-start h-11"
+                        onClick={() => setShowTrendForecast(true)}
+                      >
+                        <TrendingUp className="w-4 h-4 mr-3" />
+                        Trend Forecast
+                      </Button>
+
+                      <Button
+                        variant="ai-outline"
+                        size="sm"
+                        className="w-full justify-start h-11"
+                        onClick={() => setShowColorPsychology(true)}
+                      >
+                        <Palette className="w-4 h-4 mr-3" />
+                        Color Psychology
+                      </Button>
+
+                      <Button
+                        variant="ai-outline"
+                        size="sm"
+                        className="w-full justify-start h-11"
+                        onClick={() => setShowCollaborative(true)}
+                      >
+                        <Users className="w-4 h-4 mr-3" />
+                        Collaboration
+                      </Button>
+
+                      <Button
+                        variant="ai-outline"
+                        size="sm"
+                        className="w-full justify-start h-11"
+                        onClick={() => setShowDirectPublishing(true)}
+                      >
+                        <Upload className="w-4 h-4 mr-3" />
+                        Direct Publishing
                       </Button>
                     </div>
 
