@@ -5,16 +5,17 @@ import { Link } from "react-router-dom";
 import {
   Sparkles, ChevronLeft, Download, Share2, Undo2, Redo2,
   ZoomIn, ZoomOut, MousePointer2, Square, Circle as CircleIcon,
-  Type, Image, Trash2, Copy, Lock, Unlock, Eye, EyeOff,
-  Layers, Upload, Palette, Send, MoreHorizontal,
-  ChevronDown, Check, AlertTriangle, X, Menu, Settings
+  Type, Image, Trash2, Copy, Layers, Upload, Send, Settings,
+  Check, AlertTriangle, X, Menu, Eye as EyeIcon
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import { ComplianceScore } from "@/components/ui/ComplianceScore";
-import { FormatBadge } from "@/components/ui/FormatBadge";
 import { AIIndicator } from "@/components/ui/AIIndicator";
+import { SafeZonesOverlay } from "@/components/SafeZonesOverlay";
 import { useCreativeStore } from "@/store/creativeStore";
+import { useComplianceEngine, type ComplianceCheck } from "@/hooks/useComplianceEngine";
+import { useAICanvasControl } from "@/hooks/useAICanvasControl";
 import { cn } from "@/lib/utils";
 
 // Sample assets for the panel
@@ -25,14 +26,6 @@ const sampleAssets = [
   { id: "4", type: "logo", src: "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=200&h=200&fit=crop", name: "Brand Logo" },
 ];
 
-const complianceChecks = [
-  { id: "1", label: "Logo placement", status: "pass" as const },
-  { id: "2", label: "Safe zones", status: "pass" as const },
-  { id: "3", label: "Color contrast", status: "warning" as const },
-  { id: "4", label: "Text limits", status: "pass" as const },
-  { id: "5", label: "Prohibited copy", status: "pass" as const },
-];
-
 const CreativeBuilder = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -41,12 +34,15 @@ const CreativeBuilder = () => {
   const [chatMessage, setChatMessage] = useState("");
   const [leftPanelOpen, setLeftPanelOpen] = useState(true);
   const [rightPanelOpen, setRightPanelOpen] = useState(true);
+  const [showSafeZones, setShowSafeZones] = useState(false);
+  const [complianceChecks, setComplianceChecks] = useState<ComplianceCheck[]>([]);
+  const [calculatedScore, setCalculatedScore] = useState(85);
 
   const {
     currentFormat,
     availableFormats,
     setCurrentFormat,
-    complianceScore,
+    setComplianceScore,
     aiStatus,
     setAIStatus,
     aiMessages,
@@ -55,11 +51,26 @@ const CreativeBuilder = () => {
     setLeftPanelTab,
   } = useCreativeStore();
 
+  // Initialize compliance engine and AI canvas control
+  const { safeZones, runComplianceChecks, calculateScore } = useComplianceEngine(currentFormat.id);
+  const { processAICommand } = useAICanvasControl(fabricCanvas);
+
+  // Run compliance checks when canvas changes
+  const updateCompliance = useCallback(() => {
+    if (!fabricCanvas) return;
+    
+    const checks = runComplianceChecks(fabricCanvas);
+    setComplianceChecks(checks);
+    
+    const score = calculateScore(checks);
+    setCalculatedScore(score);
+    setComplianceScore(score);
+  }, [fabricCanvas, runComplianceChecks, calculateScore, setComplianceScore]);
+
   // Initialize Fabric.js canvas
   useEffect(() => {
     if (!canvasRef.current || !containerRef.current) return;
 
-    // Calculate canvas size based on container and format
     const containerWidth = containerRef.current.clientWidth - 80;
     const containerHeight = containerRef.current.clientHeight - 80;
     const formatRatio = currentFormat.width / currentFormat.height;
@@ -81,7 +92,7 @@ const CreativeBuilder = () => {
       selection: true,
     });
 
-    // Add some initial elements for demo
+    // Add initial elements
     const productRect = new Rect({
       left: canvasWidth / 4,
       top: canvasHeight / 4,
@@ -127,12 +138,26 @@ const CreativeBuilder = () => {
     canvas.add(productRect, ctaRect, ctaText, logoPlaceholder);
     canvas.renderAll();
 
+    // Listen for canvas changes to update compliance
+    canvas.on("object:modified", () => updateCompliance());
+    canvas.on("object:added", () => updateCompliance());
+    canvas.on("object:removed", () => updateCompliance());
+
     setFabricCanvas(canvas);
+
+    // Initial compliance check
+    setTimeout(() => {
+      const checks = runComplianceChecks(canvas);
+      setComplianceChecks(checks);
+      const score = calculateScore(checks);
+      setCalculatedScore(score);
+      setComplianceScore(score);
+    }, 100);
 
     return () => {
       canvas.dispose();
     };
-  }, [currentFormat]);
+  }, [currentFormat, runComplianceChecks, calculateScore, setComplianceScore]);
 
   // Handle tool clicks
   const handleToolClick = useCallback((tool: typeof activeTool) => {
@@ -180,26 +205,41 @@ const CreativeBuilder = () => {
     setActiveTool("select");
   }, [fabricCanvas]);
 
-  // Handle AI chat
+  // Handle AI chat - now with real canvas control
   const handleSendMessage = async () => {
-    if (!chatMessage.trim()) return;
+    if (!chatMessage.trim() || aiStatus !== "idle") return;
 
-    addAIMessage({ role: "user", content: chatMessage });
+    const userMessage = chatMessage.trim();
+    addAIMessage({ role: "user", content: userMessage });
     setChatMessage("");
     setAIStatus("thinking");
 
-    // Simulate AI response
-    setTimeout(() => {
+    try {
+      const response = await processAICommand(userMessage);
+      
       setAIStatus("generating");
-      setTimeout(() => {
-        addAIMessage({
-          role: "assistant",
-          content: "I've updated your design to be more premium. I increased the product prominence, added subtle shadows, and adjusted the color palette for a luxurious feel."
-        });
-        setAIStatus("complete");
-        setTimeout(() => setAIStatus("idle"), 2000);
-      }, 2000);
-    }, 1500);
+      
+      // Small delay for visual feedback
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      addAIMessage({
+        role: "assistant",
+        content: response.message || "I've updated your design based on your request."
+      });
+      
+      // Update compliance after AI changes
+      updateCompliance();
+      
+    } catch (error) {
+      console.error("AI processing error:", error);
+      addAIMessage({
+        role: "assistant",
+        content: "Sorry, I couldn't process that request. Please try again."
+      });
+    } finally {
+      setAIStatus("complete");
+      setTimeout(() => setAIStatus("idle"), 1500);
+    }
   };
 
   // Add image to canvas
@@ -254,7 +294,7 @@ const CreativeBuilder = () => {
               </button>
             ))}
           </div>
-          <ComplianceScore score={complianceScore} size="sm" showLabel={false} />
+          <ComplianceScore score={calculatedScore} size="sm" showLabel={false} />
           <AIIndicator status={aiStatus} />
         </div>
 
@@ -366,7 +406,7 @@ const CreativeBuilder = () => {
                       >
                         <Layers className="w-4 h-4 text-muted-foreground" />
                         <span className="text-sm text-foreground flex-1">{layer}</span>
-                        <Eye className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <EyeIcon className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                       </div>
                     ))}
                   </div>
@@ -425,6 +465,16 @@ const CreativeBuilder = () => {
             </div>
 
             <div className="flex items-center gap-2">
+              <Button
+                variant={showSafeZones ? "secondary" : "ghost"}
+                size="sm"
+                onClick={() => setShowSafeZones(!showSafeZones)}
+                className="text-xs"
+              >
+                <EyeIcon className="w-3 h-3 mr-1" />
+                Safe Zones
+              </Button>
+              <div className="w-px h-6 bg-border mx-2" />
               <Button variant="ghost" size="icon-sm">
                 <ZoomOut className="w-4 h-4" />
               </Button>
@@ -450,8 +500,14 @@ const CreativeBuilder = () => {
             ref={containerRef}
             className="flex-1 flex items-center justify-center bg-background p-10 overflow-auto"
           >
-            <div className="canvas-container shadow-premium">
+            <div className="canvas-container shadow-premium relative">
               <canvas ref={canvasRef} />
+              <SafeZonesOverlay
+                zones={safeZones}
+                canvasWidth={fabricCanvas?.getWidth() || 0}
+                canvasHeight={fabricCanvas?.getHeight() || 0}
+                visible={showSafeZones}
+              />
             </div>
           </div>
         </div>
@@ -470,19 +526,24 @@ const CreativeBuilder = () => {
               <div className="p-4 border-b border-border/50 shrink-0">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-sm font-medium text-foreground">Compliance</h3>
-                  <ComplianceScore score={complianceScore} size="sm" showLabel={false} />
+                  <ComplianceScore score={calculatedScore} size="sm" showLabel={false} />
                 </div>
                 <div className="space-y-2">
                   {complianceChecks.map((check) => (
-                    <div key={check.id} className="flex items-center gap-2">
+                    <div key={check.id} className="flex items-start gap-2">
                       {check.status === "pass" ? (
-                        <Check className="w-4 h-4 text-accent" />
+                        <Check className="w-4 h-4 text-accent shrink-0 mt-0.5" />
                       ) : check.status === "warning" ? (
-                        <AlertTriangle className="w-4 h-4 text-warning" />
+                        <AlertTriangle className="w-4 h-4 text-warning shrink-0 mt-0.5" />
                       ) : (
-                        <X className="w-4 h-4 text-destructive" />
+                        <X className="w-4 h-4 text-destructive shrink-0 mt-0.5" />
                       )}
-                      <span className="text-xs text-muted-foreground">{check.label}</span>
+                      <div className="flex-1 min-w-0">
+                        <span className="text-xs text-foreground block">{check.label}</span>
+                        <span className="text-[10px] text-muted-foreground block truncate" title={check.message}>
+                          {check.message}
+                        </span>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -507,9 +568,20 @@ const CreativeBuilder = () => {
                       <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mx-auto mb-3">
                         <Sparkles className="w-6 h-6 text-accent" />
                       </div>
-                      <p className="text-sm text-muted-foreground">
-                        Try saying: "Make it more premium" or "Add festive elements"
+                      <p className="text-sm text-muted-foreground mb-3">
+                        Try commands like:
                       </p>
+                      <div className="flex flex-wrap gap-2 justify-center">
+                        {["Make it more premium", "Add festive elements", "Increase product size", "Make it minimal"].map((cmd, i) => (
+                          <button
+                            key={i}
+                            onClick={() => setChatMessage(cmd)}
+                            className="text-xs px-2 py-1 rounded-full bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                          >
+                            {cmd}
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   ) : (
                     aiMessages.map((msg, i) => (
@@ -535,7 +607,20 @@ const CreativeBuilder = () => {
                         >
                           <Sparkles className="w-4 h-4 text-accent" />
                         </motion.div>
-                        <span className="text-sm text-muted-foreground">Thinking...</span>
+                        <span className="text-sm text-muted-foreground">Analyzing your design...</span>
+                      </div>
+                    </div>
+                  )}
+                  {aiStatus === "generating" && (
+                    <div className="chat-bubble-ai mr-8">
+                      <div className="flex items-center gap-2">
+                        <motion.div
+                          animate={{ scale: [1, 1.2, 1] }}
+                          transition={{ duration: 0.5, repeat: Infinity }}
+                        >
+                          <Sparkles className="w-4 h-4 text-accent" />
+                        </motion.div>
+                        <span className="text-sm text-muted-foreground">Applying changes...</span>
                       </div>
                     </div>
                   )}
