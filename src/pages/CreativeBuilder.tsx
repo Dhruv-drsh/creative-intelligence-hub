@@ -34,6 +34,7 @@ import { TrendForecast } from "@/components/TrendForecast";
 import { ColorPsychology } from "@/components/ColorPsychology";
 import { CollaborativeWorkflows } from "@/components/CollaborativeWorkflows";
 import { DirectPublishing } from "@/components/DirectPublishing";
+import { KeyboardShortcutsTooltip } from "@/components/KeyboardShortcutsTooltip";
 import { useCreativeStore } from "@/store/creativeStore";
 import { useComplianceEngine, type ComplianceCheck } from "@/hooks/useComplianceEngine";
 import { useAICanvasControl } from "@/hooks/useAICanvasControl";
@@ -1058,6 +1059,7 @@ const CreativeBuilder = () => {
             >
               <Redo2 className="w-4 h-4" />
             </Button>
+            <KeyboardShortcutsTooltip />
           </div>
           <Button 
             variant="outline" 
