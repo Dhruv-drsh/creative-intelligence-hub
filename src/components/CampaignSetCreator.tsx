@@ -133,9 +133,9 @@ export function CampaignSetCreator({ open, onOpenChange, onApplyVariation, canva
           className="w-full max-w-4xl max-h-[85vh] overflow-hidden"
           onClick={(e) => e.stopPropagation()}
         >
-          <GlassPanel padding="none" className="overflow-hidden">
-            {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-border/50">
+          <GlassPanel padding="none" className="flex flex-col h-[85vh]">
+            {/* Header - Fixed */}
+            <div className="flex-shrink-0 flex items-center justify-between p-6 border-b border-border/50">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
                   <Layers className="w-5 h-5 text-white" />
@@ -150,7 +150,8 @@ export function CampaignSetCreator({ open, onOpenChange, onApplyVariation, canva
               </Button>
             </div>
 
-            <ScrollArea className="max-h-[60vh]">
+            {/* Scrollable Content */}
+            <ScrollArea className="flex-1 min-h-0">
               <div className="p-6">
                 <AnimatePresence mode="wait">
                   {step === "config" && (
@@ -334,8 +335,9 @@ export function CampaignSetCreator({ open, onOpenChange, onApplyVariation, canva
               </div>
             </ScrollArea>
 
+            {/* Footer - Fixed */}
             {step === "config" && (
-              <div className="p-6 pt-4 border-t border-border/50 flex justify-end gap-3">
+              <div className="flex-shrink-0 p-6 pt-4 border-t border-border/50 flex justify-end gap-3">
                 <Button variant="outline" onClick={() => onOpenChange(false)}>
                   Cancel
                 </Button>

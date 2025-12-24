@@ -95,9 +95,9 @@ export const VisualAuditor = ({
           className="w-full max-w-4xl max-h-[85vh] overflow-hidden"
           onClick={(e) => e.stopPropagation()}
         >
-          <GlassPanel padding="none" className="overflow-hidden">
-            {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-border/50">
+          <GlassPanel padding="none" className="flex flex-col h-[85vh]">
+            {/* Header - Fixed */}
+            <div className="flex-shrink-0 flex items-center justify-between p-6 border-b border-border/50">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center">
                   <Eye className="w-5 h-5 text-white" />
@@ -112,8 +112,10 @@ export const VisualAuditor = ({
               </Button>
             </div>
 
-            <div className="p-6 max-h-[65vh] overflow-y-auto">
-              {!audit ? (
+            {/* Scrollable Content */}
+            <ScrollArea className="flex-1 min-h-0">
+              <div className="p-6">
+                {!audit ? (
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -292,10 +294,11 @@ export const VisualAuditor = ({
                   </AnimatePresence>
                 </ScrollArea>
               )}
-            </div>
+              </div>
+            </ScrollArea>
 
-            {/* Footer */}
-            <div className="flex justify-end gap-3 p-6 pt-4 border-t border-border/50">
+            {/* Footer - Fixed */}
+            <div className="flex-shrink-0 flex justify-end gap-3 p-6 pt-4 border-t border-border/50">
               {audit && (
                 <Button 
                   variant="outline" 

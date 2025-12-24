@@ -138,9 +138,9 @@ export function ColorPsychology({ isOpen, onClose, onApplyPalette }: ColorPsycho
           className="w-full max-w-3xl max-h-[85vh] overflow-hidden"
           onClick={(e) => e.stopPropagation()}
         >
-          <GlassPanel padding="none" className="overflow-hidden">
-            {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-border/50">
+          <GlassPanel padding="none" className="flex flex-col h-[85vh]">
+            {/* Header - Fixed */}
+            <div className="flex-shrink-0 flex items-center justify-between p-6 border-b border-border/50">
               <div>
                 <h2 className="font-display text-xl text-foreground flex items-center gap-2">
                   <Palette className="w-5 h-5 text-violet-500" />
@@ -155,7 +155,8 @@ export function ColorPsychology({ isOpen, onClose, onApplyPalette }: ColorPsycho
               </Button>
             </div>
 
-            <ScrollArea className="max-h-[calc(85vh-100px)]">
+            {/* Scrollable Content */}
+            <ScrollArea className="flex-1 min-h-0">
               <div className="p-6 space-y-6">
                 {/* Filters */}
                 <div className="grid grid-cols-2 gap-4">
