@@ -14,3 +14,12 @@ verify_jwt = false
 
 [functions.ai-copywriting]
 verify_jwt = false
+
+[functions.ai-creative-multiverse]
+verify_jwt = false
+
+[functions.ai-campaign-set]
+verify_jwt = false
+
+[functions.ai-brand-dna]
+verify_jwt = false
