@@ -2,3 +2,6 @@ project_id = "yzoycpiebfrvqsoocgxq"
 
 [functions.generate-background]
 verify_jwt = true
+
+[functions.ai-canvas-control]
+verify_jwt = true
