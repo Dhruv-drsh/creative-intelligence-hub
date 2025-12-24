@@ -29,3 +29,12 @@ verify_jwt = false
 
 [functions.ai-visual-auditor]
 verify_jwt = false
+
+[functions.ai-emotion-design]
+verify_jwt = false
+
+[functions.ai-trend-forecast]
+verify_jwt = false
+
+[functions.ai-color-psychology]
+verify_jwt = false
