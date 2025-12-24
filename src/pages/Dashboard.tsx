@@ -1,50 +1,27 @@
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { 
   Plus, FolderOpen, Clock, TrendingUp, 
   Sparkles, LayoutGrid, Image, FileText,
-  ArrowRight, MoreHorizontal
+  ArrowRight, MoreHorizontal, LogOut
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import { ComplianceScore } from "@/components/ui/ComplianceScore";
 import { FormatBadge } from "@/components/ui/FormatBadge";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
-// Mock data for recent projects
-const recentProjects = [
-  {
-    id: "1",
-    name: "Summer Sale Campaign",
-    thumbnail: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=300&h=300&fit=crop",
-    format: "Instagram Feed",
-    complianceScore: 98,
-    updatedAt: "2 hours ago",
-  },
-  {
-    id: "2",
-    name: "New Product Launch",
-    thumbnail: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300&h=300&fit=crop",
-    format: "Facebook Feed",
-    complianceScore: 85,
-    updatedAt: "Yesterday",
-  },
-  {
-    id: "3",
-    name: "Holiday Promo",
-    thumbnail: "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=300&h=300&fit=crop",
-    format: "Instagram Story",
-    complianceScore: 92,
-    updatedAt: "3 days ago",
-  },
-  {
-    id: "4",
-    name: "In-Store Banner",
-    thumbnail: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300&h=300&fit=crop",
-    format: "In-Store Banner",
-    complianceScore: 100,
-    updatedAt: "1 week ago",
-  },
-];
+interface Project {
+  id: string;
+  name: string;
+  thumbnail_url: string | null;
+  format_id: string;
+  compliance_score: number;
+  updated_at: string;
+}
 
 const quickActions = [
   { icon: Image, label: "Upload Product", description: "Start with a packshot" },
@@ -53,7 +30,60 @@ const quickActions = [
   { icon: FileText, label: "Brand Kit", description: "Manage brand assets" },
 ];
 
+const formatLabels: Record<string, string> = {
+  "instagram-feed": "Instagram Feed",
+  "instagram-story": "Instagram Story",
+  "facebook-feed": "Facebook Feed",
+  "in-store": "In-Store Banner",
+};
+
 const Dashboard = () => {
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    fetchProjects();
+  }, []);
+
+  const fetchProjects = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("projects")
+        .select("*")
+        .order("updated_at", { ascending: false })
+        .limit(8);
+
+      if (error) throw error;
+      setProjects(data || []);
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
+    toast.success("Signed out successfully");
+    navigate("/");
+  };
+
+  const formatTimeAgo = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMins / 60);
+    const diffDays = Math.floor(diffHours / 24);
+
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    if (diffDays < 7) return `${diffDays}d ago`;
+    return date.toLocaleDateString();
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -68,14 +98,17 @@ const Dashboard = () => {
             </Link>
           </div>
           <div className="flex items-center gap-3">
+            <span className="text-sm text-muted-foreground hidden md:block">
+              {user?.email}
+            </span>
             <Link to="/builder">
               <Button variant="ai" size="sm" className="group">
                 <Plus className="w-4 h-4" />
                 New Creative
               </Button>
             </Link>
-            <Button variant="ghost" size="icon-sm">
-              <MoreHorizontal className="w-4 h-4" />
+            <Button variant="ghost" size="icon-sm" onClick={handleSignOut} title="Sign out">
+              <LogOut className="w-4 h-4" />
             </Button>
           </div>
         </div>
@@ -89,7 +122,7 @@ const Dashboard = () => {
           className="mb-10"
         >
           <h1 className="font-display text-3xl md:text-4xl mb-2">
-            Welcome back
+            Welcome back{user?.user_metadata?.full_name ? `, ${user.user_metadata.full_name}` : ""}
           </h1>
           <p className="text-muted-foreground">
             Pick up where you left off, or start something new.
@@ -134,10 +167,16 @@ const Dashboard = () => {
           className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10"
         >
           {[
-            { icon: FolderOpen, label: "Total Projects", value: "24" },
-            { icon: TrendingUp, label: "This Week", value: "8" },
-            { icon: Clock, label: "Avg. Time Saved", value: "4.2h" },
-            { icon: Sparkles, label: "AI Generations", value: "156" },
+            { icon: FolderOpen, label: "Total Projects", value: String(projects.length) },
+            { icon: TrendingUp, label: "This Week", value: String(projects.filter(p => {
+              const weekAgo = new Date();
+              weekAgo.setDate(weekAgo.getDate() - 7);
+              return new Date(p.updated_at) > weekAgo;
+            }).length) },
+            { icon: Clock, label: "Avg. Compliance", value: projects.length > 0 
+              ? `${Math.round(projects.reduce((sum, p) => sum + p.compliance_score, 0) / projects.length)}%`
+              : "N/A" },
+            { icon: Sparkles, label: "AI Ready", value: "Yes" },
           ].map((stat, index) => (
             <GlassPanel key={index} padding="md" variant="subtle">
               <div className="flex items-center gap-3">
@@ -167,49 +206,65 @@ const Dashboard = () => {
             </Button>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {recentProjects.map((project, index) => (
-              <motion.div
-                key={project.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 + index * 0.1 }}
-              >
-                <Link to="/builder">
-                  <GlassPanel 
-                    padding="none" 
-                    className="overflow-hidden group cursor-pointer hover-lift"
-                  >
-                    {/* Thumbnail */}
-                    <div className="aspect-square relative overflow-hidden">
-                      <img
-                        src={project.thumbnail}
-                        alt={project.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                      
-                      {/* Compliance Badge */}
-                      <div className="absolute top-3 right-3">
-                        <ComplianceScore score={project.complianceScore} size="sm" showLabel={false} />
+          {isLoading ? (
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="aspect-square bg-muted/30 rounded-xl animate-pulse" />
+              ))}
+            </div>
+          ) : projects.length > 0 ? (
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {projects.map((project, index) => (
+                <motion.div
+                  key={project.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 + index * 0.1 }}
+                >
+                  <Link to={`/builder?project=${project.id}`}>
+                    <GlassPanel 
+                      padding="none" 
+                      className="overflow-hidden group cursor-pointer hover-lift"
+                    >
+                      {/* Thumbnail */}
+                      <div className="aspect-square relative overflow-hidden bg-muted/30">
+                        {project.thumbnail_url ? (
+                          <img
+                            src={project.thumbnail_url}
+                            alt={project.name}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <Image className="w-12 h-12 text-muted-foreground/50" />
+                          </div>
+                        )}
+                        <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                        
+                        {/* Compliance Badge */}
+                        <div className="absolute top-3 right-3">
+                          <ComplianceScore score={project.compliance_score} size="sm" showLabel={false} />
+                        </div>
                       </div>
-                    </div>
 
-                    {/* Info */}
-                    <div className="p-4">
-                      <h3 className="font-medium text-foreground text-sm mb-1 truncate">
-                        {project.name}
-                      </h3>
-                      <div className="flex items-center justify-between">
-                        <FormatBadge format={project.format} />
-                        <span className="text-xs text-muted-foreground">{project.updatedAt}</span>
+                      {/* Info */}
+                      <div className="p-4">
+                        <h3 className="font-medium text-foreground text-sm mb-1 truncate">
+                          {project.name}
+                        </h3>
+                        <div className="flex items-center justify-between">
+                          <FormatBadge format={formatLabels[project.format_id] || project.format_id} />
+                          <span className="text-xs text-muted-foreground">
+                            {formatTimeAgo(project.updated_at)}
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                  </GlassPanel>
-                </Link>
-              </motion.div>
-            ))}
-          </div>
+                    </GlassPanel>
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+          ) : null}
         </motion.div>
 
         {/* Empty State / New Project CTA */}
@@ -227,7 +282,7 @@ const Dashboard = () => {
               Create Your Next Campaign
             </h3>
             <p className="text-sm text-muted-foreground mb-6 max-w-md mx-auto">
-              Upload a product image and let our 18 AI engines generate compliant, 
+              Upload a product image and let our AI engines generate compliant, 
               campaign-ready creatives in minutes.
             </p>
             <Link to="/builder">

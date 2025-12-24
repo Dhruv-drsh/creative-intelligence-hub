@@ -6,17 +6,23 @@ import {
   Sparkles, ChevronLeft, Download, Share2, Undo2, Redo2,
   ZoomIn, ZoomOut, MousePointer2, Square, Circle as CircleIcon,
   Type, Image, Trash2, Copy, Layers, Upload, Send, Settings,
-  Check, AlertTriangle, X, Menu, Eye as EyeIcon
+  Check, AlertTriangle, X, Menu, Eye as EyeIcon, Palette, Wand2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import { ComplianceScore } from "@/components/ui/ComplianceScore";
 import { AIIndicator } from "@/components/ui/AIIndicator";
 import { SafeZonesOverlay } from "@/components/SafeZonesOverlay";
+import { ImageUploader } from "@/components/ImageUploader";
+import { BrandKitManager } from "@/components/BrandKitManager";
+import { TemplateGallery } from "@/components/TemplateGallery";
+import { ExportDialog } from "@/components/ExportDialog";
+import { AIBackgroundGenerator } from "@/components/AIBackgroundGenerator";
 import { useCreativeStore } from "@/store/creativeStore";
 import { useComplianceEngine, type ComplianceCheck } from "@/hooks/useComplianceEngine";
 import { useAICanvasControl } from "@/hooks/useAICanvasControl";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 // Sample assets for the panel
 const sampleAssets = [
@@ -37,6 +43,15 @@ const CreativeBuilder = () => {
   const [showSafeZones, setShowSafeZones] = useState(false);
   const [complianceChecks, setComplianceChecks] = useState<ComplianceCheck[]>([]);
   const [calculatedScore, setCalculatedScore] = useState(85);
+  const [uploadedAssets, setUploadedAssets] = useState<Array<{ id: string; src: string; name: string; type: string }>>([]);
+
+  // Modal states
+  const [showImageUploader, setShowImageUploader] = useState(false);
+  const [uploadType, setUploadType] = useState<"product" | "logo">("product");
+  const [showBrandKitManager, setShowBrandKitManager] = useState(false);
+  const [showTemplateGallery, setShowTemplateGallery] = useState(false);
+  const [showExportDialog, setShowExportDialog] = useState(false);
+  const [showAIBackground, setShowAIBackground] = useState(false);
 
   const {
     currentFormat,
@@ -243,7 +258,7 @@ const CreativeBuilder = () => {
   };
 
   // Add image to canvas
-  const handleAddAsset = async (asset: typeof sampleAssets[0]) => {
+  const handleAddAsset = async (asset: { src: string; name: string }) => {
     if (!fabricCanvas) return;
 
     try {
@@ -253,13 +268,106 @@ const CreativeBuilder = () => {
       fabricCanvas.add(img);
       fabricCanvas.setActiveObject(img);
       fabricCanvas.renderAll();
+      toast.success(`Added ${asset.name} to canvas`);
     } catch (error) {
       console.error("Failed to load image:", error);
+      toast.error("Failed to add image to canvas");
     }
+  };
+
+  // Handle uploaded image
+  const handleImageUploaded = async (imageUrl: string, fileName: string) => {
+    const newAsset = {
+      id: Date.now().toString(),
+      src: imageUrl,
+      name: fileName,
+      type: uploadType,
+    };
+    setUploadedAssets(prev => [newAsset, ...prev]);
+    await handleAddAsset({ src: imageUrl, name: fileName });
+  };
+
+  // Handle AI background selection
+  const handleBackgroundSelected = async (imageUrl: string) => {
+    if (!fabricCanvas) return;
+
+    try {
+      const img = await FabricImage.fromURL(imageUrl, { crossOrigin: "anonymous" });
+      const canvasWidth = fabricCanvas.getWidth();
+      const canvasHeight = fabricCanvas.getHeight();
+      
+      // Scale to cover canvas
+      const scaleX = canvasWidth / (img.width || 1);
+      const scaleY = canvasHeight / (img.height || 1);
+      const scale = Math.max(scaleX, scaleY);
+      
+      img.scale(scale);
+      img.set({
+        left: 0,
+        top: 0,
+        originX: "left",
+        originY: "top",
+        selectable: true,
+      });
+      
+      // Send to back
+      fabricCanvas.add(img);
+      fabricCanvas.sendObjectToBack(img);
+      fabricCanvas.renderAll();
+      
+      toast.success("Background applied!");
+    } catch (error) {
+      console.error("Failed to apply background:", error);
+      toast.error("Failed to apply background");
+    }
+  };
+
+  // Handle template selection
+  const handleTemplateSelected = (template: { name: string; format_width: number; format_height: number }) => {
+    toast.success(`Loaded template: ${template.name}`);
+    setShowTemplateGallery(false);
+    // Template loading would apply canvas_data here
+  };
+
+  // Handle brand kit selection
+  const handleBrandKitSelected = (brandKit: { name: string; primary_color: string; font_heading: string }) => {
+    toast.success(`Applied brand kit: ${brandKit.name}`);
+    setShowBrandKitManager(false);
+    // Would apply colors/fonts to canvas
   };
 
   return (
     <div className="h-screen flex flex-col bg-background overflow-hidden">
+      {/* Modals */}
+      <ImageUploader
+        isOpen={showImageUploader}
+        onClose={() => setShowImageUploader(false)}
+        onImageUploaded={handleImageUploaded}
+        type={uploadType}
+      />
+      <BrandKitManager
+        isOpen={showBrandKitManager}
+        onClose={() => setShowBrandKitManager(false)}
+        onSelectBrandKit={handleBrandKitSelected}
+      />
+      <TemplateGallery
+        isOpen={showTemplateGallery}
+        onClose={() => setShowTemplateGallery(false)}
+        onSelectTemplate={handleTemplateSelected}
+      />
+      <ExportDialog
+        isOpen={showExportDialog}
+        onClose={() => setShowExportDialog(false)}
+        canvasRef={canvasRef}
+        complianceScore={calculatedScore}
+        formatName={currentFormat.name}
+      />
+      <AIBackgroundGenerator
+        isOpen={showAIBackground}
+        onClose={() => setShowAIBackground(false)}
+        onSelectBackground={handleBackgroundSelected}
+      />
+
       {/* Top Bar */}
       <header className="h-14 border-b border-border/50 glass flex items-center justify-between px-4 shrink-0">
         <div className="flex items-center gap-4">
@@ -311,7 +419,7 @@ const CreativeBuilder = () => {
             <Share2 className="w-4 h-4 mr-2" />
             Share
           </Button>
-          <Button variant="ai" size="sm">
+          <Button variant="ai" size="sm" onClick={() => setShowExportDialog(true)}>
             <Download className="w-4 h-4 mr-2" />
             Export
           </Button>
@@ -352,13 +460,77 @@ const CreativeBuilder = () => {
               <div className="flex-1 p-4 overflow-y-auto">
                 {leftPanelTab === "assets" && (
                   <div className="space-y-4">
-                    <Button variant="outline" size="sm" className="w-full">
-                      <Upload className="w-4 h-4 mr-2" />
-                      Upload Asset
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex-1"
+                        onClick={() => {
+                          setUploadType("product");
+                          setShowImageUploader(true);
+                        }}
+                      >
+                        <Upload className="w-4 h-4 mr-1" />
+                        Product
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex-1"
+                        onClick={() => {
+                          setUploadType("logo");
+                          setShowImageUploader(true);
+                        }}
+                      >
+                        <Upload className="w-4 h-4 mr-1" />
+                        Logo
+                      </Button>
+                    </div>
+
+                    <Button
+                      variant="ai"
+                      size="sm"
+                      className="w-full"
+                      onClick={() => setShowAIBackground(true)}
+                    >
+                      <Wand2 className="w-4 h-4 mr-2" />
+                      AI Background
                     </Button>
 
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="w-full justify-start"
+                      onClick={() => setShowBrandKitManager(true)}
+                    >
+                      <Palette className="w-4 h-4 mr-2" />
+                      Brand Kit
+                    </Button>
+
+                    {/* Uploaded Assets */}
+                    {uploadedAssets.length > 0 && (
+                      <div>
+                        <h3 className="text-xs font-medium text-muted-foreground mb-3">Your Uploads</h3>
+                        <div className="grid grid-cols-2 gap-2">
+                          {uploadedAssets.map((asset) => (
+                            <button
+                              key={asset.id}
+                              onClick={() => handleAddAsset(asset)}
+                              className="aspect-square rounded-lg overflow-hidden border border-border/50 hover:border-accent/50 transition-colors group"
+                            >
+                              <img
+                                src={asset.src}
+                                alt={asset.name}
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                              />
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
                     <div>
-                      <h3 className="text-xs font-medium text-muted-foreground mb-3">Products</h3>
+                      <h3 className="text-xs font-medium text-muted-foreground mb-3">Sample Products</h3>
                       <div className="grid grid-cols-2 gap-2">
                         {sampleAssets.filter(a => a.type === "product").map((asset) => (
                           <button
@@ -377,7 +549,7 @@ const CreativeBuilder = () => {
                     </div>
 
                     <div>
-                      <h3 className="text-xs font-medium text-muted-foreground mb-3">Logos</h3>
+                      <h3 className="text-xs font-medium text-muted-foreground mb-3">Sample Logos</h3>
                       <div className="grid grid-cols-2 gap-2">
                         {sampleAssets.filter(a => a.type === "logo").map((asset) => (
                           <button
@@ -399,21 +571,38 @@ const CreativeBuilder = () => {
 
                 {leftPanelTab === "layers" && (
                   <div className="space-y-2">
-                    {["CTA Button", "Product Image", "Logo", "Background"].map((layer, i) => (
+                    {fabricCanvas?.getObjects().map((obj, i) => (
                       <div
                         key={i}
                         className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 cursor-pointer group"
+                        onClick={() => {
+                          fabricCanvas.setActiveObject(obj);
+                          fabricCanvas.renderAll();
+                        }}
                       >
                         <Layers className="w-4 h-4 text-muted-foreground" />
-                        <span className="text-sm text-foreground flex-1">{layer}</span>
+                        <span className="text-sm text-foreground flex-1 capitalize">
+                          {obj.type || "Object"} {i + 1}
+                        </span>
                         <EyeIcon className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                       </div>
-                    ))}
+                    )) || (
+                      <p className="text-sm text-muted-foreground text-center py-4">No objects on canvas</p>
+                    )}
                   </div>
                 )}
 
                 {leftPanelTab === "templates" && (
                   <div className="space-y-3">
+                    <Button
+                      variant="ai"
+                      size="sm"
+                      className="w-full"
+                      onClick={() => setShowTemplateGallery(true)}
+                    >
+                      <Image className="w-4 h-4 mr-2" />
+                      Browse All Templates
+                    </Button>
                     {["Premium Minimal", "Festive Sale", "Product Focus", "Bold Typography"].map((template, i) => (
                       <GlassPanel key={i} padding="sm" className="cursor-pointer hover:border-accent/50 transition-colors">
                         <div className="aspect-video bg-muted/30 rounded mb-2" />
@@ -456,7 +645,18 @@ const CreativeBuilder = () => {
                 </Button>
               ))}
               <div className="w-px h-6 bg-border mx-2" />
-              <Button variant="ghost" size="icon-sm">
+              <Button 
+                variant="ghost" 
+                size="icon-sm"
+                onClick={() => {
+                  const activeObj = fabricCanvas?.getActiveObject();
+                  if (activeObj) {
+                    fabricCanvas?.remove(activeObj);
+                    fabricCanvas?.renderAll();
+                    toast.success("Deleted");
+                  }
+                }}
+              >
                 <Trash2 className="w-4 h-4" />
               </Button>
               <Button variant="ghost" size="icon-sm">
