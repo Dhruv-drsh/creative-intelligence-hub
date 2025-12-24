@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Upload, Palette, Type, FileText, Save, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -49,14 +49,7 @@ export const BrandKitManager = ({ isOpen, onClose, onSelectBrandKit }: BrandKitM
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [activeTab, setActiveTab] = useState<"list" | "edit">("list");
 
-  // Fetch brand kits on mount
-  useState(() => {
-    if (user) {
-      fetchBrandKits();
-    }
-  });
-
-  const fetchBrandKits = async () => {
+  const fetchBrandKits = useCallback(async () => {
     if (!user) return;
     
     const { data, error } = await supabase
@@ -69,7 +62,14 @@ export const BrandKitManager = ({ isOpen, onClose, onSelectBrandKit }: BrandKitM
     } else {
       setBrandKits(data || []);
     }
-  };
+  }, [user]);
+
+  // Fetch brand kits on mount and when modal opens
+  useEffect(() => {
+    if (isOpen && user) {
+      fetchBrandKits();
+    }
+  }, [isOpen, user, fetchBrandKits]);
 
   const handleLogoUpload = async (file: File) => {
     if (!user) return null;
