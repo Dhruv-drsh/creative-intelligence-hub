@@ -6,7 +6,8 @@ import {
   Sparkles, ChevronLeft, Download, Share2, Undo2, Redo2,
   ZoomIn, ZoomOut, MousePointer2, Square, Circle as CircleIcon,
   Type, Image, Trash2, Copy, Layers, Upload, Send, Settings,
-  Check, AlertTriangle, X, Menu, Eye as EyeIcon, Palette, Wand2, Save, Loader2
+  Check, AlertTriangle, X, Menu, Eye as EyeIcon, Palette, Wand2, Save, Loader2,
+  PenTool, Zap, FileText
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,11 +20,16 @@ import { BrandKitManager } from "@/components/BrandKitManager";
 import { TemplateGallery } from "@/components/TemplateGallery";
 import { ExportDialog } from "@/components/ExportDialog";
 import { AIBackgroundGenerator } from "@/components/AIBackgroundGenerator";
+import { AttentionHeatmap } from "@/components/AttentionHeatmap";
+import { CopywritingEngine } from "@/components/CopywritingEngine";
 import { useCreativeStore } from "@/store/creativeStore";
 import { useComplianceEngine, type ComplianceCheck } from "@/hooks/useComplianceEngine";
 import { useAICanvasControl } from "@/hooks/useAICanvasControl";
 import { useProject } from "@/hooks/useProject";
 import { useFormatResize } from "@/hooks/useFormatResize";
+import { useCanvasHistory } from "@/hooks/useCanvasHistory";
+import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
+import { useAutoCorrection } from "@/hooks/useAutoCorrection";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -44,9 +50,11 @@ const CreativeBuilder = () => {
   const [leftPanelOpen, setLeftPanelOpen] = useState(true);
   const [rightPanelOpen, setRightPanelOpen] = useState(true);
   const [showSafeZones, setShowSafeZones] = useState(false);
+  const [showHeatmap, setShowHeatmap] = useState(false);
   const [complianceChecks, setComplianceChecks] = useState<ComplianceCheck[]>([]);
   const [calculatedScore, setCalculatedScore] = useState(85);
   const [uploadedAssets, setUploadedAssets] = useState<Array<{ id: string; src: string; name: string; type: string }>>([]);
+  const [zoom, setZoom] = useState(100);
 
   // Modal states
   const [showImageUploader, setShowImageUploader] = useState(false);
@@ -55,6 +63,7 @@ const CreativeBuilder = () => {
   const [showTemplateGallery, setShowTemplateGallery] = useState(false);
   const [showExportDialog, setShowExportDialog] = useState(false);
   const [showAIBackground, setShowAIBackground] = useState(false);
+  const [showCopywriting, setShowCopywriting] = useState(false);
   const [searchParams] = useSearchParams();
   const [isEditingName, setIsEditingName] = useState(false);
 
@@ -81,6 +90,21 @@ const CreativeBuilder = () => {
     isSaving, saveProject, loadProject 
   } = useProject(fabricCanvas, currentFormat, calculatedScore);
   const { resizeToFormat } = useFormatResize(fabricCanvas);
+  
+  // History and keyboard shortcuts
+  const { undo, redo, canUndo, canRedo } = useCanvasHistory(fabricCanvas);
+  const { autoFixAll } = useAutoCorrection(fabricCanvas, safeZones);
+  
+  // Keyboard shortcuts
+  useKeyboardShortcuts({
+    canvas: fabricCanvas,
+    onUndo: undo,
+    onRedo: redo,
+    onSave: saveProject,
+    onExport: () => setShowExportDialog(true),
+    canUndo,
+    canRedo,
+  });
 
   // Run compliance checks when canvas changes
   const updateCompliance = useCallback(() => {
@@ -485,11 +509,33 @@ const CreativeBuilder = () => {
         canvasRef={canvasRef}
         complianceScore={calculatedScore}
         formatName={currentFormat.name}
+        fabricCanvas={fabricCanvas}
+        format={currentFormat}
       />
       <AIBackgroundGenerator
         isOpen={showAIBackground}
         onClose={() => setShowAIBackground(false)}
         onSelectBackground={handleBackgroundSelected}
+      />
+      <CopywritingEngine
+        isOpen={showCopywriting}
+        onClose={() => setShowCopywriting(false)}
+        onSelectCopy={(text, type) => {
+          if (!fabricCanvas) return;
+          const fontSize = type === "headline" ? 32 : type === "cta" ? 18 : 24;
+          const newText = new IText(text, {
+            left: fabricCanvas.getWidth() / 2,
+            top: type === "cta" ? fabricCanvas.getHeight() - 100 : fabricCanvas.getHeight() / 3,
+            fontSize,
+            fontFamily: "Inter",
+            fontWeight: type === "headline" ? "700" : "600",
+            fill: "#020617",
+            originX: "center",
+          });
+          fabricCanvas.add(newText);
+          fabricCanvas.setActiveObject(newText);
+          fabricCanvas.renderAll();
+        }}
       />
 
       {/* Top Bar */}
@@ -548,10 +594,22 @@ const CreativeBuilder = () => {
 
         {/* Actions */}
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon-sm">
+          <Button 
+            variant="ghost" 
+            size="icon-sm"
+            onClick={undo}
+            disabled={!canUndo}
+            title="Undo (Ctrl+Z)"
+          >
             <Undo2 className="w-4 h-4" />
           </Button>
-          <Button variant="ghost" size="icon-sm">
+          <Button 
+            variant="ghost" 
+            size="icon-sm"
+            onClick={redo}
+            disabled={!canRedo}
+            title="Redo (Ctrl+Shift+Z)"
+          >
             <Redo2 className="w-4 h-4" />
           </Button>
           <div className="w-px h-6 bg-border mx-2" />
@@ -658,6 +716,16 @@ const CreativeBuilder = () => {
                     >
                       <Palette className="w-4 h-4 mr-2" />
                       Brand Kit
+                    </Button>
+
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="w-full justify-start"
+                      onClick={() => setShowCopywriting(true)}
+                    >
+                      <FileText className="w-4 h-4 mr-2" />
+                      AI Copywriting
                     </Button>
 
                     {/* Uploaded Assets */}
@@ -812,7 +880,23 @@ const CreativeBuilder = () => {
               >
                 <Trash2 className="w-4 h-4" />
               </Button>
-              <Button variant="ghost" size="icon-sm">
+              <Button 
+                variant="ghost" 
+                size="icon-sm"
+                onClick={() => {
+                  const activeObj = fabricCanvas?.getActiveObject();
+                  if (activeObj) {
+                    activeObj.clone().then((cloned: any) => {
+                      cloned.set({ left: (cloned.left || 0) + 20, top: (cloned.top || 0) + 20 });
+                      fabricCanvas?.add(cloned);
+                      fabricCanvas?.setActiveObject(cloned);
+                      fabricCanvas?.renderAll();
+                      toast.success("Duplicated");
+                    });
+                  }
+                }}
+                title="Duplicate (Ctrl+D)"
+              >
                 <Copy className="w-4 h-4" />
               </Button>
             </div>
@@ -827,12 +911,29 @@ const CreativeBuilder = () => {
                 <EyeIcon className="w-3 h-3 mr-1" />
                 Safe Zones
               </Button>
+              <Button
+                variant={showHeatmap ? "secondary" : "ghost"}
+                size="sm"
+                onClick={() => setShowHeatmap(!showHeatmap)}
+                className="text-xs"
+              >
+                <Zap className="w-3 h-3 mr-1" />
+                Heatmap
+              </Button>
               <div className="w-px h-6 bg-border mx-2" />
-              <Button variant="ghost" size="icon-sm">
+              <Button 
+                variant="ghost" 
+                size="icon-sm"
+                onClick={() => setZoom(Math.max(50, zoom - 10))}
+              >
                 <ZoomOut className="w-4 h-4" />
               </Button>
-              <span className="text-xs font-mono text-muted-foreground w-12 text-center">100%</span>
-              <Button variant="ghost" size="icon-sm">
+              <span className="text-xs font-mono text-muted-foreground w-12 text-center">{zoom}%</span>
+              <Button 
+                variant="ghost" 
+                size="icon-sm"
+                onClick={() => setZoom(Math.min(200, zoom + 10))}
+              >
                 <ZoomIn className="w-4 h-4" />
               </Button>
             </div>
@@ -853,13 +954,24 @@ const CreativeBuilder = () => {
             ref={containerRef}
             className="flex-1 flex items-center justify-center bg-background p-10 overflow-auto"
           >
-            <div className="canvas-container shadow-premium relative">
+            <div 
+              className="canvas-container shadow-premium relative"
+              style={{ transform: `scale(${zoom / 100})`, transformOrigin: 'center' }}
+            >
               <canvas ref={canvasRef} />
               <SafeZonesOverlay
                 zones={safeZones}
                 canvasWidth={fabricCanvas?.getWidth() || 0}
                 canvasHeight={fabricCanvas?.getHeight() || 0}
                 visible={showSafeZones}
+              />
+              <AttentionHeatmap
+                canvas={fabricCanvas}
+                canvasWidth={fabricCanvas?.getWidth() || 0}
+                canvasHeight={fabricCanvas?.getHeight() || 0}
+                formatName={currentFormat.name}
+                visible={showHeatmap}
+                onToggle={() => setShowHeatmap(false)}
               />
             </div>
           </div>
@@ -879,7 +991,21 @@ const CreativeBuilder = () => {
               <div className="p-4 border-b border-border/50 shrink-0">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-sm font-medium text-foreground">Compliance</h3>
-                  <ComplianceScore score={calculatedScore} size="sm" showLabel={false} />
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        autoFixAll();
+                        updateCompliance();
+                      }}
+                      className="text-xs h-6 px-2"
+                    >
+                      <Zap className="w-3 h-3 mr-1" />
+                      Auto-Fix
+                    </Button>
+                    <ComplianceScore score={calculatedScore} size="sm" showLabel={false} />
+                  </div>
                 </div>
                 <div className="space-y-2">
                   {complianceChecks.map((check) => (
