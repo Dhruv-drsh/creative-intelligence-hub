@@ -222,9 +222,9 @@ export const ExportDialog = ({
                         {(["png", "jpeg"] as const).map((f) => (
                           <button
                             key={f}
-                            onClick={() => setFormat(f)}
+                            onClick={() => setImageFormat(f)}
                             className={`flex-1 flex items-center justify-center gap-2 p-3 rounded-lg border transition-colors ${
-                              format === f
+                              imageFormat === f
                                 ? "border-accent bg-accent/10 text-accent"
                                 : "border-border text-muted-foreground hover:text-foreground"
                             }`}
@@ -320,7 +320,7 @@ export const ExportDialog = ({
                     ) : (
                       <>
                         <Download className="w-5 h-5 mr-2" />
-                        Export {formatName} ({format.toUpperCase()})
+                        Export {formatName} ({imageFormat.toUpperCase()})
                       </>
                     )}
                   </Button>
