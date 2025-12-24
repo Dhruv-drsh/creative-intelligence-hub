@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import { ComplianceScore } from "@/components/ui/ComplianceScore";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import type { Canvas as FabricCanvas } from "fabric";
 
 interface ExportDialogProps {
@@ -119,33 +120,42 @@ export const ExportDialog = ({
   ];
 
   const handleExport = async () => {
-    if (!canvasRef.current) return;
+    if (!fabricCanvas) {
+      toast.error("Canvas not ready");
+      return;
+    }
 
     setIsExporting(true);
 
     try {
-      // Get canvas data
-      const canvas = canvasRef.current;
-      const dataUrl = canvas.toDataURL(`image/${format}`, quality / 100);
+      // Get canvas data from fabric canvas with proper format and quality
+      const multiplier = 2; // Higher resolution export
+      const dataUrl = fabricCanvas.toDataURL({
+        format: imageFormat,
+        quality: quality / 100,
+        multiplier,
+      });
 
       // Calculate file size
-      const base64Length = dataUrl.length - `data:image/${format};base64,`.length;
+      const base64Length = dataUrl.length - `data:image/${imageFormat};base64,`.length;
       const fileSizeBytes = (base64Length * 3) / 4;
       const fileSizeKB = (fileSizeBytes / 1024).toFixed(1);
       setExportedSize(`${fileSizeKB} KB`);
 
       // Create download link
       const link = document.createElement("a");
-      link.download = `creative-${Date.now()}.${format}`;
+      link.download = `creative-${Date.now()}.${imageFormat}`;
       link.href = dataUrl;
       
-      // Simulate processing time
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      // Small processing delay for UX
+      await new Promise((resolve) => setTimeout(resolve, 800));
       
       link.click();
       setExportComplete(true);
+      toast.success(`Exported as ${imageFormat.toUpperCase()}`);
     } catch (error) {
       console.error("Export failed:", error);
+      toast.error("Export failed. Please try again.");
     } finally {
       setIsExporting(false);
     }

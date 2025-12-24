@@ -7,7 +7,7 @@ import {
   ZoomIn, ZoomOut, MousePointer2, Square, Circle as CircleIcon,
   Type, Image, Trash2, Copy, Layers, Upload, Send, Settings,
   Check, AlertTriangle, X, Menu, Eye as EyeIcon, Palette, Wand2, Save, Loader2, Heart, TrendingUp, Users,
-  PenTool, Zap, FileText, Triangle, Star, ArrowRight, Grid3X3, Dna, Bold, Italic
+  PenTool, Zap, FileText, Triangle, Star, ArrowRight, Grid3X3, Dna, Bold, Italic, HelpCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -38,6 +38,7 @@ import { KeyboardShortcutsTooltip } from "@/components/KeyboardShortcutsTooltip"
 import { DraggableLayers } from "@/components/DraggableLayers";
 import { OnboardingTutorial } from "@/components/OnboardingTutorial";
 import { ColorPaletteGenerator } from "@/components/ColorPaletteGenerator";
+import { ShareDialog } from "@/components/ShareDialog";
 import { useCreativeStore } from "@/store/creativeStore";
 import { useComplianceEngine, type ComplianceCheck } from "@/hooks/useComplianceEngine";
 import { useAICanvasControl } from "@/hooks/useAICanvasControl";
@@ -152,11 +153,18 @@ const CreativeBuilder = () => {
   const [showColorPsychology, setShowColorPsychology] = useState(false);
   const [showCollaborative, setShowCollaborative] = useState(false);
   const [showDirectPublishing, setShowDirectPublishing] = useState(false);
+  const [showShareDialog, setShowShareDialog] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(() => {
     // Show onboarding if user hasn't completed it before
     const hasCompletedOnboarding = localStorage.getItem('creato-onboarding-completed');
     return !hasCompletedOnboarding;
   });
+  
+  // Function to restart onboarding
+  const handleRestartOnboarding = () => {
+    localStorage.removeItem('creato-onboarding-completed');
+    setShowOnboarding(true);
+  };
   const [searchParams] = useSearchParams();
   const [isEditingName, setIsEditingName] = useState(false);
   
@@ -986,6 +994,11 @@ const CreativeBuilder = () => {
         onClose={() => setShowDirectPublishing(false)}
         canvasRef={canvasRef}
       />
+      <ShareDialog
+        isOpen={showShareDialog}
+        onClose={() => setShowShareDialog(false)}
+        projectName={projectName}
+      />
 
       {/* Top Bar - Enhanced */}
       <header className="h-16 border-b border-border/30 glass flex items-center justify-between px-5 shrink-0 backdrop-blur-xl">
@@ -1068,6 +1081,16 @@ const CreativeBuilder = () => {
               <Redo2 className="w-4 h-4" />
             </Button>
             <KeyboardShortcutsTooltip />
+            {/* Help button to restart onboarding */}
+            <Button 
+              variant="ghost" 
+              size="icon-sm"
+              onClick={handleRestartOnboarding}
+              title="Show tutorial"
+              className="hover:bg-accent/10 hover:text-accent"
+            >
+              <HelpCircle className="w-4 h-4" />
+            </Button>
           </div>
           <Button 
             variant="outline" 
@@ -1083,7 +1106,12 @@ const CreativeBuilder = () => {
             )}
             Save
           </Button>
-          <Button variant="outline" size="sm" className="border-border/50 hover:border-highlight/50 hover:bg-highlight/5">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="border-border/50 hover:border-highlight/50 hover:bg-highlight/5"
+            onClick={() => setShowShareDialog(true)}
+          >
             <Share2 className="w-4 h-4 mr-2" />
             Share
           </Button>
