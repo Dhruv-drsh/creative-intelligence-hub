@@ -125,9 +125,9 @@ export function CollaborativeWorkflows({ isOpen, onClose, projectName }: Collabo
           className="w-full max-w-2xl max-h-[85vh] overflow-hidden"
           onClick={(e) => e.stopPropagation()}
         >
-          <GlassPanel padding="none" className="overflow-hidden">
-            {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-border/50">
+          <GlassPanel padding="none" className="flex flex-col h-[85vh]">
+            {/* Header - Fixed */}
+            <div className="flex-shrink-0 flex items-center justify-between p-6 border-b border-border/50">
               <div>
                 <h2 className="font-display text-xl text-foreground flex items-center gap-2">
                   <Users className="w-5 h-5 text-blue-500" />
@@ -142,8 +142,8 @@ export function CollaborativeWorkflows({ isOpen, onClose, projectName }: Collabo
               </Button>
             </div>
 
-            {/* Tabs */}
-            <div className="px-6 pt-4 flex gap-2 border-b border-border/50 pb-4">
+            {/* Tabs - Fixed */}
+            <div className="flex-shrink-0 px-6 pt-4 flex gap-2 border-b border-border/50 pb-4">
               {[
                 { id: "team", label: "Team", icon: Users },
                 { id: "comments", label: "Comments", icon: MessageSquare },
@@ -167,7 +167,8 @@ export function CollaborativeWorkflows({ isOpen, onClose, projectName }: Collabo
               })}
             </div>
 
-            <ScrollArea className="max-h-[calc(85vh-180px)]">
+            {/* Scrollable Content */}
+            <ScrollArea className="flex-1 min-h-0">
               <div className="p-6 space-y-6">
                 {/* Team Tab */}
                 {activeTab === "team" && (

@@ -643,11 +643,19 @@ const CreativeBuilder = () => {
     format_height: number;
     canvas_data: unknown;
   }) => {
-    if (!fabricCanvas) return;
+    if (!fabricCanvas) {
+      toast.error("Canvas not ready. Please try again.");
+      return;
+    }
     
     setShowTemplateGallery(false);
     
     try {
+      // Ensure canvas is properly initialized
+      if (typeof fabricCanvas.clear !== 'function') {
+        toast.error("Canvas not ready. Please try again.");
+        return;
+      }
       // Find matching format or use template dimensions
       const matchingFormat = availableFormats.find(
         f => f.width === template.format_width && f.height === template.format_height
@@ -716,9 +724,18 @@ const CreativeBuilder = () => {
     color: string;
     canvas_data: { objects: unknown[] };
   }) => {
-    if (!fabricCanvas) return;
+    if (!fabricCanvas) {
+      toast.error("Canvas not ready. Please try again.");
+      return;
+    }
     
     try {
+      // Ensure canvas is properly initialized before clearing
+      if (typeof fabricCanvas.clear !== 'function') {
+        toast.error("Canvas not ready. Please try again.");
+        return;
+      }
+      
       fabricCanvas.clear();
       fabricCanvas.backgroundColor = "#ffffff";
       

@@ -88,8 +88,8 @@ export function EmotionToDesign({ isOpen, onClose, onApplyDesign }: EmotionToDes
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[85vh] p-0 overflow-hidden">
-        <DialogHeader className="p-6 pb-0">
+      <DialogContent className="max-w-2xl max-h-[85vh] p-0 overflow-hidden flex flex-col">
+        <DialogHeader className="flex-shrink-0 p-6 pb-4 border-b border-border/50">
           <DialogTitle className="flex items-center gap-2 text-xl">
             <Heart className="w-5 h-5 text-rose-500" />
             Emotion to Design
@@ -99,7 +99,7 @@ export function EmotionToDesign({ isOpen, onClose, onApplyDesign }: EmotionToDes
           </p>
         </DialogHeader>
 
-        <ScrollArea className="max-h-[calc(85vh-100px)]">
+        <ScrollArea className="flex-1 min-h-0">
           <div className="p-6 space-y-6">
             {/* Emotion Selection */}
             <div className="space-y-3">
