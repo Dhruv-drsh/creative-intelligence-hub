@@ -317,6 +317,30 @@ const CreativeBuilder = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Helper to convert any color format to hex
+  const toHexColor = (color: any): string => {
+    if (!color) return "#000000";
+    const colorStr = color.toString();
+    
+    // Already hex
+    if (colorStr.startsWith("#")) {
+      return colorStr.length === 4 
+        ? `#${colorStr[1]}${colorStr[1]}${colorStr[2]}${colorStr[2]}${colorStr[3]}${colorStr[3]}`
+        : colorStr.substring(0, 7);
+    }
+    
+    // Handle rgba/rgb
+    const rgbMatch = colorStr.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+    if (rgbMatch) {
+      const r = parseInt(rgbMatch[1]).toString(16).padStart(2, '0');
+      const g = parseInt(rgbMatch[2]).toString(16).padStart(2, '0');
+      const b = parseInt(rgbMatch[3]).toString(16).padStart(2, '0');
+      return `#${r}${g}${b}`;
+    }
+    
+    return "#000000";
+  };
+
   // Update selected object state for formatting controls
   const updateSelectedObjectState = (obj: any) => {
     if (!obj) {
@@ -326,9 +350,9 @@ const CreativeBuilder = () => {
     setSelectedObject(obj);
     
     // Update fill/stroke for shapes
-    if (obj.fill) setSelectedFillColor(obj.fill.toString());
-    if (obj.stroke) setSelectedStrokeColor(obj.stroke?.toString() || "#000000");
-    if (obj.strokeWidth) setSelectedStrokeWidth(obj.strokeWidth);
+    if (obj.fill) setSelectedFillColor(toHexColor(obj.fill));
+    if (obj.stroke) setSelectedStrokeColor(toHexColor(obj.stroke));
+    if (obj.strokeWidth !== undefined) setSelectedStrokeWidth(obj.strokeWidth);
     
     // Update font properties for text
     if (obj.type === "i-text" || obj.type === "text" || obj.type === "textbox") {
@@ -385,6 +409,13 @@ const CreativeBuilder = () => {
     selectedObject.set("fontWeight", weight);
     fabricCanvas.renderAll();
   };
+
+  // Color presets
+  const colorPresets = [
+    "#EF4444", "#F97316", "#FBBF24", "#22C55E", "#06B6D4", 
+    "#3B82F6", "#8B5CF6", "#EC4899", "#000000", "#FFFFFF",
+    "#1E293B", "#64748B", "#CBD5E1", "#FEF3C7", "#ECFDF5"
+  ];
 
   // Handle tool clicks
   const handleToolClick = useCallback((tool: typeof activeTool) => {
@@ -1405,7 +1436,7 @@ const CreativeBuilder = () => {
                       <div className="space-y-4">
                         <div>
                           <label className="text-xs text-muted-foreground mb-2 block">Fill Color</label>
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 mb-2">
                             <input
                               type="color"
                               value={selectedFillColor}
@@ -1415,13 +1446,29 @@ const CreativeBuilder = () => {
                             <Input
                               value={selectedFillColor}
                               onChange={(e) => updateFillColor(e.target.value)}
-                              className="flex-1 h-10 bg-muted/30 border-border/50 text-xs font-mono"
+                              className="flex-1 h-10 bg-muted/30 border-border/50 text-xs font-mono uppercase"
                             />
+                          </div>
+                          <div className="flex flex-wrap gap-1.5">
+                            {colorPresets.map((color) => (
+                              <button
+                                key={`fill-${color}`}
+                                onClick={() => updateFillColor(color)}
+                                className={cn(
+                                  "w-6 h-6 rounded-md border-2 transition-all hover:scale-110",
+                                  selectedFillColor.toLowerCase() === color.toLowerCase() 
+                                    ? "border-accent shadow-md" 
+                                    : "border-border/30"
+                                )}
+                                style={{ backgroundColor: color }}
+                                title={color}
+                              />
+                            ))}
                           </div>
                         </div>
                         <div>
                           <label className="text-xs text-muted-foreground mb-2 block">Stroke Color</label>
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 mb-2">
                             <input
                               type="color"
                               value={selectedStrokeColor}
@@ -1431,8 +1478,24 @@ const CreativeBuilder = () => {
                             <Input
                               value={selectedStrokeColor}
                               onChange={(e) => updateStrokeColor(e.target.value)}
-                              className="flex-1 h-10 bg-muted/30 border-border/50 text-xs font-mono"
+                              className="flex-1 h-10 bg-muted/30 border-border/50 text-xs font-mono uppercase"
                             />
+                          </div>
+                          <div className="flex flex-wrap gap-1.5">
+                            {colorPresets.map((color) => (
+                              <button
+                                key={`stroke-${color}`}
+                                onClick={() => updateStrokeColor(color)}
+                                className={cn(
+                                  "w-6 h-6 rounded-md border-2 transition-all hover:scale-110",
+                                  selectedStrokeColor.toLowerCase() === color.toLowerCase() 
+                                    ? "border-accent shadow-md" 
+                                    : "border-border/30"
+                                )}
+                                style={{ backgroundColor: color }}
+                                title={color}
+                              />
+                            ))}
                           </div>
                         </div>
                         <div>
@@ -1454,7 +1517,7 @@ const CreativeBuilder = () => {
                       <div className="space-y-4">
                         <div>
                           <label className="text-xs text-muted-foreground mb-2 block">Text Color</label>
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 mb-2">
                             <input
                               type="color"
                               value={selectedFillColor}
@@ -1464,8 +1527,24 @@ const CreativeBuilder = () => {
                             <Input
                               value={selectedFillColor}
                               onChange={(e) => updateFillColor(e.target.value)}
-                              className="flex-1 h-10 bg-muted/30 border-border/50 text-xs font-mono"
+                              className="flex-1 h-10 bg-muted/30 border-border/50 text-xs font-mono uppercase"
                             />
+                          </div>
+                          <div className="flex flex-wrap gap-1.5">
+                            {colorPresets.map((color) => (
+                              <button
+                                key={`text-${color}`}
+                                onClick={() => updateFillColor(color)}
+                                className={cn(
+                                  "w-6 h-6 rounded-md border-2 transition-all hover:scale-110",
+                                  selectedFillColor.toLowerCase() === color.toLowerCase() 
+                                    ? "border-accent shadow-md" 
+                                    : "border-border/30"
+                                )}
+                                style={{ backgroundColor: color }}
+                                title={color}
+                              />
+                            ))}
                           </div>
                         </div>
                         <div>
