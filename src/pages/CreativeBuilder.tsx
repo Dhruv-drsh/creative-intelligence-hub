@@ -33,13 +33,20 @@ import { useAutoCorrection } from "@/hooks/useAutoCorrection";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
-// Sample assets for the panel
+// Sample assets for the panel with better images
 const sampleAssets = [
-  { id: "1", type: "product", src: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&h=200&fit=crop", name: "Watch" },
-  { id: "2", type: "product", src: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200&h=200&fit=crop", name: "Headphones" },
-  { id: "3", type: "product", src: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=200&h=200&fit=crop", name: "Sunglasses" },
-  { id: "4", type: "logo", src: "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=200&h=200&fit=crop", name: "Brand Logo" },
+  { id: "1", type: "product", src: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&h=400&fit=crop", name: "Watch", color: "from-amber-500/20 to-orange-500/20" },
+  { id: "2", type: "product", src: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=400&fit=crop", name: "Headphones", color: "from-yellow-500/20 to-amber-500/20" },
+  { id: "3", type: "product", src: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=400&h=400&fit=crop", name: "Sunglasses", color: "from-slate-500/20 to-zinc-500/20" },
+  { id: "4", type: "logo", src: "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=400&h=400&fit=crop", name: "Brand Logo", color: "from-violet-500/20 to-purple-500/20" },
 ];
+
+// Tool colors for shapes
+const shapeColors = {
+  rectangle: { fill: "rgba(99, 102, 241, 0.15)", stroke: "#6366F1" }, // Indigo
+  circle: { fill: "rgba(236, 72, 153, 0.15)", stroke: "#EC4899" }, // Pink
+  text: "#1E293B", // Slate
+};
 
 const CreativeBuilder = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -244,11 +251,13 @@ const CreativeBuilder = () => {
       const rect = new Rect({
         left: 100,
         top: 100,
-        width: 100,
-        height: 100,
-        fill: "rgba(56, 189, 248, 0.2)",
-        stroke: "#38BDF8",
+        width: 120,
+        height: 80,
+        fill: shapeColors.rectangle.fill,
+        stroke: shapeColors.rectangle.stroke,
         strokeWidth: 2,
+        rx: 12,
+        ry: 12,
       });
       fabricCanvas.add(rect);
       fabricCanvas.setActiveObject(rect);
@@ -257,19 +266,20 @@ const CreativeBuilder = () => {
         left: 100,
         top: 100,
         radius: 50,
-        fill: "rgba(56, 189, 248, 0.2)",
-        stroke: "#38BDF8",
+        fill: shapeColors.circle.fill,
+        stroke: shapeColors.circle.stroke,
         strokeWidth: 2,
       });
       fabricCanvas.add(circle);
       fabricCanvas.setActiveObject(circle);
     } else if (tool === "text") {
-      const text = new IText("Click to edit", {
+      const text = new IText("Your Text Here", {
         left: 100,
         top: 100,
-        fontSize: 24,
+        fontSize: 28,
         fontFamily: "Inter",
-        fill: "#020617",
+        fontWeight: "600",
+        fill: shapeColors.text,
       });
       fabricCanvas.add(text);
       fabricCanvas.setActiveObject(text);
@@ -538,16 +548,16 @@ const CreativeBuilder = () => {
         }}
       />
 
-      {/* Top Bar */}
-      <header className="h-14 border-b border-border/50 glass flex items-center justify-between px-4 shrink-0">
+      {/* Top Bar - Enhanced */}
+      <header className="h-16 border-b border-border/30 glass flex items-center justify-between px-5 shrink-0 backdrop-blur-xl">
         <div className="flex items-center gap-4">
           <Link to="/dashboard">
-            <Button variant="ghost" size="icon-sm">
+            <Button variant="ghost" size="icon-sm" className="hover:bg-muted/50">
               <ChevronLeft className="w-4 h-4" />
             </Button>
           </Link>
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded bg-gradient-to-br from-accent to-highlight flex items-center justify-center">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent via-highlight to-accent flex items-center justify-center shadow-glow-accent">
               <Sparkles className="w-4 h-4 text-primary-foreground" />
             </div>
             {isEditingName ? (
@@ -556,12 +566,12 @@ const CreativeBuilder = () => {
                 onChange={(e) => setProjectName(e.target.value)}
                 onBlur={() => setIsEditingName(false)}
                 onKeyDown={(e) => e.key === 'Enter' && setIsEditingName(false)}
-                className="h-7 w-40 text-sm"
+                className="h-8 w-48 text-sm font-medium bg-muted/30 border-accent/30"
                 autoFocus
               />
             ) : (
               <span 
-                className="font-medium text-sm text-foreground cursor-pointer hover:text-accent"
+                className="font-semibold text-foreground cursor-pointer hover:text-accent transition-colors"
                 onClick={() => setIsEditingName(true)}
               >
                 {projectName}
@@ -570,54 +580,61 @@ const CreativeBuilder = () => {
           </div>
         </div>
 
-        {/* Format Selector */}
-        <div className="flex items-center gap-2">
-          <div className="flex gap-1 bg-secondary/50 rounded-lg p-1">
+        {/* Format Selector - Enhanced */}
+        <div className="flex items-center gap-3">
+          <div className="flex gap-1 bg-secondary/30 rounded-xl p-1.5 backdrop-blur-sm border border-border/30">
             {availableFormats.slice(0, 4).map((format) => (
               <button
                 key={format.id}
                 onClick={() => handleFormatChange(format)}
                 className={cn(
-                  "px-3 py-1.5 rounded-md text-xs font-medium transition-all",
+                  "px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-300",
                   currentFormat.id === format.id
-                    ? "bg-accent text-accent-foreground"
-                    : "text-muted-foreground hover:text-foreground"
+                    ? "bg-gradient-to-r from-accent to-highlight text-accent-foreground shadow-md"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
                 )}
               >
                 {format.name}
               </button>
             ))}
           </div>
-          <ComplianceScore score={calculatedScore} size="sm" showLabel={false} />
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-secondary/30 border border-border/30">
+            <ComplianceScore score={calculatedScore} size="sm" showLabel={false} />
+            <span className="text-xs font-medium text-muted-foreground">Score</span>
+          </div>
           <AIIndicator status={aiStatus} />
         </div>
 
-        {/* Actions */}
+        {/* Actions - Enhanced */}
         <div className="flex items-center gap-2">
-          <Button 
-            variant="ghost" 
-            size="icon-sm"
-            onClick={undo}
-            disabled={!canUndo}
-            title="Undo (Ctrl+Z)"
-          >
-            <Undo2 className="w-4 h-4" />
-          </Button>
-          <Button 
-            variant="ghost" 
-            size="icon-sm"
-            onClick={redo}
-            disabled={!canRedo}
-            title="Redo (Ctrl+Shift+Z)"
-          >
-            <Redo2 className="w-4 h-4" />
-          </Button>
-          <div className="w-px h-6 bg-border mx-2" />
+          <div className="flex items-center gap-1 p-1 rounded-lg bg-secondary/30 border border-border/30">
+            <Button 
+              variant="ghost" 
+              size="icon-sm"
+              onClick={undo}
+              disabled={!canUndo}
+              title="Undo (Ctrl+Z)"
+              className="hover:bg-muted/50"
+            >
+              <Undo2 className="w-4 h-4" />
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="icon-sm"
+              onClick={redo}
+              disabled={!canRedo}
+              title="Redo (Ctrl+Shift+Z)"
+              className="hover:bg-muted/50"
+            >
+              <Redo2 className="w-4 h-4" />
+            </Button>
+          </div>
           <Button 
             variant="outline" 
             size="sm" 
             onClick={saveProject}
             disabled={isSaving}
+            className="border-border/50 hover:border-accent/50 hover:bg-accent/5"
           >
             {isSaving ? (
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -626,11 +643,11 @@ const CreativeBuilder = () => {
             )}
             Save
           </Button>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" className="border-border/50 hover:border-highlight/50 hover:bg-highlight/5">
             <Share2 className="w-4 h-4 mr-2" />
             Share
           </Button>
-          <Button variant="ai" size="sm" onClick={() => setShowExportDialog(true)}>
+          <Button variant="ai" size="sm" onClick={() => setShowExportDialog(true)} className="shadow-lg">
             <Download className="w-4 h-4 mr-2" />
             Export
           </Button>
@@ -644,105 +661,123 @@ const CreativeBuilder = () => {
           {leftPanelOpen && (
             <motion.aside
               initial={{ width: 0, opacity: 0 }}
-              animate={{ width: 280, opacity: 1 }}
+              animate={{ width: 300, opacity: 1 }}
               exit={{ width: 0, opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="border-r border-border/50 bg-card/50 flex flex-col shrink-0 overflow-hidden"
+              className="border-r border-border/30 bg-gradient-to-b from-card/80 to-card/40 flex flex-col shrink-0 overflow-hidden backdrop-blur-sm"
             >
-              {/* Tabs */}
-              <div className="flex border-b border-border/50 shrink-0">
+              {/* Tabs - Enhanced */}
+              <div className="flex border-b border-border/30 shrink-0 bg-secondary/20">
                 {(["assets", "layers", "templates"] as const).map((tab) => (
                   <button
                     key={tab}
                     onClick={() => setLeftPanelTab(tab)}
                     className={cn(
-                      "flex-1 py-3 text-xs font-medium transition-colors capitalize",
+                      "flex-1 py-3.5 text-xs font-semibold transition-all duration-300 capitalize relative",
                       leftPanelTab === tab
-                        ? "text-accent border-b-2 border-accent"
+                        ? "text-accent"
                         : "text-muted-foreground hover:text-foreground"
                     )}
                   >
                     {tab}
+                    {leftPanelTab === tab && (
+                      <motion.div 
+                        layoutId="activeTab"
+                        className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-accent to-highlight"
+                      />
+                    )}
                   </button>
                 ))}
               </div>
 
-              {/* Panel Content */}
-              <div className="flex-1 p-4 overflow-y-auto">
+              {/* Panel Content - Enhanced */}
+              <div className="flex-1 p-5 overflow-y-auto">
                 {leftPanelTab === "assets" && (
-                  <div className="space-y-4">
-                    <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="flex-1"
+                  <div className="space-y-5">
+                    {/* Upload Buttons */}
+                    <div className="grid grid-cols-2 gap-3">
+                      <button
                         onClick={() => {
                           setUploadType("product");
                           setShowImageUploader(true);
                         }}
+                        className="panel-card flex flex-col items-center gap-2 p-4 hover:border-accent/40"
                       >
-                        <Upload className="w-4 h-4 mr-1" />
-                        Product
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="flex-1"
+                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 flex items-center justify-center">
+                          <Upload className="w-5 h-5 text-amber-400" />
+                        </div>
+                        <span className="text-xs font-medium text-foreground">Product</span>
+                      </button>
+                      <button
                         onClick={() => {
                           setUploadType("logo");
                           setShowImageUploader(true);
                         }}
+                        className="panel-card flex flex-col items-center gap-2 p-4 hover:border-highlight/40"
                       >
-                        <Upload className="w-4 h-4 mr-1" />
-                        Logo
+                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20 flex items-center justify-center">
+                          <Upload className="w-5 h-5 text-cyan-400" />
+                        </div>
+                        <span className="text-xs font-medium text-foreground">Logo</span>
+                      </button>
+                    </div>
+
+                    {/* AI Tools */}
+                    <div className="space-y-2">
+                      <h3 className="section-title">AI Tools</h3>
+                      <Button
+                        variant="ai"
+                        size="sm"
+                        className="w-full justify-start h-11"
+                        onClick={() => setShowAIBackground(true)}
+                      >
+                        <Wand2 className="w-4 h-4 mr-3" />
+                        Generate AI Background
+                      </Button>
+
+                      <Button
+                        variant="ai-outline"
+                        size="sm"
+                        className="w-full justify-start h-11"
+                        onClick={() => setShowCopywriting(true)}
+                      >
+                        <FileText className="w-4 h-4 mr-3" />
+                        AI Copywriting
                       </Button>
                     </div>
 
-                    <Button
-                      variant="ai"
-                      size="sm"
-                      className="w-full"
-                      onClick={() => setShowAIBackground(true)}
-                    >
-                      <Wand2 className="w-4 h-4 mr-2" />
-                      AI Background
-                    </Button>
+                    <div className="divider" />
 
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="w-full justify-start"
+                    {/* Brand Kit */}
+                    <button
                       onClick={() => setShowBrandKitManager(true)}
+                      className="panel-card w-full flex items-center gap-3 p-3"
                     >
-                      <Palette className="w-4 h-4 mr-2" />
-                      Brand Kit
-                    </Button>
-
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="w-full justify-start"
-                      onClick={() => setShowCopywriting(true)}
-                    >
-                      <FileText className="w-4 h-4 mr-2" />
-                      AI Copywriting
-                    </Button>
+                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500/20 to-purple-500/20 flex items-center justify-center">
+                        <Palette className="w-5 h-5 text-violet-400" />
+                      </div>
+                      <div className="text-left">
+                        <span className="text-sm font-medium text-foreground block">Brand Kit</span>
+                        <span className="text-[10px] text-muted-foreground">Apply your brand colors & fonts</span>
+                      </div>
+                    </button>
 
                     {/* Uploaded Assets */}
                     {uploadedAssets.length > 0 && (
                       <div>
-                        <h3 className="text-xs font-medium text-muted-foreground mb-3">Your Uploads</h3>
-                        <div className="grid grid-cols-2 gap-2">
+                        <div className="divider" />
+                        <h3 className="section-title">Your Uploads</h3>
+                        <div className="grid grid-cols-2 gap-3">
                           {uploadedAssets.map((asset) => (
                             <button
                               key={asset.id}
                               onClick={() => handleAddAsset(asset)}
-                              className="aspect-square rounded-lg overflow-hidden border border-border/50 hover:border-accent/50 transition-colors group"
+                              className="asset-card"
                             >
                               <img
                                 src={asset.src}
                                 alt={asset.name}
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                               />
                             </button>
                           ))}
@@ -750,33 +785,41 @@ const CreativeBuilder = () => {
                       </div>
                     )}
 
+                    <div className="divider" />
+
+                    {/* Sample Products */}
                     <div>
-                      <h3 className="text-xs font-medium text-muted-foreground mb-3">Sample Products</h3>
-                      <div className="grid grid-cols-2 gap-2">
+                      <h3 className="section-title">Sample Products</h3>
+                      <div className="grid grid-cols-2 gap-3">
                         {sampleAssets.filter(a => a.type === "product").map((asset) => (
                           <button
                             key={asset.id}
                             onClick={() => handleAddAsset(asset)}
-                            className="aspect-square rounded-lg overflow-hidden border border-border/50 hover:border-accent/50 transition-colors group"
+                            className="asset-card group relative"
                           >
+                            <div className={`absolute inset-0 bg-gradient-to-br ${asset.color} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
                             <img
                               src={asset.src}
                               alt={asset.name}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                             />
+                            <div className="absolute inset-x-0 bottom-0 p-2 bg-gradient-to-t from-background/90 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                              <span className="text-[10px] font-medium text-foreground">{asset.name}</span>
+                            </div>
                           </button>
                         ))}
                       </div>
                     </div>
 
+                    {/* Sample Logos */}
                     <div>
-                      <h3 className="text-xs font-medium text-muted-foreground mb-3">Sample Logos</h3>
-                      <div className="grid grid-cols-2 gap-2">
+                      <h3 className="section-title">Sample Logos</h3>
+                      <div className="grid grid-cols-2 gap-3">
                         {sampleAssets.filter(a => a.type === "logo").map((asset) => (
                           <button
                             key={asset.id}
                             onClick={() => handleAddAsset(asset)}
-                            className="aspect-square rounded-lg overflow-hidden border border-border/50 hover:border-accent/50 transition-colors bg-muted/30 p-2"
+                            className="asset-card p-3 flex items-center justify-center bg-muted/20"
                           >
                             <img
                               src={asset.src}
@@ -792,43 +835,80 @@ const CreativeBuilder = () => {
 
                 {leftPanelTab === "layers" && (
                   <div className="space-y-2">
-                    {fabricCanvas?.getObjects().map((obj, i) => (
-                      <div
-                        key={i}
-                        className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 cursor-pointer group"
-                        onClick={() => {
-                          fabricCanvas.setActiveObject(obj);
-                          fabricCanvas.renderAll();
-                        }}
-                      >
-                        <Layers className="w-4 h-4 text-muted-foreground" />
-                        <span className="text-sm text-foreground flex-1 capitalize">
-                          {obj.type || "Object"} {i + 1}
-                        </span>
-                        <EyeIcon className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <h3 className="section-title">Canvas Objects</h3>
+                    {fabricCanvas?.getObjects().length ? (
+                      fabricCanvas.getObjects().map((obj, i) => {
+                        const isActive = fabricCanvas.getActiveObject() === obj;
+                        const objType = obj.type || "Object";
+                        const iconColors: Record<string, string> = {
+                          rect: "text-indigo-400",
+                          circle: "text-pink-400",
+                          "i-text": "text-emerald-400",
+                          text: "text-emerald-400",
+                          image: "text-amber-400",
+                        };
+                        return (
+                          <div
+                            key={i}
+                            className={cn("layer-item", isActive && "active")}
+                            onClick={() => {
+                              fabricCanvas.setActiveObject(obj);
+                              fabricCanvas.renderAll();
+                            }}
+                          >
+                            <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center bg-muted/30", iconColors[objType] || "text-muted-foreground")}>
+                              {objType === "rect" && <Square className="w-4 h-4" />}
+                              {objType === "circle" && <CircleIcon className="w-4 h-4" />}
+                              {(objType === "i-text" || objType === "text") && <Type className="w-4 h-4" />}
+                              {objType === "image" && <Image className="w-4 h-4" />}
+                              {!["rect", "circle", "i-text", "text", "image"].includes(objType) && <Layers className="w-4 h-4" />}
+                            </div>
+                            <span className="text-sm text-foreground flex-1 capitalize font-medium">
+                              {objType} {i + 1}
+                            </span>
+                            <EyeIcon className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <div className="text-center py-8">
+                        <div className="w-12 h-12 rounded-xl bg-muted/30 flex items-center justify-center mx-auto mb-3">
+                          <Layers className="w-6 h-6 text-muted-foreground" />
+                        </div>
+                        <p className="text-sm text-muted-foreground">No objects on canvas</p>
+                        <p className="text-xs text-muted-foreground mt-1">Add shapes or images to get started</p>
                       </div>
-                    )) || (
-                      <p className="text-sm text-muted-foreground text-center py-4">No objects on canvas</p>
                     )}
                   </div>
                 )}
 
                 {leftPanelTab === "templates" && (
-                  <div className="space-y-3">
+                  <div className="space-y-4">
                     <Button
                       variant="ai"
                       size="sm"
-                      className="w-full"
+                      className="w-full h-11"
                       onClick={() => setShowTemplateGallery(true)}
                     >
                       <Image className="w-4 h-4 mr-2" />
                       Browse All Templates
                     </Button>
-                    {["Premium Minimal", "Festive Sale", "Product Focus", "Bold Typography"].map((template, i) => (
-                      <GlassPanel key={i} padding="sm" className="cursor-pointer hover:border-accent/50 transition-colors">
-                        <div className="aspect-video bg-muted/30 rounded mb-2" />
-                        <span className="text-xs font-medium text-foreground">{template}</span>
-                      </GlassPanel>
+                    
+                    <div className="divider" />
+                    <h3 className="section-title">Quick Templates</h3>
+                    
+                    {[
+                      { name: "Premium Minimal", color: "from-slate-500/20 to-zinc-500/20" },
+                      { name: "Festive Sale", color: "from-red-500/20 to-orange-500/20" },
+                      { name: "Product Focus", color: "from-blue-500/20 to-cyan-500/20" },
+                      { name: "Bold Typography", color: "from-purple-500/20 to-pink-500/20" },
+                    ].map((template, i) => (
+                      <div key={i} className="panel-card group">
+                        <div className={`aspect-video bg-gradient-to-br ${template.color} rounded-lg mb-3 flex items-center justify-center`}>
+                          <span className="text-[10px] font-medium text-muted-foreground group-hover:text-foreground transition-colors">Preview</span>
+                        </div>
+                        <span className="text-sm font-medium text-foreground">{template.name}</span>
+                      </div>
                     ))}
                   </div>
                 )}
@@ -839,103 +919,127 @@ const CreativeBuilder = () => {
 
         {/* Canvas Area */}
         <div className="flex-1 flex flex-col overflow-hidden">
-          {/* Tools Bar */}
-          <div className="h-12 border-b border-border/50 flex items-center justify-between px-4 bg-card/30 shrink-0">
-            <div className="flex items-center gap-1">
+          {/* Tools Bar - Enhanced */}
+          <div className="h-14 border-b border-border/30 flex items-center justify-between px-5 bg-gradient-to-r from-card/50 to-card/30 shrink-0 backdrop-blur-sm">
+            <div className="flex items-center gap-2">
               <Button
                 variant="ghost"
                 size="icon-sm"
                 onClick={() => setLeftPanelOpen(!leftPanelOpen)}
+                className="hover:bg-muted/50"
               >
                 <Menu className="w-4 h-4" />
               </Button>
-              <div className="w-px h-6 bg-border mx-2" />
-              {[
-                { tool: "select" as const, icon: MousePointer2 },
-                { tool: "rectangle" as const, icon: Square },
-                { tool: "circle" as const, icon: CircleIcon },
-                { tool: "text" as const, icon: Type },
-              ].map(({ tool, icon: Icon }) => (
-                <Button
-                  key={tool}
-                  variant={activeTool === tool ? "secondary" : "ghost"}
+              <div className="w-px h-6 bg-border/50 mx-2" />
+              
+              {/* Tool Buttons - Enhanced */}
+              <div className="flex items-center gap-1 p-1 rounded-xl bg-secondary/30 border border-border/30">
+                {[
+                  { tool: "select" as const, icon: MousePointer2, color: "text-foreground" },
+                  { tool: "rectangle" as const, icon: Square, color: "text-indigo-400" },
+                  { tool: "circle" as const, icon: CircleIcon, color: "text-pink-400" },
+                  { tool: "text" as const, icon: Type, color: "text-emerald-400" },
+                ].map(({ tool, icon: Icon, color }) => (
+                  <button
+                    key={tool}
+                    onClick={() => handleToolClick(tool)}
+                    className={cn(
+                      "w-9 h-9 rounded-lg flex items-center justify-center transition-all duration-200",
+                      activeTool === tool
+                        ? `bg-gradient-to-br from-accent/20 to-highlight/20 ${color} shadow-md border border-accent/30`
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
+                    )}
+                  >
+                    <Icon className="w-4 h-4" />
+                  </button>
+                ))}
+              </div>
+              
+              <div className="w-px h-6 bg-border/50 mx-2" />
+              
+              {/* Action Buttons */}
+              <div className="flex items-center gap-1">
+                <Button 
+                  variant="ghost" 
                   size="icon-sm"
-                  onClick={() => handleToolClick(tool)}
-                >
-                  <Icon className="w-4 h-4" />
-                </Button>
-              ))}
-              <div className="w-px h-6 bg-border mx-2" />
-              <Button 
-                variant="ghost" 
-                size="icon-sm"
-                onClick={() => {
-                  const activeObj = fabricCanvas?.getActiveObject();
-                  if (activeObj) {
-                    fabricCanvas?.remove(activeObj);
-                    fabricCanvas?.renderAll();
-                    toast.success("Deleted");
-                  }
-                }}
-              >
-                <Trash2 className="w-4 h-4" />
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="icon-sm"
-                onClick={() => {
-                  const activeObj = fabricCanvas?.getActiveObject();
-                  if (activeObj) {
-                    activeObj.clone().then((cloned: any) => {
-                      cloned.set({ left: (cloned.left || 0) + 20, top: (cloned.top || 0) + 20 });
-                      fabricCanvas?.add(cloned);
-                      fabricCanvas?.setActiveObject(cloned);
+                  className="hover:bg-destructive/10 hover:text-destructive"
+                  onClick={() => {
+                    const activeObj = fabricCanvas?.getActiveObject();
+                    if (activeObj) {
+                      fabricCanvas?.remove(activeObj);
                       fabricCanvas?.renderAll();
-                      toast.success("Duplicated");
-                    });
-                  }
-                }}
-                title="Duplicate (Ctrl+D)"
-              >
-                <Copy className="w-4 h-4" />
-              </Button>
+                      toast.success("Deleted");
+                    }
+                  }}
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="icon-sm"
+                  className="hover:bg-accent/10 hover:text-accent"
+                  onClick={() => {
+                    const activeObj = fabricCanvas?.getActiveObject();
+                    if (activeObj) {
+                      activeObj.clone().then((cloned: any) => {
+                        cloned.set({ left: (cloned.left || 0) + 20, top: (cloned.top || 0) + 20 });
+                        fabricCanvas?.add(cloned);
+                        fabricCanvas?.setActiveObject(cloned);
+                        fabricCanvas?.renderAll();
+                        toast.success("Duplicated");
+                      });
+                    }
+                  }}
+                  title="Duplicate (Ctrl+D)"
+                >
+                  <Copy className="w-4 h-4" />
+                </Button>
+              </div>
             </div>
 
+            {/* View Controls */}
             <div className="flex items-center gap-2">
               <Button
-                variant={showSafeZones ? "secondary" : "ghost"}
+                variant={showSafeZones ? "ai-outline" : "ghost"}
                 size="sm"
                 onClick={() => setShowSafeZones(!showSafeZones)}
-                className="text-xs"
+                className="text-xs h-8"
               >
-                <EyeIcon className="w-3 h-3 mr-1" />
+                <EyeIcon className="w-3.5 h-3.5 mr-1.5" />
                 Safe Zones
               </Button>
               <Button
-                variant={showHeatmap ? "secondary" : "ghost"}
+                variant={showHeatmap ? "ai-outline" : "ghost"}
                 size="sm"
                 onClick={() => setShowHeatmap(!showHeatmap)}
-                className="text-xs"
+                className="text-xs h-8"
               >
-                <Zap className="w-3 h-3 mr-1" />
+                <Zap className="w-3.5 h-3.5 mr-1.5" />
                 Heatmap
               </Button>
-              <div className="w-px h-6 bg-border mx-2" />
-              <Button 
-                variant="ghost" 
-                size="icon-sm"
-                onClick={() => setZoom(Math.max(50, zoom - 10))}
-              >
-                <ZoomOut className="w-4 h-4" />
-              </Button>
-              <span className="text-xs font-mono text-muted-foreground w-12 text-center">{zoom}%</span>
-              <Button 
-                variant="ghost" 
-                size="icon-sm"
-                onClick={() => setZoom(Math.min(200, zoom + 10))}
-              >
-                <ZoomIn className="w-4 h-4" />
-              </Button>
+              
+              <div className="w-px h-6 bg-border/50 mx-2" />
+              
+              {/* Zoom Controls */}
+              <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-secondary/30 border border-border/30">
+                <Button 
+                  variant="ghost" 
+                  size="icon-sm"
+                  className="w-7 h-7 hover:bg-muted/50"
+                  onClick={() => setZoom(Math.max(50, zoom - 10))}
+                >
+                  <ZoomOut className="w-3.5 h-3.5" />
+                </Button>
+                <span className="text-xs font-mono text-muted-foreground w-10 text-center">{zoom}%</span>
+                <Button 
+                  variant="ghost" 
+                  size="icon-sm"
+                  className="w-7 h-7 hover:bg-muted/50"
+                  onClick={() => setZoom(Math.min(200, zoom + 10))}
+                >
+                  <ZoomIn className="w-3.5 h-3.5" />
+                </Button>
+              </div>
             </div>
 
             <div className="flex items-center gap-1">
@@ -943,6 +1047,7 @@ const CreativeBuilder = () => {
                 variant="ghost"
                 size="icon-sm"
                 onClick={() => setRightPanelOpen(!rightPanelOpen)}
+                className="hover:bg-muted/50"
               >
                 <Settings className="w-4 h-4" />
               </Button>
@@ -952,10 +1057,10 @@ const CreativeBuilder = () => {
           {/* Canvas */}
           <div 
             ref={containerRef}
-            className="flex-1 flex items-center justify-center bg-background p-10 overflow-auto"
+            className="flex-1 flex items-center justify-center bg-gradient-to-br from-background via-background to-secondary/10 p-10 overflow-auto"
           >
             <div 
-              className="canvas-container shadow-premium relative"
+              className="canvas-container shadow-premium relative ring-1 ring-border/20"
               style={{ transform: `scale(${zoom / 100})`, transformOrigin: 'center' }}
             >
               <canvas ref={canvasRef} />
@@ -977,31 +1082,31 @@ const CreativeBuilder = () => {
           </div>
         </div>
 
-        {/* Right Panel - AI Chat & Compliance */}
+        {/* Right Panel - AI Chat & Compliance - Enhanced */}
         <AnimatePresence>
           {rightPanelOpen && (
             <motion.aside
               initial={{ width: 0, opacity: 0 }}
-              animate={{ width: 320, opacity: 1 }}
+              animate={{ width: 340, opacity: 1 }}
               exit={{ width: 0, opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="border-l border-border/50 bg-card/50 flex flex-col shrink-0 overflow-hidden"
+              className="border-l border-border/30 bg-gradient-to-b from-card/80 to-card/40 flex flex-col shrink-0 overflow-hidden backdrop-blur-sm"
             >
-              {/* Compliance Section */}
-              <div className="p-4 border-b border-border/50 shrink-0">
+              {/* Compliance Section - Enhanced */}
+              <div className="p-5 border-b border-border/30 shrink-0">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-medium text-foreground">Compliance</h3>
+                  <h3 className="text-sm font-semibold text-foreground">Compliance</h3>
                   <div className="flex items-center gap-2">
                     <Button
-                      variant="ghost"
+                      variant="ai-outline"
                       size="sm"
                       onClick={() => {
                         autoFixAll();
                         updateCompliance();
                       }}
-                      className="text-xs h-6 px-2"
+                      className="text-xs h-7 px-3"
                     >
-                      <Zap className="w-3 h-3 mr-1" />
+                      <Zap className="w-3 h-3 mr-1.5" />
                       Auto-Fix
                     </Button>
                     <ComplianceScore score={calculatedScore} size="sm" showLabel={false} />
@@ -1009,16 +1114,24 @@ const CreativeBuilder = () => {
                 </div>
                 <div className="space-y-2">
                   {complianceChecks.map((check) => (
-                    <div key={check.id} className="flex items-start gap-2">
+                    <div 
+                      key={check.id} 
+                      className={cn(
+                        "compliance-item",
+                        check.status === "pass" && "pass",
+                        check.status === "warning" && "warning",
+                        check.status === "fail" && "fail"
+                      )}
+                    >
                       {check.status === "pass" ? (
-                        <Check className="w-4 h-4 text-accent shrink-0 mt-0.5" />
+                        <Check className="w-4 h-4 text-success shrink-0 mt-0.5" />
                       ) : check.status === "warning" ? (
                         <AlertTriangle className="w-4 h-4 text-warning shrink-0 mt-0.5" />
                       ) : (
                         <X className="w-4 h-4 text-destructive shrink-0 mt-0.5" />
                       )}
                       <div className="flex-1 min-w-0">
-                        <span className="text-xs text-foreground block">{check.label}</span>
+                        <span className="text-xs font-medium text-foreground block">{check.label}</span>
                         <span className="text-[10px] text-muted-foreground block truncate" title={check.message}>
                           {check.message}
                         </span>
@@ -1028,34 +1141,34 @@ const CreativeBuilder = () => {
                 </div>
               </div>
 
-              {/* AI Chat */}
+              {/* AI Chat - Enhanced */}
               <div className="flex-1 flex flex-col min-h-0">
-                <div className="p-4 border-b border-border/50 shrink-0">
+                <div className="p-5 border-b border-border/30 shrink-0">
                   <div className="flex items-center gap-2">
-                    <Sparkles className="w-4 h-4 text-accent" />
-                    <h3 className="text-sm font-medium text-foreground">AI Assistant</h3>
+                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent to-highlight flex items-center justify-center">
+                      <Sparkles className="w-4 h-4 text-accent-foreground" />
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-semibold text-foreground">AI Assistant</h3>
+                      <p className="text-[10px] text-muted-foreground">Tell me how to improve your creative</p>
+                    </div>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Tell me how to improve your creative
-                  </p>
                 </div>
 
                 {/* Messages */}
-                <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                <div className="flex-1 overflow-y-auto p-5 space-y-4">
                   {aiMessages.length === 0 ? (
                     <div className="text-center py-8">
-                      <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mx-auto mb-3">
-                        <Sparkles className="w-6 h-6 text-accent" />
+                      <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent/20 to-highlight/20 flex items-center justify-center mx-auto mb-4">
+                        <Sparkles className="w-7 h-7 text-accent" />
                       </div>
-                      <p className="text-sm text-muted-foreground mb-3">
-                        Try commands like:
-                      </p>
+                      <p className="text-sm text-muted-foreground mb-4">Try commands like:</p>
                       <div className="flex flex-wrap gap-2 justify-center">
                         {["Make it more premium", "Add festive elements", "Increase product size", "Make it minimal"].map((cmd, i) => (
                           <button
                             key={i}
                             onClick={() => setChatMessage(cmd)}
-                            className="text-xs px-2 py-1 rounded-full bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                            className="command-chip"
                           >
                             {cmd}
                           </button>
@@ -1068,9 +1181,7 @@ const CreativeBuilder = () => {
                         key={i}
                         className={cn(
                           "text-sm",
-                          msg.role === "user"
-                            ? "chat-bubble-user ml-8"
-                            : "chat-bubble-ai mr-8"
+                          msg.role === "user" ? "chat-bubble-user ml-8" : "chat-bubble-ai mr-8"
                         )}
                       >
                         {msg.content}
@@ -1080,10 +1191,7 @@ const CreativeBuilder = () => {
                   {aiStatus === "thinking" && (
                     <div className="chat-bubble-ai mr-8">
                       <div className="flex items-center gap-2">
-                        <motion.div
-                          animate={{ rotate: 360 }}
-                          transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                        >
+                        <motion.div animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity, ease: "linear" }}>
                           <Sparkles className="w-4 h-4 text-accent" />
                         </motion.div>
                         <span className="text-sm text-muted-foreground">Analyzing your design...</span>
@@ -1093,10 +1201,7 @@ const CreativeBuilder = () => {
                   {aiStatus === "generating" && (
                     <div className="chat-bubble-ai mr-8">
                       <div className="flex items-center gap-2">
-                        <motion.div
-                          animate={{ scale: [1, 1.2, 1] }}
-                          transition={{ duration: 0.5, repeat: Infinity }}
-                        >
+                        <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ duration: 0.5, repeat: Infinity }}>
                           <Sparkles className="w-4 h-4 text-accent" />
                         </motion.div>
                         <span className="text-sm text-muted-foreground">Applying changes...</span>
@@ -1105,8 +1210,8 @@ const CreativeBuilder = () => {
                   )}
                 </div>
 
-                {/* Input */}
-                <div className="p-4 border-t border-border/50 shrink-0">
+                {/* Input - Enhanced */}
+                <div className="p-5 border-t border-border/30 shrink-0">
                   <div className="flex gap-2">
                     <input
                       type="text"
@@ -1114,7 +1219,7 @@ const CreativeBuilder = () => {
                       onChange={(e) => setChatMessage(e.target.value)}
                       onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
                       placeholder="Describe changes..."
-                      className="flex-1 bg-muted/50 border border-border rounded-lg px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/50"
+                      className="ai-input flex-1"
                     />
                     <Button
                       variant="ai"
