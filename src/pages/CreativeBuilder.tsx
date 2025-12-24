@@ -1,14 +1,15 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { Canvas as FabricCanvas, Rect, Circle, IText, FabricImage } from "fabric";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import {
   Sparkles, ChevronLeft, Download, Share2, Undo2, Redo2,
   ZoomIn, ZoomOut, MousePointer2, Square, Circle as CircleIcon,
   Type, Image, Trash2, Copy, Layers, Upload, Send, Settings,
-  Check, AlertTriangle, X, Menu, Eye as EyeIcon, Palette, Wand2
+  Check, AlertTriangle, X, Menu, Eye as EyeIcon, Palette, Wand2, Save, Loader2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import { ComplianceScore } from "@/components/ui/ComplianceScore";
 import { AIIndicator } from "@/components/ui/AIIndicator";
@@ -21,6 +22,8 @@ import { AIBackgroundGenerator } from "@/components/AIBackgroundGenerator";
 import { useCreativeStore } from "@/store/creativeStore";
 import { useComplianceEngine, type ComplianceCheck } from "@/hooks/useComplianceEngine";
 import { useAICanvasControl } from "@/hooks/useAICanvasControl";
+import { useProject } from "@/hooks/useProject";
+import { useFormatResize } from "@/hooks/useFormatResize";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -52,6 +55,8 @@ const CreativeBuilder = () => {
   const [showTemplateGallery, setShowTemplateGallery] = useState(false);
   const [showExportDialog, setShowExportDialog] = useState(false);
   const [showAIBackground, setShowAIBackground] = useState(false);
+  const [searchParams] = useSearchParams();
+  const [isEditingName, setIsEditingName] = useState(false);
 
   const {
     currentFormat,
@@ -66,9 +71,16 @@ const CreativeBuilder = () => {
     setLeftPanelTab,
   } = useCreativeStore();
 
-  // Initialize compliance engine and AI canvas control
+  const [previousFormat, setPreviousFormat] = useState(currentFormat);
+
+  // Initialize compliance engine, AI canvas control, project management, and format resize
   const { safeZones, runComplianceChecks, calculateScore } = useComplianceEngine(currentFormat.id);
   const { processAICommand } = useAICanvasControl(fabricCanvas);
+  const { 
+    projectName, setProjectName, 
+    isSaving, saveProject, loadProject 
+  } = useProject(fabricCanvas, currentFormat, calculatedScore);
+  const { resizeToFormat } = useFormatResize(fabricCanvas);
 
   // Run compliance checks when canvas changes
   const updateCompliance = useCallback(() => {
@@ -82,9 +94,26 @@ const CreativeBuilder = () => {
     setComplianceScore(score);
   }, [fabricCanvas, runComplianceChecks, calculateScore, setComplianceScore]);
 
-  // Initialize Fabric.js canvas
+  // Handle format change with intelligent resizing
+  const handleFormatChange = useCallback((newFormat: typeof currentFormat) => {
+    if (fabricCanvas && previousFormat.id !== newFormat.id) {
+      resizeToFormat(previousFormat, newFormat);
+      setPreviousFormat(newFormat);
+    }
+    setCurrentFormat(newFormat);
+  }, [fabricCanvas, previousFormat, resizeToFormat, setCurrentFormat]);
+
+  // Load project from URL param on mount
   useEffect(() => {
-    if (!canvasRef.current || !containerRef.current) return;
+    const projectIdFromUrl = searchParams.get('project');
+    if (projectIdFromUrl && fabricCanvas) {
+      loadProject(projectIdFromUrl, setCurrentFormat, availableFormats);
+    }
+  }, [fabricCanvas, searchParams, loadProject, setCurrentFormat, availableFormats]);
+
+  // Initialize Fabric.js canvas - only on initial mount
+  useEffect(() => {
+    if (!canvasRef.current || !containerRef.current || fabricCanvas) return;
 
     const containerWidth = containerRef.current.clientWidth - 80;
     const containerHeight = containerRef.current.clientHeight - 80;
@@ -107,50 +136,54 @@ const CreativeBuilder = () => {
       selection: true,
     });
 
-    // Add initial elements
-    const productRect = new Rect({
-      left: canvasWidth / 4,
-      top: canvasHeight / 4,
-      width: canvasWidth / 2,
-      height: canvasHeight / 2,
-      fill: "rgba(34, 197, 94, 0.1)",
-      stroke: "rgba(34, 197, 94, 0.5)",
-      strokeWidth: 2,
-      rx: 8,
-      ry: 8,
-    });
+    // Add initial elements only if not loading a project
+    const projectIdFromUrl = searchParams.get('project');
+    if (!projectIdFromUrl) {
+      const productRect = new Rect({
+        left: canvasWidth / 4,
+        top: canvasHeight / 4,
+        width: canvasWidth / 2,
+        height: canvasHeight / 2,
+        fill: "rgba(34, 197, 94, 0.1)",
+        stroke: "rgba(34, 197, 94, 0.5)",
+        strokeWidth: 2,
+        rx: 8,
+        ry: 8,
+      });
 
-    const ctaRect = new Rect({
-      left: canvasWidth / 4,
-      top: canvasHeight - 80,
-      width: canvasWidth / 2,
-      height: 50,
-      fill: "#22C55E",
-      rx: 8,
-      ry: 8,
-    });
+      const ctaRect = new Rect({
+        left: canvasWidth / 4,
+        top: canvasHeight - 80,
+        width: canvasWidth / 2,
+        height: 50,
+        fill: "#22C55E",
+        rx: 8,
+        ry: 8,
+      });
 
-    const ctaText = new IText("Shop Now", {
-      left: canvasWidth / 2,
-      top: canvasHeight - 70,
-      fontSize: 18,
-      fontFamily: "Inter",
-      fontWeight: "600",
-      fill: "#020617",
-      originX: "center",
-    });
+      const ctaText = new IText("Shop Now", {
+        left: canvasWidth / 2,
+        top: canvasHeight - 70,
+        fontSize: 18,
+        fontFamily: "Inter",
+        fontWeight: "600",
+        fill: "#020617",
+        originX: "center",
+      });
 
-    const logoPlaceholder = new Rect({
-      left: canvasWidth - 80,
-      top: 20,
-      width: 60,
-      height: 30,
-      fill: "#e2e8f0",
-      rx: 4,
-      ry: 4,
-    });
+      const logoPlaceholder = new Rect({
+        left: canvasWidth - 80,
+        top: 20,
+        width: 60,
+        height: 30,
+        fill: "#e2e8f0",
+        rx: 4,
+        ry: 4,
+      });
 
-    canvas.add(productRect, ctaRect, ctaText, logoPlaceholder);
+      canvas.add(productRect, ctaRect, ctaText, logoPlaceholder);
+    }
+    
     canvas.renderAll();
 
     // Listen for canvas changes to update compliance
@@ -159,6 +192,7 @@ const CreativeBuilder = () => {
     canvas.on("object:removed", () => updateCompliance());
 
     setFabricCanvas(canvas);
+    setPreviousFormat(currentFormat);
 
     // Initial compliance check
     setTimeout(() => {
@@ -172,7 +206,8 @@ const CreativeBuilder = () => {
     return () => {
       canvas.dispose();
     };
-  }, [currentFormat, runComplianceChecks, calculateScore, setComplianceScore]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Handle tool clicks
   const handleToolClick = useCallback((tool: typeof activeTool) => {
@@ -380,7 +415,23 @@ const CreativeBuilder = () => {
             <div className="w-6 h-6 rounded bg-gradient-to-br from-accent to-highlight flex items-center justify-center">
               <Sparkles className="w-4 h-4 text-primary-foreground" />
             </div>
-            <span className="font-medium text-sm text-foreground">Untitled Creative</span>
+            {isEditingName ? (
+              <Input
+                value={projectName}
+                onChange={(e) => setProjectName(e.target.value)}
+                onBlur={() => setIsEditingName(false)}
+                onKeyDown={(e) => e.key === 'Enter' && setIsEditingName(false)}
+                className="h-7 w-40 text-sm"
+                autoFocus
+              />
+            ) : (
+              <span 
+                className="font-medium text-sm text-foreground cursor-pointer hover:text-accent"
+                onClick={() => setIsEditingName(true)}
+              >
+                {projectName}
+              </span>
+            )}
           </div>
         </div>
 
@@ -390,7 +441,7 @@ const CreativeBuilder = () => {
             {availableFormats.slice(0, 4).map((format) => (
               <button
                 key={format.id}
-                onClick={() => setCurrentFormat(format)}
+                onClick={() => handleFormatChange(format)}
                 className={cn(
                   "px-3 py-1.5 rounded-md text-xs font-medium transition-all",
                   currentFormat.id === format.id
@@ -415,6 +466,19 @@ const CreativeBuilder = () => {
             <Redo2 className="w-4 h-4" />
           </Button>
           <div className="w-px h-6 bg-border mx-2" />
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={saveProject}
+            disabled={isSaving}
+          >
+            {isSaving ? (
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            ) : (
+              <Save className="w-4 h-4 mr-2" />
+            )}
+            Save
+          </Button>
           <Button variant="outline" size="sm">
             <Share2 className="w-4 h-4 mr-2" />
             Share

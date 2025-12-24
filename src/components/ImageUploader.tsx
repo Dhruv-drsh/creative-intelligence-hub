@@ -1,11 +1,14 @@
 import { useRef, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Upload, X, Image, Loader2 } from "lucide-react";
+import { Upload, X, Image, Loader2, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GlassPanel } from "@/components/ui/GlassPanel";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { removeBackground, loadImage } from "@/utils/backgroundRemoval";
 
 interface ImageUploaderProps {
   isOpen: boolean;
@@ -22,8 +25,10 @@ export const ImageUploader = ({ isOpen, onClose, onImageUploaded, type = "produc
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isRemovingBg, setIsRemovingBg] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [removeBgEnabled, setRemoveBgEnabled] = useState(false);
 
   const validateFile = (file: File): string | null => {
     if (!ALLOWED_TYPES.includes(file.type)) {
@@ -82,12 +87,34 @@ export const ImageUploader = ({ isOpen, onClose, onImageUploaded, type = "produc
     setIsUploading(true);
 
     try {
-      const fileExt = selectedFile.name.split(".").pop();
-      const fileName = `${user.id}/${type}/${Date.now()}.${fileExt}`;
+      let fileToUpload: File | Blob = selectedFile;
+      let fileName = selectedFile.name;
+
+      // Remove background if enabled
+      if (removeBgEnabled) {
+        setIsRemovingBg(true);
+        toast.info("Removing background... This may take 10-30 seconds");
+        
+        try {
+          const img = await loadImage(selectedFile);
+          const processedBlob = await removeBackground(img);
+          fileToUpload = processedBlob;
+          fileName = selectedFile.name.replace(/\.[^/.]+$/, '') + '_nobg.png';
+          toast.success("Background removed!");
+        } catch (bgError) {
+          console.error("Background removal failed:", bgError);
+          toast.error("Background removal failed, uploading original image");
+        } finally {
+          setIsRemovingBg(false);
+        }
+      }
+
+      const fileExt = fileName.split(".").pop() || 'png';
+      const uploadPath = `${user.id}/${type}/${Date.now()}.${fileExt}`;
 
       const { error: uploadError } = await supabase.storage
         .from("assets")
-        .upload(fileName, selectedFile, {
+        .upload(uploadPath, fileToUpload, {
           cacheControl: "3600",
           upsert: false,
         });
@@ -98,10 +125,10 @@ export const ImageUploader = ({ isOpen, onClose, onImageUploaded, type = "produc
 
       const { data: { publicUrl } } = supabase.storage
         .from("assets")
-        .getPublicUrl(fileName);
+        .getPublicUrl(uploadPath);
 
       toast.success("Image uploaded successfully!");
-      onImageUploaded(publicUrl, selectedFile.name);
+      onImageUploaded(publicUrl, fileName);
       handleReset();
       onClose();
     } catch (error) {
@@ -115,6 +142,7 @@ export const ImageUploader = ({ isOpen, onClose, onImageUploaded, type = "produc
   const handleReset = () => {
     setPreview(null);
     setSelectedFile(null);
+    setRemoveBgEnabled(false);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -207,6 +235,28 @@ export const ImageUploader = ({ isOpen, onClose, onImageUploaded, type = "produc
                 )}
               </div>
 
+              {/* Background Removal Toggle */}
+              {selectedFile && type === "product" && (
+                <div className="flex items-center justify-between p-4 rounded-xl bg-accent/5 border border-accent/20">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center">
+                      <Sparkles className="w-4 h-4 text-accent" />
+                    </div>
+                    <div>
+                      <Label htmlFor="remove-bg" className="text-sm font-medium text-foreground cursor-pointer">
+                        Remove Background
+                      </Label>
+                      <p className="text-xs text-muted-foreground">AI-powered background removal</p>
+                    </div>
+                  </div>
+                  <Switch
+                    id="remove-bg"
+                    checked={removeBgEnabled}
+                    onCheckedChange={setRemoveBgEnabled}
+                  />
+                </div>
+              )}
+
               {/* Actions */}
               <div className="flex gap-3">
                 <Button variant="outline" className="flex-1" onClick={onClose}>
@@ -216,9 +266,14 @@ export const ImageUploader = ({ isOpen, onClose, onImageUploaded, type = "produc
                   variant="ai"
                   className="flex-1"
                   onClick={handleUpload}
-                  disabled={!selectedFile || isUploading}
+                  disabled={!selectedFile || isUploading || isRemovingBg}
                 >
-                  {isUploading ? (
+                  {isRemovingBg ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                      Removing BG...
+                    </>
+                  ) : isUploading ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin mr-2" />
                       Uploading...
@@ -226,7 +281,7 @@ export const ImageUploader = ({ isOpen, onClose, onImageUploaded, type = "produc
                   ) : (
                     <>
                       <Image className="w-4 h-4 mr-2" />
-                      Add to Canvas
+                      {removeBgEnabled ? "Process & Add" : "Add to Canvas"}
                     </>
                   )}
                 </Button>
