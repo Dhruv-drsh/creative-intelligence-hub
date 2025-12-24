@@ -660,12 +660,45 @@ const CreativeBuilder = () => {
       
       // Clear canvas and load template data
       fabricCanvas.clear();
-      fabricCanvas.backgroundColor = "#ffffff";
       
-      const canvasData = template.canvas_data as { objects?: unknown[]; background?: string };
+      const canvasData = template.canvas_data as { objects?: unknown[]; backgroundColor?: string; style?: string };
       
-      if (canvasData && typeof canvasData === 'object' && canvasData.objects) {
-        await fabricCanvas.loadFromJSON(canvasData);
+      // Set background color from template
+      if (canvasData?.backgroundColor) {
+        fabricCanvas.backgroundColor = canvasData.backgroundColor;
+      } else {
+        fabricCanvas.backgroundColor = "#ffffff";
+      }
+      
+      if (canvasData && typeof canvasData === 'object' && Array.isArray(canvasData.objects)) {
+        // Convert text types to i-text for fabric.js compatibility
+        const convertedObjects = canvasData.objects.map((obj: any) => ({
+          ...obj,
+          type: obj.type === 'text' ? 'i-text' : obj.type
+        }));
+        
+        const convertedData = {
+          ...canvasData,
+          objects: convertedObjects
+        };
+        
+        await fabricCanvas.loadFromJSON(convertedData);
+        
+        // Scale objects to fit current canvas size
+        const scaleX = fabricCanvas.getWidth() / template.format_width;
+        const scaleY = fabricCanvas.getHeight() / template.format_height;
+        const scale = Math.min(scaleX, scaleY);
+        
+        fabricCanvas.getObjects().forEach(obj => {
+          obj.set({
+            left: (obj.left || 0) * scale,
+            top: (obj.top || 0) * scale,
+            scaleX: (obj.scaleX || 1) * scale,
+            scaleY: (obj.scaleY || 1) * scale,
+          });
+          obj.setCoords();
+        });
+        
         fabricCanvas.renderAll();
       }
       
