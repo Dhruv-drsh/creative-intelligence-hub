@@ -5,3 +5,12 @@ verify_jwt = false
 
 [functions.ai-canvas-control]
 verify_jwt = false
+
+[functions.ai-performance-predictions]
+verify_jwt = false
+
+[functions.ai-attention-heatmap]
+verify_jwt = false
+
+[functions.ai-copywriting]
+verify_jwt = false
