@@ -528,7 +528,7 @@ export const BrandKitManager = ({ isOpen, onClose, onSelectBrandKit }: BrandKitM
                     </div>
                   )}
                 </div>
-              )}
+              ) : null}
             </div>
           </GlassPanel>
         </motion.div>
