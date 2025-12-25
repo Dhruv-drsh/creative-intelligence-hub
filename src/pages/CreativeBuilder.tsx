@@ -977,11 +977,39 @@ const CreativeBuilder = () => {
       <ColorPsychology
         isOpen={showColorPsychology}
         onClose={() => setShowColorPsychology(false)}
-        onApplyPalette={(colors) => {
+        onApplyPalette={(colors, options) => {
           if (!fabricCanvas) return;
-          fabricCanvas.backgroundColor = colors.primary;
+          let updatedCount = 0;
+          
+          // Apply background
+          if (options.applyToBackground && colors.background) {
+            fabricCanvas.backgroundColor = colors.background;
+            updatedCount++;
+          }
+          
+          fabricCanvas.getObjects().forEach((obj) => {
+            // Apply to shapes
+            if (options.applyToShapes && (obj.type === 'rect' || obj.type === 'circle' || obj.type === 'polygon')) {
+              obj.set({ fill: colors.primary, stroke: colors.secondary });
+              updatedCount++;
+            }
+            
+            // Apply to text
+            if (options.applyToText && (obj.type === 'i-text' || obj.type === 'text' || obj.type === 'textbox')) {
+              const textObj = obj as any;
+              const fontSize = textObj.fontSize || 16;
+              if (fontSize >= 32) {
+                textObj.set({ fill: colors.primary });
+              } else {
+                textObj.set({ fill: colors.secondary });
+              }
+              updatedCount++;
+            }
+          });
+          
           fabricCanvas.renderAll();
           updateCompliance();
+          toast.success(`Applied colors to ${updatedCount} elements`);
         }}
       />
       <CollaborativeWorkflows

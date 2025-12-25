@@ -3,15 +3,27 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Palette, Loader2, Sparkles, Check, Copy, Heart, Shield, Zap, X } from "lucide-react";
+import { Palette, Loader2, Sparkles, Check, Copy, Heart, Shield, Zap, X, Paintbrush, Type, Shapes, Image } from "lucide-react";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useUnifiedAIState } from "@/hooks/useUnifiedAIState";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface ColorPsychologyProps {
   isOpen: boolean;
   onClose: () => void;
-  onApplyPalette: (colors: { primary: string; secondary: string; accent: string }) => void;
+  onApplyPalette: (colors: { 
+    primary: string; 
+    secondary: string; 
+    accent: string;
+    cta?: string;
+    background?: string;
+  }, options: {
+    applyToText: boolean;
+    applyToShapes: boolean;
+    applyToBackground: boolean;
+  }) => void;
 }
 
 interface ColorPalette {
@@ -70,8 +82,20 @@ export function ColorPsychology({ isOpen, onClose, onApplyPalette }: ColorPsycho
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysis, setAnalysis] = useState<ColorAnalysis | null>(null);
   const [copiedColor, setCopiedColor] = useState<string | null>(null);
+  
+  // Apply options
+  const [applyToText, setApplyToText] = useState(true);
+  const [applyToShapes, setApplyToShapes] = useState(true);
+  const [applyToBackground, setApplyToBackground] = useState(true);
+  
+  const { setBrand } = useUnifiedAIState();
 
   const handleAnalyze = async () => {
+    if (!targetEmotion || !industry) {
+      toast.error("Please select a target emotion and industry");
+      return;
+    }
+    
     setIsAnalyzing(true);
     try {
       const { data, error } = await supabase.functions.invoke('ai-color-psychology', {
@@ -99,23 +123,65 @@ export function ColorPsychology({ isOpen, onClose, onApplyPalette }: ColorPsycho
 
   const handleApplyPalette = (palette: ColorPalette) => {
     const colors = palette.colors;
+    const primary = colors.find(c => c.usage === "Primary")?.hex || colors[0]?.hex || "#6366F1";
+    const secondary = colors.find(c => c.usage === "Secondary")?.hex || colors[1]?.hex || "#818CF8";
+    const accent = colors.find(c => c.usage === "Accent")?.hex || colors[2]?.hex || "#F59E0B";
+    const background = colors.find(c => c.usage === "Background")?.hex || "#FFFFFF";
+    
+    // Update unified AI state
+    setBrand({ primaryColor: primary, secondaryColor: secondary, accentColor: accent });
+    
     onApplyPalette({
-      primary: colors.find(c => c.usage === "Primary")?.hex || colors[0]?.hex || "#6366F1",
-      secondary: colors.find(c => c.usage === "Secondary")?.hex || colors[1]?.hex || "#818CF8",
-      accent: colors.find(c => c.usage === "Accent")?.hex || colors[2]?.hex || "#F59E0B",
+      primary,
+      secondary,
+      accent,
+      background,
+    }, {
+      applyToText,
+      applyToShapes,
+      applyToBackground,
     });
-    toast.success("Palette applied to canvas!");
+    
+    const appliedTo = [
+      applyToText && 'text',
+      applyToShapes && 'shapes',
+      applyToBackground && 'background',
+    ].filter(Boolean).join(', ');
+    
+    toast.success(`Palette applied to ${appliedTo}!`);
     onClose();
   };
 
   const handleApplyRecommended = () => {
     if (analysis) {
-      onApplyPalette({
-        primary: analysis.recommendations.primary.hex,
-        secondary: analysis.recommendations.secondary.hex,
-        accent: analysis.recommendations.accent.hex,
+      const { primary, secondary, accent, callToAction } = analysis.recommendations;
+      
+      // Update unified AI state
+      setBrand({ 
+        primaryColor: primary.hex, 
+        secondaryColor: secondary.hex, 
+        accentColor: accent.hex,
+        ctaColor: callToAction.hex,
       });
-      toast.success("Recommended colors applied!");
+      
+      onApplyPalette({
+        primary: primary.hex,
+        secondary: secondary.hex,
+        accent: accent.hex,
+        cta: callToAction.hex,
+      }, {
+        applyToText,
+        applyToShapes,
+        applyToBackground,
+      });
+      
+      const appliedTo = [
+        applyToText && 'text',
+        applyToShapes && 'shapes',
+        applyToBackground && 'background',
+      ].filter(Boolean).join(', ');
+      
+      toast.success(`Recommended colors applied to ${appliedTo}!`);
       onClose();
     }
   };
@@ -188,9 +254,31 @@ export function ColorPsychology({ isOpen, onClose, onApplyPalette }: ColorPsycho
                   </div>
                 </div>
 
+                {/* Apply Options */}
+                <div className="p-4 rounded-xl bg-muted/30 border border-border/50 space-y-3">
+                  <h4 className="text-sm font-medium">Apply Colors To:</h4>
+                  <div className="grid grid-cols-3 gap-3">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <Checkbox checked={applyToText} onCheckedChange={(c) => setApplyToText(!!c)} />
+                      <Type className="w-4 h-4 text-muted-foreground" />
+                      <span className="text-sm">Text</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <Checkbox checked={applyToShapes} onCheckedChange={(c) => setApplyToShapes(!!c)} />
+                      <Shapes className="w-4 h-4 text-muted-foreground" />
+                      <span className="text-sm">Shapes</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <Checkbox checked={applyToBackground} onCheckedChange={(c) => setApplyToBackground(!!c)} />
+                      <Image className="w-4 h-4 text-muted-foreground" />
+                      <span className="text-sm">Background</span>
+                    </label>
+                  </div>
+                </div>
+
                 <Button
                   onClick={handleAnalyze}
-                  disabled={isAnalyzing}
+                  disabled={isAnalyzing || !targetEmotion || !industry}
                   className="w-full"
                   variant="ai"
                 >
