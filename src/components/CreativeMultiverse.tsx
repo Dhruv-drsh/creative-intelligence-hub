@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, X, Loader2, Check, Wand2, Palette, Grid3X3 } from "lucide-react";
+import { Sparkles, X, Loader2, Check, Wand2, Palette, Grid3X3, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -8,6 +8,7 @@ import { GlassPanel } from "@/components/ui/GlassPanel";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { MAX_FONT_SIZE } from "@/utils/canvasUtils";
 
 interface StyleVariation {
   id: string;
@@ -105,9 +106,10 @@ export function CreativeMultiverse({ open, onOpenChange, onApplyVariation, canva
 
   const applyVariation = (variation: StyleVariation) => {
     if (variation.canvas_data) {
+      // Note: The parent component enforces 18px max and center alignment
       onApplyVariation(variation.canvas_data);
       onOpenChange(false);
-      toast.success(`Applied "${variation.name}" style`);
+      toast.success(`Applied "${variation.name}" style (constraints enforced)`);
     }
   };
 
@@ -143,7 +145,7 @@ export function CreativeMultiverse({ open, onOpenChange, onApplyVariation, canva
                 </div>
                 <div>
                   <h2 className="font-display text-xl text-foreground">Creative Multiverse</h2>
-                  <p className="text-sm text-muted-foreground">Generate 20+ style variations instantly</p>
+                  <p className="text-sm text-muted-foreground">Generate 20+ style variations (max {MAX_FONT_SIZE}px, center-aligned)</p>
                 </div>
               </div>
               <Button variant="ghost" size="icon-sm" onClick={() => onOpenChange(false)}>

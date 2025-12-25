@@ -1,12 +1,14 @@
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Loader2, Sparkles, Copy, Check } from "lucide-react";
+import { X, Loader2, Sparkles, Copy, Check, Type, AlignCenter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { GlassPanel } from "@/components/ui/GlassPanel";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { MAX_FONT_SIZE, TYPOGRAPHY_SCALE } from "@/utils/canvasUtils";
 
 interface CopyVariation {
   text: string;
@@ -23,7 +25,7 @@ interface CopywritingData {
 interface CopywritingEngineProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelectCopy: (text: string, type: "headline" | "cta" | "tagline") => void;
+  onSelectCopy: (text: string, type: "headline" | "cta" | "tagline", fontSize: number) => void;
 }
 
 const campaignTypes = [
@@ -57,6 +59,7 @@ export function CopywritingEngine({
   const [copyData, setCopyData] = useState<CopywritingData | null>(null);
   const [activeTab, setActiveTab] = useState<"headlines" | "ctas" | "taglines">("headlines");
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const [selectedStyle, setSelectedStyle] = useState<'headline' | 'body' | 'caption'>('headline');
 
   const generateCopy = useCallback(async () => {
     if (!productName.trim()) {
@@ -96,8 +99,10 @@ export function CopywritingEngine({
 
   const handleSelectForCanvas = (text: string) => {
     const type = activeTab === "headlines" ? "headline" : activeTab === "ctas" ? "cta" : "tagline";
-    onSelectCopy(text, type);
-    toast.success(`Added ${type} to canvas`);
+    // Get font size based on selected style, capped at MAX_FONT_SIZE (18px)
+    const fontSize = Math.min(MAX_FONT_SIZE, TYPOGRAPHY_SCALE[selectedStyle] || TYPOGRAPHY_SCALE.body);
+    onSelectCopy(text, type, fontSize);
+    toast.success(`Added ${type} to canvas (${fontSize}px, centered)`);
   };
 
   if (!isOpen) return null;
@@ -118,16 +123,16 @@ export function CopywritingEngine({
           className="w-full max-w-3xl max-h-[85vh] overflow-hidden"
           onClick={(e) => e.stopPropagation()}
         >
-          <GlassPanel padding="none" className="overflow-hidden">
+          <GlassPanel padding="none" className="overflow-hidden flex flex-col h-[85vh]">
             {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-border/50">
+            <div className="flex-shrink-0 flex items-center justify-between p-6 border-b border-border/50">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-accent to-highlight flex items-center justify-center">
                   <Sparkles className="w-5 h-5 text-primary-foreground" />
                 </div>
                 <div>
                   <h2 className="font-display text-xl text-foreground">AI Copywriting Engine</h2>
-                  <p className="text-sm text-muted-foreground">Generate 20-30 headline & CTA variations</p>
+                  <p className="text-sm text-muted-foreground">Generate 20-30 headline & CTA variations (max {MAX_FONT_SIZE}px)</p>
                 </div>
               </div>
               <Button variant="ghost" size="icon-sm" onClick={onClose}>
@@ -135,7 +140,8 @@ export function CopywritingEngine({
               </Button>
             </div>
 
-            <div className="p-6 max-h-[65vh] overflow-y-auto">
+            <ScrollArea className="flex-1 min-h-0">
+              <div className="p-6">
               {!copyData ? (
                 <motion.div
                   initial={{ opacity: 0 }}
@@ -314,7 +320,8 @@ export function CopywritingEngine({
                   </div>
                 </motion.div>
               )}
-            </div>
+              </div>
+            </ScrollArea>
           </GlassPanel>
         </motion.div>
       </motion.div>
