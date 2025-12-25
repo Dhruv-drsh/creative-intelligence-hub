@@ -8,6 +8,8 @@ import { GlassPanel } from "@/components/ui/GlassPanel";
 import { Type, Sparkles, Check, Loader2, Palette, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useUnifiedAIState } from "@/hooks/useUnifiedAIState";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface FontPairing {
   id: string;
@@ -23,7 +25,7 @@ interface FontPairing {
 interface TypographyHarmonyProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onApplyFonts: (headingFont: string, bodyFont: string) => void;
+  onApplyFonts: (headingFont: string, bodyFont: string, options?: { applyToAll?: boolean; selectedOnly?: boolean }) => void;
   currentHeadingFont?: string;
   currentBodyFont?: string;
 }
@@ -49,6 +51,10 @@ export const TypographyHarmony = ({
   const [context, setContext] = useState("");
   const [suggestions, setSuggestions] = useState<FontPairing[]>([]);
   const [selectedPairing, setSelectedPairing] = useState<FontPairing | null>(null);
+  const [applyToAll, setApplyToAll] = useState(true);
+  const [selectedOnly, setSelectedOnly] = useState(false);
+  
+  const { setBrand, markTodosByCategory } = useUnifiedAIState();
 
   const generateSuggestions = async () => {
     setIsLoading(true);
@@ -78,8 +84,22 @@ export const TypographyHarmony = ({
 
   const handleApply = () => {
     if (selectedPairing) {
-      onApplyFonts(selectedPairing.headingFont, selectedPairing.bodyFont);
-      toast.success(`Applied ${selectedPairing.headingFont} + ${selectedPairing.bodyFont}`);
+      // Update unified AI state
+      setBrand({
+        headingFont: selectedPairing.headingFont,
+        bodyFont: selectedPairing.bodyFont,
+      });
+      
+      // Mark typography todos as done
+      markTodosByCategory('typography', 'done');
+      
+      // Apply fonts with options
+      onApplyFonts(selectedPairing.headingFont, selectedPairing.bodyFont, {
+        applyToAll,
+        selectedOnly,
+      });
+      
+      toast.success(`Applied ${selectedPairing.headingFont} + ${selectedPairing.bodyFont} to ${applyToAll ? 'all text' : 'selected text'}`);
       onOpenChange(false);
     }
   };
@@ -187,6 +207,33 @@ export const TypographyHarmony = ({
                       </>
                     )}
                   </Button>
+                  
+                  {/* Apply Options */}
+                  <div className="p-3 rounded-lg bg-muted/30 space-y-2 mt-4">
+                    <span className="text-xs font-medium">Apply To:</span>
+                    <div className="space-y-2">
+                      <label className="flex items-center gap-2 text-xs cursor-pointer">
+                        <Checkbox 
+                          checked={applyToAll} 
+                          onCheckedChange={(c) => {
+                            setApplyToAll(!!c);
+                            if (c) setSelectedOnly(false);
+                          }} 
+                        />
+                        All text elements
+                      </label>
+                      <label className="flex items-center gap-2 text-xs cursor-pointer">
+                        <Checkbox 
+                          checked={selectedOnly} 
+                          onCheckedChange={(c) => {
+                            setSelectedOnly(!!c);
+                            if (c) setApplyToAll(false);
+                          }} 
+                        />
+                        Selected elements only
+                      </label>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Results */}

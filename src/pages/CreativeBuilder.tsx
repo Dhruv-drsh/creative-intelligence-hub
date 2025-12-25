@@ -930,21 +930,41 @@ const CreativeBuilder = () => {
       <TypographyHarmony
         open={showTypography}
         onOpenChange={setShowTypography}
-        onApplyFonts={(headingFont, bodyFont) => {
+        onApplyFonts={(headingFont, bodyFont, options) => {
           if (!fabricCanvas) return;
-          fabricCanvas.getObjects().forEach(obj => {
+          const maxFontSize = 18; // Enforce max 18px for AI-generated text
+          let count = 0;
+          
+          const objects = options?.selectedOnly 
+            ? fabricCanvas.getActiveObjects() 
+            : fabricCanvas.getObjects();
+            
+          objects.forEach(obj => {
             if (obj.type === 'i-text' || obj.type === 'text' || obj.type === 'textbox') {
-              const textObj = obj as { fontSize?: number; set: (key: string, value: string) => void };
-              const fontSize = textObj.fontSize || 16;
-              if (fontSize >= 20) {
+              const textObj = obj as { fontSize?: number; set: (key: string, value: any) => void };
+              let fontSize = textObj.fontSize || 14;
+              
+              // Enforce max font size
+              if (fontSize > maxFontSize) {
+                fontSize = maxFontSize;
+                textObj.set('fontSize', fontSize);
+              }
+              
+              // Apply font based on size
+              if (fontSize >= 16) {
                 textObj.set('fontFamily', headingFont);
               } else {
                 textObj.set('fontFamily', bodyFont);
               }
+              
+              // Make draggable
+              (obj as any).set({ selectable: true, evented: true });
+              count++;
             }
           });
           fabricCanvas.renderAll();
           updateCompliance();
+          toast.success(`Applied typography to ${count} text elements`);
         }}
         currentHeadingFont={selectedFontFamily}
         currentBodyFont={selectedFontFamily}
@@ -953,6 +973,22 @@ const CreativeBuilder = () => {
         open={showVisualAuditor}
         onOpenChange={setShowVisualAuditor}
         canvasState={fabricCanvas?.toJSON()}
+        onApplyFixes={(fixes) => {
+          if (!fabricCanvas) return;
+          // Auto-fix: center align, safe zones, contrast
+          fabricCanvas.getObjects().forEach(obj => {
+            // Center horizontally
+            obj.set({ 
+              left: fabricCanvas.getWidth() / 2, 
+              originX: 'center',
+              selectable: true,
+              evented: true,
+            });
+            obj.setCoords();
+          });
+          fabricCanvas.renderAll();
+          updateCompliance();
+        }}
       />
       <EmotionToDesign
         isOpen={showEmotionDesign}

@@ -5,9 +5,10 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Progress } from "@/components/ui/progress";
 import { GlassPanel } from "@/components/ui/GlassPanel";
-import { Eye, Sparkles, Loader2, AlertTriangle, CheckCircle, Lightbulb, Zap, Target, X } from "lucide-react";
+import { Eye, Sparkles, Loader2, AlertTriangle, CheckCircle, Lightbulb, Zap, Target, X, Wrench } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useUnifiedAIState } from "@/hooks/useUnifiedAIState";
 
 interface AuditCategory {
   name: string;
@@ -15,6 +16,7 @@ interface AuditCategory {
   strengths: string[];
   improvements: string[];
   actionable: string;
+  fixable?: boolean;
 }
 
 interface DesignAudit {
@@ -30,16 +32,21 @@ interface VisualAuditorProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   canvasState: any;
+  onApplyFixes?: (fixes: { type: string; action: string }[]) => void;
 }
 
 export const VisualAuditor = ({
   open,
   onOpenChange,
   canvasState,
+  onApplyFixes,
 }: VisualAuditorProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [designGoal, setDesignGoal] = useState("");
   const [audit, setAudit] = useState<DesignAudit | null>(null);
+  const [isApplyingFixes, setIsApplyingFixes] = useState(false);
+  
+  const { syncFromVisualAuditor, markTodosByCategory } = useUnifiedAIState();
 
   const runAudit = async () => {
     setIsLoading(true);
@@ -55,6 +62,15 @@ export const VisualAuditor = ({
       
       if (data?.audit) {
         setAudit(data.audit);
+        
+        // Sync issues to unified AI state todo list
+        const issues = data.audit.categories.map((cat: AuditCategory) => ({
+          category: getCategoryType(cat.name),
+          label: cat.improvements[0] || `${cat.name} check`,
+          status: cat.score >= 8 ? 'done' as const : cat.score >= 5 ? 'pending' as const : 'missing' as const,
+        }));
+        syncFromVisualAuditor(issues);
+        
         toast.success("Design audit complete!");
       }
     } catch (error) {
@@ -63,6 +79,38 @@ export const VisualAuditor = ({
     } finally {
       setIsLoading(false);
     }
+  };
+  
+  const getCategoryType = (name: string): 'colors' | 'typography' | 'layout' | 'content' | 'compliance' => {
+    const lower = name.toLowerCase();
+    if (lower.includes('color') || lower.includes('contrast')) return 'colors';
+    if (lower.includes('typo') || lower.includes('font')) return 'typography';
+    if (lower.includes('layout') || lower.includes('align') || lower.includes('balance')) return 'layout';
+    if (lower.includes('content') || lower.includes('cta') || lower.includes('hierarchy')) return 'content';
+    return 'compliance';
+  };
+  
+  const handleFixAll = () => {
+    if (!audit || !onApplyFixes) return;
+    
+    setIsApplyingFixes(true);
+    
+    // Collect all fixable issues
+    const fixes = audit.categories
+      .filter(cat => cat.score < 8)
+      .map(cat => ({
+        type: getCategoryType(cat.name),
+        action: cat.actionable,
+      }));
+    
+    onApplyFixes(fixes);
+    
+    // Mark relevant todos as done
+    markTodosByCategory('layout', 'done');
+    markTodosByCategory('compliance', 'done');
+    
+    setIsApplyingFixes(false);
+    toast.success(`Applied ${fixes.length} automatic fixes!`);
   };
 
   const getScoreColor = (score: number) => {
@@ -190,9 +238,22 @@ export const VisualAuditor = ({
 
                       {/* Priority Fixes */}
                       <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20">
-                        <div className="flex items-center gap-2 mb-3">
-                          <AlertTriangle className="w-5 h-5 text-red-500" />
-                          <h4 className="font-semibold text-red-500">Priority Fixes</h4>
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center gap-2">
+                            <AlertTriangle className="w-5 h-5 text-red-500" />
+                            <h4 className="font-semibold text-red-500">Priority Fixes</h4>
+                          </div>
+                          {onApplyFixes && (
+                            <Button 
+                              variant="destructive" 
+                              size="sm"
+                              onClick={handleFixAll}
+                              disabled={isApplyingFixes}
+                            >
+                              <Wrench className="w-3 h-3 mr-1" />
+                              Fix All
+                            </Button>
+                          )}
                         </div>
                         <ul className="space-y-2">
                           {audit.priorityFixes.map((fix, i) => (

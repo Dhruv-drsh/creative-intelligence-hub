@@ -1,14 +1,14 @@
 import type { Canvas as FabricCanvas, FabricObject, IText } from 'fabric';
 
-// Minimum font size for AI-generated text
-export const MIN_FONT_SIZE = 24;
+// Maximum font size for AI-generated text (as per new requirement)
+export const MAX_FONT_SIZE = 18;
 
-// Typography scale for different text types
+// Typography scale for different text types (scaled down, never above 18px)
 export const TYPOGRAPHY_SCALE = {
-  headline: 64,
-  subheadline: 48,
-  body: 32,
-  caption: 24,
+  headline: 18,
+  subheadline: 16,
+  body: 14,
+  caption: 12,
 };
 
 // Safe zone configurations by platform
@@ -138,13 +138,13 @@ export function autoCorrectOverflow(
 }
 
 /**
- * Applies minimum font size to text objects
+ * Enforces maximum font size for AI-generated text (max 18px)
  */
-export function enforceMinFontSize(obj: FabricObject, minSize: number = MIN_FONT_SIZE): boolean {
+export function enforceMaxFontSize(obj: FabricObject, maxSize: number = MAX_FONT_SIZE): boolean {
   if (obj.type === 'i-text' || obj.type === 'text' || obj.type === 'textbox') {
     const textObj = obj as IText;
-    if ((textObj.fontSize || 0) < minSize) {
-      textObj.set({ fontSize: minSize });
+    if ((textObj.fontSize || 0) > maxSize) {
+      textObj.set({ fontSize: maxSize });
       return true;
     }
   }
@@ -152,10 +152,25 @@ export function enforceMinFontSize(obj: FabricObject, minSize: number = MIN_FONT
 }
 
 /**
- * Gets the appropriate font size based on text type
+ * Gets the appropriate font size based on text type (max 18px)
  */
 export function getFontSizeForType(type: 'headline' | 'subheadline' | 'body' | 'caption'): number {
   return TYPOGRAPHY_SCALE[type] || TYPOGRAPHY_SCALE.body;
+}
+
+/**
+ * Makes all objects on canvas draggable
+ */
+export function makeAllDraggable(canvas: FabricCanvas): void {
+  canvas.getObjects().forEach(obj => {
+    obj.set({
+      selectable: true,
+      evented: true,
+      lockMovementX: false,
+      lockMovementY: false,
+    });
+  });
+  canvas.renderAll();
 }
 
 /**
@@ -165,13 +180,14 @@ export function applyTypographyHarmony(
   canvas: FabricCanvas,
   headingFont: string,
   bodyFont: string,
+  captionFont: string = bodyFont,
   options: {
     applyToAll?: boolean;
     selectedOnly?: boolean;
-    minFontSize?: number;
+    maxFontSize?: number;
   } = {}
 ): number {
-  const { applyToAll = true, selectedOnly = false, minFontSize = MIN_FONT_SIZE } = options;
+  const { applyToAll = true, selectedOnly = false, maxFontSize = MAX_FONT_SIZE } = options;
   
   let updatedCount = 0;
   const objects = selectedOnly
@@ -181,19 +197,29 @@ export function applyTypographyHarmony(
   objects.forEach((obj) => {
     if (obj.type === 'i-text' || obj.type === 'text' || obj.type === 'textbox') {
       const textObj = obj as IText;
-      const fontSize = textObj.fontSize || 16;
+      const fontSize = textObj.fontSize || 14;
       
-      // Enforce minimum font size
-      if (fontSize < minFontSize) {
-        textObj.set({ fontSize: minFontSize });
+      // Enforce maximum font size (18px max for AI-generated text)
+      if (fontSize > maxFontSize) {
+        textObj.set({ fontSize: maxFontSize });
       }
       
-      // Apply font based on size (headings vs body)
-      if (fontSize >= 32) {
+      // Apply font based on relative size (headings vs body vs caption)
+      if (fontSize >= 16) {
         textObj.set({ fontFamily: headingFont });
-      } else {
+      } else if (fontSize >= 13) {
         textObj.set({ fontFamily: bodyFont });
+      } else {
+        textObj.set({ fontFamily: captionFont });
       }
+      
+      // Make draggable
+      textObj.set({
+        selectable: true,
+        evented: true,
+        lockMovementX: false,
+        lockMovementY: false,
+      });
       
       updatedCount++;
     }
