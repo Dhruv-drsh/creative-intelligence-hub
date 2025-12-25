@@ -299,7 +299,7 @@ export const BrandKitManager = ({ isOpen, onClose, onSelectBrandKit }: BrandKitM
 
             {/* Content */}
             <div className="p-6 max-h-[60vh] overflow-y-auto">
-              {activeTab === "list" ? (
+              {activeTab === "list" && (
                 <div className="space-y-4">
                   {brandKits.length === 0 ? (
                     <div className="text-center py-12">
@@ -348,7 +348,8 @@ export const BrandKitManager = ({ isOpen, onClose, onSelectBrandKit }: BrandKitM
                     ))
                   )}
                 </div>
-              ) : activeTab === "edit" ? (
+              )}
+              {activeTab === "edit" && (
                 <div className="space-y-6">
                   {/* Name */}
                   <div>
@@ -460,7 +461,8 @@ export const BrandKitManager = ({ isOpen, onClose, onSelectBrandKit }: BrandKitM
                     {isLoading ? "Saving..." : currentKit.id ? "Update Brand Kit" : "Create Brand Kit"}
                   </Button>
                 </div>
-              ) : activeTab === "dna" ? (
+              )}
+              {activeTab === "dna" && (
                 <div className="space-y-6">
                   {/* Brand DNA Extractor Tab */}
                   <div>
@@ -528,7 +530,7 @@ export const BrandKitManager = ({ isOpen, onClose, onSelectBrandKit }: BrandKitM
                     </div>
                   )}
                 </div>
-              ) : null}
+              )}
             </div>
           </GlassPanel>
         </motion.div>
