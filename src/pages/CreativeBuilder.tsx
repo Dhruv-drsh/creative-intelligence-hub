@@ -998,6 +998,7 @@ const CreativeBuilder = () => {
         isOpen={showShareDialog}
         onClose={() => setShowShareDialog(false)}
         projectName={projectName}
+        projectId={searchParams.get("project") ?? undefined}
       />
 
       {/* Top Bar - Enhanced */}

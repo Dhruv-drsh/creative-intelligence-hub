@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -75,19 +75,26 @@ export function TrendForecast({ isOpen, onClose }: TrendForecastProps) {
   const [forecast, setForecast] = useState<TrendForecast | null>(null);
 
   const handleAnalyze = async () => {
+    if (!industry || !platform) {
+      toast.error("Please select an industry and platform");
+      return;
+    }
+
     setIsAnalyzing(true);
     try {
-      const { data, error } = await supabase.functions.invoke('ai-trend-forecast', {
-        body: { industry, platform }
+      const { data, error } = await supabase.functions.invoke("ai-trend-forecast", {
+        body: { industry, platform },
       });
 
       if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      if (!data?.trendForecast) throw new Error("No forecast returned");
 
       setForecast(data.trendForecast);
       toast.success("Trend analysis complete!");
     } catch (error) {
-      console.error('Error analyzing trends:', error);
-      toast.error("Failed to analyze trends");
+      console.error("Error analyzing trends:", error);
+      toast.error(error instanceof Error ? error.message : "Failed to analyze trends");
     } finally {
       setIsAnalyzing(false);
     }
@@ -100,16 +107,16 @@ export function TrendForecast({ isOpen, onClose }: TrendForecastProps) {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-3xl max-h-[85vh] p-0 overflow-hidden flex flex-col">
         <DialogHeader className="flex-shrink-0 p-6 pb-4 border-b border-border/50">
           <DialogTitle className="flex items-center gap-2 text-xl">
             <TrendingUp className="w-5 h-5 text-green-500" />
             Trend Forecast
           </DialogTitle>
-          <p className="text-sm text-muted-foreground">
+          <DialogDescription className="text-sm text-muted-foreground">
             Monitor current creative trends and get actionable insights
-          </p>
+          </DialogDescription>
         </DialogHeader>
 
         <ScrollArea className="flex-1 min-h-0">
@@ -146,7 +153,7 @@ export function TrendForecast({ isOpen, onClose }: TrendForecastProps) {
 
             <Button
               onClick={handleAnalyze}
-              disabled={isAnalyzing}
+              disabled={isAnalyzing || !industry || !platform}
               className="w-full"
               variant="ai"
             >

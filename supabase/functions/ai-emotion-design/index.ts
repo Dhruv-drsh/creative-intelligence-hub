@@ -64,24 +64,98 @@ Generate a comprehensive design specification that captures this emotion. Return
 
 Be specific and practical. Choose colors and fonts that genuinely evoke the ${emotion} emotion.`;
 
-    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-      method: 'POST',
+    const toolName = "return_emotion_design";
+
+    const gatewayBody: any = {
+      model: "google/gemini-2.5-flash",
+      messages: [
+        { role: "system", content: "You are an expert emotional design consultant." },
+        { role: "user", content: prompt },
+      ],
+      tools: [
+        {
+          type: "function",
+          function: {
+            name: toolName,
+            description: "Return emotion-to-design parameters in the required schema.",
+            parameters: {
+              type: "object",
+              additionalProperties: false,
+              properties: {
+                designParams: {
+                  type: "object",
+                  additionalProperties: true,
+                  properties: {
+                    colors: {
+                      type: "object",
+                      additionalProperties: false,
+                      properties: {
+                        primary: { type: "string" },
+                        secondary: { type: "string" },
+                        accent: { type: "string" },
+                        background: { type: "string" },
+                        text: { type: "string" },
+                      },
+                      required: ["primary", "secondary", "accent", "background", "text"],
+                    },
+                    typography: {
+                      type: "object",
+                      additionalProperties: true,
+                      properties: {
+                        headingFont: { type: "string" },
+                        bodyFont: { type: "string" },
+                        headingWeight: { type: "string" },
+                      },
+                      required: ["headingFont", "bodyFont", "headingWeight"],
+                    },
+                    mood: {
+                      type: "object",
+                      additionalProperties: true,
+                      properties: {
+                        description: { type: "string" },
+                        keywords: { type: "array", items: { type: "string" } },
+                      },
+                      required: ["description", "keywords"],
+                    },
+                  },
+                  required: ["colors", "typography", "mood"],
+                },
+              },
+              required: ["designParams"],
+            },
+          },
+        },
+      ],
+      tool_choice: { type: "function", function: { name: toolName } },
+    };
+
+    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
       headers: {
-        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
-        'Content-Type': 'application/json',
+        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
-        messages: [
-          { role: 'system', content: 'You are an expert emotional design consultant. Always respond with valid JSON.' },
-          { role: 'user', content: prompt }
-        ],
-      }),
+      body: JSON.stringify(gatewayBody),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('AI Gateway error:', response.status, errorText);
+      console.error("AI Gateway error:", response.status, errorText);
+
+      if (response.status === 429) {
+        return new Response(JSON.stringify({ error: "Rate limits exceeded. Please try again in a moment." }), {
+          status: 429,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      if (response.status === 402) {
+        return new Response(JSON.stringify({ error: "AI credits required. Please add credits to continue." }), {
+          status: 402,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
       throw new Error(`AI Gateway error: ${response.status}`);
     }
 
@@ -89,52 +163,65 @@ Be specific and practical. Choose colors and fonts that genuinely evoke the ${em
     let designParams;
 
     try {
-      const content = data.choices[0].message.content;
-      const jsonMatch = content.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        designParams = JSON.parse(jsonMatch[0]);
+      const toolArgs = data?.choices?.[0]?.message?.tool_calls?.[0]?.function?.arguments;
+      if (toolArgs) {
+        const parsed = JSON.parse(toolArgs);
+        designParams = parsed.designParams;
       } else {
-        throw new Error('No JSON found in response');
+        throw new Error("No tool call arguments found");
       }
     } catch (parseError) {
-      console.error('Parse error:', parseError);
-      // Fallback design parameters
-      designParams = {
-        colors: {
-          primary: "#6366F1",
-          secondary: "#818CF8",
-          accent: "#F59E0B",
-          background: "#0F172A",
-          text: "#F8FAFC"
-        },
-        typography: {
-          headingFont: "Inter",
-          bodyFont: "Inter",
-          headingWeight: "700",
-          headingStyle: "normal",
-          letterSpacing: "normal",
-          lineHeight: "normal"
-        },
-        composition: {
-          layout: "centered",
-          whitespace: "balanced",
-          contrast: "moderate",
-          movement: "gentle"
-        },
-        effects: {
-          shadows: "subtle",
-          gradients: "soft",
-          textures: "smooth",
-          overlays: "none"
-        },
-        mood: {
-          description: `Design parameters for ${emotion} emotion`,
-          keywords: [emotion, "creative", "engaging"],
-          inspirations: ["Modern advertising", "Brand campaigns"]
-        }
-      };
+      console.error("Tool parse error:", parseError);
+
+      // Fallback: try to parse JSON from content
+      try {
+        const content = data?.choices?.[0]?.message?.content;
+        const jsonMatch = typeof content === "string" ? content.match(/\{[\s\S]*\}/) : null;
+        if (jsonMatch) designParams = JSON.parse(jsonMatch[0]);
+      } catch (fallbackErr) {
+        console.error("Fallback parse error:", fallbackErr);
+      }
+
+      if (!designParams) {
+        // Fallback design parameters
+        designParams = {
+          colors: {
+            primary: "#6366F1",
+            secondary: "#818CF8",
+            accent: "#F59E0B",
+            background: "#0F172A",
+            text: "#F8FAFC",
+          },
+          typography: {
+            headingFont: "Inter",
+            bodyFont: "Inter",
+            headingWeight: "700",
+            headingStyle: "normal",
+            letterSpacing: "normal",
+            lineHeight: "normal",
+          },
+          composition: {
+            layout: "centered",
+            whitespace: "balanced",
+            contrast: "moderate",
+            movement: "gentle",
+          },
+          effects: {
+            shadows: "subtle",
+            gradients: "soft",
+            textures: "smooth",
+            overlays: "none",
+          },
+          mood: {
+            description: `Design parameters for ${emotion} emotion`,
+            keywords: [emotion, "creative", "engaging"],
+            inspirations: ["Modern advertising", "Brand campaigns"],
+          },
+        };
+      }
     }
 
+    console.log("Generated design parameters:", designParams);
     console.log('Generated design parameters:', designParams);
 
     return new Response(JSON.stringify({ designParams, emotion, intensity }), {

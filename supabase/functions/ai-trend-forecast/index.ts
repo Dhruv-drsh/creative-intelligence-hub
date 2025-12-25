@@ -73,24 +73,160 @@ Provide a comprehensive trend forecast with actionable insights. Return a JSON o
 
 Provide 4-6 current trends, 2-3 emerging trends, 2-3 declining trends, and 3-5 recommendations. Be specific and data-driven.`;
 
-    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-      method: 'POST',
+    const toolName = "return_trend_forecast";
+
+    const gatewayBody: any = {
+      model: "google/gemini-2.5-flash",
+      messages: [
+        { role: "system", content: "You are a creative trend analyst." },
+        { role: "user", content: prompt },
+      ],
+      tools: [
+        {
+          type: "function",
+          function: {
+            name: toolName,
+            description: "Return a trend forecast in the required schema.",
+            parameters: {
+              type: "object",
+              additionalProperties: false,
+              properties: {
+                trendForecast: {
+                  type: "object",
+                  additionalProperties: false,
+                  properties: {
+                    currentTrends: {
+                      type: "array",
+                      items: {
+                        type: "object",
+                        additionalProperties: false,
+                        properties: {
+                          name: { type: "string" },
+                          description: { type: "string" },
+                          popularity: { type: "number" },
+                          growthRate: { type: "string", enum: ["rising", "stable", "declining"] },
+                          examples: { type: "array", items: { type: "string" } },
+                          colorPalette: { type: "array", items: { type: "string" } },
+                          keyElements: { type: "array", items: { type: "string" } },
+                        },
+                        required: [
+                          "name",
+                          "description",
+                          "popularity",
+                          "growthRate",
+                          "examples",
+                          "colorPalette",
+                          "keyElements",
+                        ],
+                      },
+                    },
+                    emergingTrends: {
+                      type: "array",
+                      items: {
+                        type: "object",
+                        additionalProperties: false,
+                        properties: {
+                          name: { type: "string" },
+                          description: { type: "string" },
+                          predictedPeak: { type: "string" },
+                          earlyAdopters: { type: "array", items: { type: "string" } },
+                          keyCharacteristics: { type: "array", items: { type: "string" } },
+                        },
+                        required: [
+                          "name",
+                          "description",
+                          "predictedPeak",
+                          "earlyAdopters",
+                          "keyCharacteristics",
+                        ],
+                      },
+                    },
+                    decliningTrends: {
+                      type: "array",
+                      items: {
+                        type: "object",
+                        additionalProperties: false,
+                        properties: {
+                          name: { type: "string" },
+                          reason: { type: "string" },
+                        },
+                        required: ["name", "reason"],
+                      },
+                    },
+                    recommendations: {
+                      type: "array",
+                      items: {
+                        type: "object",
+                        additionalProperties: false,
+                        properties: {
+                          priority: { type: "string", enum: ["high", "medium", "low"] },
+                          action: { type: "string" },
+                          expectedImpact: { type: "string" },
+                        },
+                        required: ["priority", "action", "expectedImpact"],
+                      },
+                    },
+                    industryInsights: {
+                      type: "object",
+                      additionalProperties: false,
+                      properties: {
+                        topPerformingFormats: { type: "array", items: { type: "string" } },
+                        colorTrends: { type: "array", items: { type: "string" } },
+                        typographyTrends: { type: "array", items: { type: "string" } },
+                        contentThemes: { type: "array", items: { type: "string" } },
+                      },
+                      required: [
+                        "topPerformingFormats",
+                        "colorTrends",
+                        "typographyTrends",
+                        "contentThemes",
+                      ],
+                    },
+                  },
+                  required: [
+                    "currentTrends",
+                    "emergingTrends",
+                    "decliningTrends",
+                    "recommendations",
+                    "industryInsights",
+                  ],
+                },
+              },
+              required: ["trendForecast"],
+            },
+          },
+        },
+      ],
+      tool_choice: { type: "function", function: { name: toolName } },
+    };
+
+    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
       headers: {
-        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
-        'Content-Type': 'application/json',
+        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
-        messages: [
-          { role: 'system', content: 'You are a creative trend analyst. Always respond with valid JSON.' },
-          { role: 'user', content: prompt }
-        ],
-      }),
+      body: JSON.stringify(gatewayBody),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('AI Gateway error:', response.status, errorText);
+      console.error("AI Gateway error:", response.status, errorText);
+
+      if (response.status === 429) {
+        return new Response(JSON.stringify({ error: "Rate limits exceeded. Please try again in a moment." }), {
+          status: 429,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      if (response.status === 402) {
+        return new Response(JSON.stringify({ error: "AI credits required. Please add credits to continue." }), {
+          status: 402,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
       throw new Error(`AI Gateway error: ${response.status}`);
     }
 
@@ -98,82 +234,73 @@ Provide 4-6 current trends, 2-3 emerging trends, 2-3 declining trends, and 3-5 r
     let trendForecast;
 
     try {
-      const content = data.choices[0].message.content;
-      const jsonMatch = content.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        trendForecast = JSON.parse(jsonMatch[0]);
+      const toolArgs = data?.choices?.[0]?.message?.tool_calls?.[0]?.function?.arguments;
+      if (toolArgs) {
+        const parsed = JSON.parse(toolArgs);
+        trendForecast = parsed.trendForecast;
       } else {
-        throw new Error('No JSON found in response');
+        throw new Error("No tool call arguments found");
       }
     } catch (parseError) {
-      console.error('Parse error:', parseError);
-      // Fallback trends
-      trendForecast = {
-        currentTrends: [
-          {
-            name: "Bold Minimalism",
-            description: "Clean designs with bold typography and limited color palettes. Focus on white space and impactful messaging.",
-            popularity: 92,
-            growthRate: "rising",
-            examples: ["Apple campaigns", "Nike minimalist ads"],
-            colorPalette: ["#000000", "#FFFFFF", "#FF0000"],
-            keyElements: ["Large typography", "Negative space", "Single focal point"]
+      console.error("Tool parse error:", parseError);
+
+      // Fallback: try to parse JSON from content
+      try {
+        const content = data?.choices?.[0]?.message?.content;
+        const jsonMatch = typeof content === "string" ? content.match(/\{[\s\S]*\}/) : null;
+        if (jsonMatch) trendForecast = JSON.parse(jsonMatch[0]);
+      } catch (fallbackErr) {
+        console.error("Fallback parse error:", fallbackErr);
+      }
+
+      if (!trendForecast) {
+        // Final fallback trends
+        trendForecast = {
+          currentTrends: [
+            {
+              name: "Bold Minimalism",
+              description:
+                "Clean designs with bold typography and limited color palettes. Focus on white space and impactful messaging.",
+              popularity: 92,
+              growthRate: "rising",
+              examples: ["Apple campaigns", "Nike minimalist ads"],
+              colorPalette: ["#000000", "#FFFFFF", "#FF0000"],
+              keyElements: ["Large typography", "Negative space", "Single focal point"],
+            },
+          ],
+          emergingTrends: [
+            {
+              name: "AI-Generated Art Integration",
+              description: "Blending AI-generated visuals with traditional design elements",
+              predictedPeak: "Q2 2025",
+              earlyAdopters: ["Coca-Cola", "Heinz"],
+              keyCharacteristics: ["Surreal imagery", "Unique textures", "Creative mashups"],
+            },
+          ],
+          decliningTrends: [
+            {
+              name: "Flat Design",
+              reason: "Being replaced by subtle 3D and depth elements",
+            },
+          ],
+          recommendations: [
+            {
+              priority: "high",
+              action: "Incorporate bold, oversized typography",
+              expectedImpact: "15-20% increase in ad recall",
+            },
+          ],
+          industryInsights: {
+            topPerformingFormats: ["Short-form video", "Carousel ads", "Interactive stories"],
+            colorTrends: ["Deep purple", "Vibrant coral", "Electric blue"],
+            typographyTrends: ["Variable fonts", "Serif revival", "Hand-drawn elements"],
+            contentThemes: ["Sustainability", "Inclusivity", "Nostalgia"],
           },
-          {
-            name: "Gradient Renaissance",
-            description: "Vibrant, multi-color gradients creating depth and visual interest. Popular in tech and lifestyle brands.",
-            popularity: 87,
-            growthRate: "stable",
-            examples: ["Instagram branding", "Spotify campaigns"],
-            colorPalette: ["#667EEA", "#764BA2", "#F093FB"],
-            keyElements: ["Smooth transitions", "Vibrant colors", "Abstract backgrounds"]
-          },
-          {
-            name: "Authentic Photography",
-            description: "Unfiltered, genuine imagery replacing overly polished stock photos.",
-            popularity: 85,
-            growthRate: "rising",
-            examples: ["Airbnb", "Patagonia"],
-            colorPalette: ["#F4F4F4", "#333333", "#E8E8E8"],
-            keyElements: ["Natural lighting", "Real people", "Candid moments"]
-          }
-        ],
-        emergingTrends: [
-          {
-            name: "AI-Generated Art Integration",
-            description: "Blending AI-generated visuals with traditional design elements",
-            predictedPeak: "Q2 2025",
-            earlyAdopters: ["Coca-Cola", "Heinz"],
-            keyCharacteristics: ["Surreal imagery", "Unique textures", "Creative mashups"]
-          }
-        ],
-        decliningTrends: [
-          {
-            name: "Flat Design",
-            reason: "Being replaced by subtle 3D and depth elements"
-          }
-        ],
-        recommendations: [
-          {
-            priority: "high",
-            action: "Incorporate bold, oversized typography",
-            expectedImpact: "15-20% increase in ad recall"
-          },
-          {
-            priority: "medium",
-            action: "Use authentic, candid photography",
-            expectedImpact: "Higher engagement and trust"
-          }
-        ],
-        industryInsights: {
-          topPerformingFormats: ["Short-form video", "Carousel ads", "Interactive stories"],
-          colorTrends: ["Deep purple", "Vibrant coral", "Electric blue"],
-          typographyTrends: ["Variable fonts", "Serif revival", "Hand-drawn elements"],
-          contentThemes: ["Sustainability", "Inclusivity", "Nostalgia"]
-        }
-      };
+        };
+      }
     }
 
+    console.log("Generated trend forecast");
     console.log('Generated trend forecast');
 
     return new Response(JSON.stringify({ trendForecast, industry, platform }), {
