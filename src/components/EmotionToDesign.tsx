@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -58,21 +58,23 @@ export function EmotionToDesign({ isOpen, onClose, onApplyDesign }: EmotionToDes
 
     setIsGenerating(true);
     try {
-      const { data, error } = await supabase.functions.invoke('ai-emotion-design', {
-        body: { 
-          emotion: emotions.find(e => e.id === selectedEmotion)?.name,
+      const { data, error } = await supabase.functions.invoke("ai-emotion-design", {
+        body: {
+          emotion: emotions.find((e) => e.id === selectedEmotion)?.name,
           intensity: intensity[0],
-          context
-        }
+          context,
+        },
       });
 
       if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      if (!data?.designParams) throw new Error("No design params returned");
 
       setDesignParams(data.designParams);
       toast.success("Design parameters generated!");
     } catch (error) {
-      console.error('Error generating design:', error);
-      toast.error("Failed to generate design parameters");
+      console.error("Error generating design:", error);
+      toast.error(error instanceof Error ? error.message : "Failed to generate design parameters");
     } finally {
       setIsGenerating(false);
     }
@@ -87,16 +89,16 @@ export function EmotionToDesign({ isOpen, onClose, onApplyDesign }: EmotionToDes
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-2xl max-h-[85vh] p-0 overflow-hidden flex flex-col">
         <DialogHeader className="flex-shrink-0 p-6 pb-4 border-b border-border/50">
           <DialogTitle className="flex items-center gap-2 text-xl">
             <Heart className="w-5 h-5 text-rose-500" />
             Emotion to Design
           </DialogTitle>
-          <p className="text-sm text-muted-foreground">
+          <DialogDescription className="text-sm text-muted-foreground">
             Translate emotions into visual design parameters
-          </p>
+          </DialogDescription>
         </DialogHeader>
 
         <ScrollArea className="flex-1 min-h-0">

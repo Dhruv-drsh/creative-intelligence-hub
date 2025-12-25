@@ -112,6 +112,13 @@
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 
+  /* Center toast popups on screen (Sonner) */
+  .toaster {
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+  }
+
   /* Custom Scrollbar */
   ::-webkit-scrollbar {
     width: 8px;
