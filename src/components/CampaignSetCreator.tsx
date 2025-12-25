@@ -103,10 +103,10 @@ export function CampaignSetCreator({ open, onOpenChange, onApplyVariation, canva
   };
 
   const applyVariation = (variation: ChannelVariation) => {
-    if (variation.canvas_data) {
-      onApplyVariation(variation.canvas_data, variation.width, variation.height);
-      toast.success(`Applied "${variation.name}" (${variation.width}×${variation.height})`);
-    }
+    // IMPORTANT: Transform existing content, do NOT wipe canvas
+    // Pass the variation data to parent which will merge/transform without clearing
+    onApplyVariation(variation.canvas_data, variation.width, variation.height);
+    toast.success(`Transformed to "${variation.name}" (${variation.width}×${variation.height})`);
   };
 
   const resetToConfig = () => {

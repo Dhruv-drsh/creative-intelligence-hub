@@ -1,9 +1,9 @@
 import type { Canvas as FabricCanvas, FabricObject, IText } from 'fabric';
 
-// Maximum font size for AI-generated text (as per new requirement)
+// Maximum font size for AI-generated text (HARD CONSTRAINT: never above 18px)
 export const MAX_FONT_SIZE = 18;
 
-// Typography scale for different text types (scaled down, never above 18px)
+// Typography scale for different text types (all capped at 18px max)
 export const TYPOGRAPHY_SCALE = {
   headline: 18,
   subheadline: 16,
@@ -21,8 +21,33 @@ export const SAFE_ZONES = {
   'instore-poster': { top: 60, bottom: 60, left: 60, right: 60 },
 };
 
+// Tracks Y position for center-stack layout
+let centerStackNextY = 0;
+
 /**
- * Centers an object on the canvas
+ * Resets the center-stack Y tracker (call when starting a new layout)
+ */
+export function resetCenterStack(canvas: FabricCanvas, formatId: string = 'instagram-feed'): void {
+  const safeZone = SAFE_ZONES[formatId as keyof typeof SAFE_ZONES] || SAFE_ZONES['instagram-feed'];
+  centerStackNextY = safeZone.top + 40;
+}
+
+/**
+ * Gets the next center-stack Y position
+ */
+export function getNextCenterStackY(): number {
+  return centerStackNextY;
+}
+
+/**
+ * Advances the center-stack Y position
+ */
+export function advanceCenterStackY(height: number, spacing: number = 20): void {
+  centerStackNextY += height + spacing;
+}
+
+/**
+ * Centers an object on the canvas (exact center)
  */
 export function centerObjectOnCanvas(canvas: FabricCanvas, obj: FabricObject): void {
   const canvasWidth = canvas.getWidth();
@@ -33,6 +58,8 @@ export function centerObjectOnCanvas(canvas: FabricCanvas, obj: FabricObject): v
     top: canvasHeight / 2,
     originX: 'center',
     originY: 'center',
+    selectable: true,
+    evented: true,
   });
   
   obj.setCoords();
@@ -46,8 +73,57 @@ export function centerHorizontally(canvas: FabricCanvas, obj: FabricObject): voi
   obj.set({
     left: canvasWidth / 2,
     originX: 'center',
+    selectable: true,
+    evented: true,
   });
   obj.setCoords();
+}
+
+/**
+ * CORE CENTER-STACK LAYOUT: Places object centered horizontally + stacked vertically
+ * This is the PRIMARY layout function for AI-generated elements
+ */
+export function placeCenterStacked(
+  canvas: FabricCanvas,
+  obj: FabricObject,
+  formatId: string = 'instagram-feed',
+  spacing: number = 24
+): void {
+  const canvasWidth = canvas.getWidth();
+  const canvasHeight = canvas.getHeight();
+  const safeZone = SAFE_ZONES[formatId as keyof typeof SAFE_ZONES] || SAFE_ZONES['instagram-feed'];
+  
+  // Enforce max font size for text
+  if (obj.type === 'i-text' || obj.type === 'text' || obj.type === 'textbox') {
+    const textObj = obj as IText;
+    if ((textObj.fontSize || 0) > MAX_FONT_SIZE) {
+      textObj.set({ fontSize: MAX_FONT_SIZE });
+    }
+  }
+  
+  // Get object dimensions
+  const objHeight = obj.getBoundingRect().height || 40;
+  
+  // If centerStackNextY would overflow, reset to top
+  if (centerStackNextY + objHeight > canvasHeight - safeZone.bottom) {
+    centerStackNextY = safeZone.top + 40;
+  }
+  
+  obj.set({
+    left: canvasWidth / 2,
+    top: centerStackNextY + objHeight / 2,
+    originX: 'center',
+    originY: 'center',
+    selectable: true,
+    evented: true,
+    lockMovementX: false,
+    lockMovementY: false,
+  });
+  
+  obj.setCoords();
+  
+  // Advance Y for next element
+  centerStackNextY += objHeight + spacing;
 }
 
 /**
@@ -63,14 +139,22 @@ export function positionTextCentered(
   const canvasHeight = canvas.getHeight();
   const safeZone = SAFE_ZONES[formatId as keyof typeof SAFE_ZONES] || SAFE_ZONES['instagram-feed'];
   
+  // Enforce max font size
+  if (obj.type === 'i-text' || obj.type === 'text' || obj.type === 'textbox') {
+    const textObj = obj as IText;
+    if ((textObj.fontSize || 0) > MAX_FONT_SIZE) {
+      textObj.set({ fontSize: MAX_FONT_SIZE });
+    }
+  }
+  
   let top = canvasHeight / 2;
   
   switch (verticalPosition) {
     case 'top':
-      top = safeZone.top + 80;
+      top = safeZone.top + 60;
       break;
     case 'bottom':
-      top = canvasHeight - safeZone.bottom - 80;
+      top = canvasHeight - safeZone.bottom - 60;
       break;
     case 'center':
     default:
@@ -82,6 +166,8 @@ export function positionTextCentered(
     top,
     originX: 'center',
     originY: 'center',
+    selectable: true,
+    evented: true,
   });
   
   obj.setCoords();
@@ -138,7 +224,8 @@ export function autoCorrectOverflow(
 }
 
 /**
- * Enforces maximum font size for AI-generated text (max 18px)
+ * Enforces maximum font size for AI-generated text (HARD LIMIT: 18px)
+ * Returns true if font size was clamped
  */
 export function enforceMaxFontSize(obj: FabricObject, maxSize: number = MAX_FONT_SIZE): boolean {
   if (obj.type === 'i-text' || obj.type === 'text' || obj.type === 'textbox') {
@@ -149,6 +236,22 @@ export function enforceMaxFontSize(obj: FabricObject, maxSize: number = MAX_FONT
     }
   }
   return false;
+}
+
+/**
+ * Enforces max font size on ALL text objects in canvas
+ */
+export function enforceMaxFontSizeAll(canvas: FabricCanvas, maxSize: number = MAX_FONT_SIZE): number {
+  let clampedCount = 0;
+  canvas.getObjects().forEach(obj => {
+    if (enforceMaxFontSize(obj, maxSize)) {
+      clampedCount++;
+    }
+  });
+  if (clampedCount > 0) {
+    canvas.renderAll();
+  }
+  return clampedCount;
 }
 
 /**
@@ -170,6 +273,30 @@ export function makeAllDraggable(canvas: FabricCanvas): void {
       lockMovementY: false,
     });
   });
+  canvas.renderAll();
+}
+
+/**
+ * Centers all objects horizontally on canvas and enforces max font size
+ */
+export function centerAndEnforceAll(canvas: FabricCanvas): void {
+  const canvasWidth = canvas.getWidth();
+  
+  canvas.getObjects().forEach(obj => {
+    // Center horizontally
+    obj.set({
+      left: canvasWidth / 2,
+      originX: 'center',
+      selectable: true,
+      evented: true,
+    });
+    
+    // Enforce max font size
+    enforceMaxFontSize(obj);
+    
+    obj.setCoords();
+  });
+  
   canvas.renderAll();
 }
 
