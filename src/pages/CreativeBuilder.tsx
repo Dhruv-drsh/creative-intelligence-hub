@@ -39,6 +39,7 @@ import { DraggableLayers } from "@/components/DraggableLayers";
 import { OnboardingTutorial } from "@/components/OnboardingTutorial";
 import { ColorPaletteGenerator } from "@/components/ColorPaletteGenerator";
 import { ShareDialog } from "@/components/ShareDialog";
+import { BrandKitTodoPanel } from "@/components/BrandKitTodoPanel";
 import { useCreativeStore } from "@/store/creativeStore";
 import { useComplianceEngine, type ComplianceCheck } from "@/hooks/useComplianceEngine";
 import { useAICanvasControl } from "@/hooks/useAICanvasControl";
@@ -867,7 +868,8 @@ const CreativeBuilder = () => {
         onClose={() => setShowCopywriting(false)}
         onSelectCopy={(text, type) => {
           if (!fabricCanvas) return;
-          const fontSize = type === "headline" ? 32 : type === "cta" ? 18 : 24;
+          // HARD CONSTRAINT: Max 18px for all AI-generated text
+          const fontSize = Math.min(18, type === "headline" ? 18 : type === "cta" ? 16 : 14);
           const newText = new IText(text, {
             left: fabricCanvas.getWidth() / 2,
             top: type === "cta" ? fabricCanvas.getHeight() - 100 : fabricCanvas.getHeight() / 3,
@@ -876,6 +878,9 @@ const CreativeBuilder = () => {
             fontWeight: type === "headline" ? "700" : "600",
             fill: "#020617",
             originX: "center",
+            originY: "center",
+            selectable: true,
+            evented: true,
           });
           fabricCanvas.add(newText);
           fabricCanvas.setActiveObject(newText);
@@ -887,9 +892,28 @@ const CreativeBuilder = () => {
         onOpenChange={setShowMultiverse}
         onApplyVariation={async (canvasData) => {
           if (!fabricCanvas) return;
+          // Load new canvas data but ensure max font size and center alignment
           fabricCanvas.clear();
           fabricCanvas.backgroundColor = "#ffffff";
           await fabricCanvas.loadFromJSON(canvasData);
+          // Enforce constraints after loading
+          fabricCanvas.getObjects().forEach(obj => {
+            // Center horizontally
+            obj.set({ 
+              left: fabricCanvas.getWidth() / 2, 
+              originX: 'center',
+              selectable: true,
+              evented: true,
+            });
+            // Enforce max 18px font
+            if (obj.type === 'i-text' || obj.type === 'text' || obj.type === 'textbox') {
+              const textObj = obj as any;
+              if ((textObj.fontSize || 0) > 18) {
+                textObj.set({ fontSize: 18 });
+              }
+            }
+            obj.setCoords();
+          });
           fabricCanvas.renderAll();
           updateCompliance();
         }}
@@ -900,14 +924,48 @@ const CreativeBuilder = () => {
         onOpenChange={setShowCampaignCreator}
         onApplyVariation={async (canvasData, width, height) => {
           if (!fabricCanvas) return;
+          
+          // Update format if needed
           const matchingFormat = availableFormats.find(f => f.width === width && f.height === height);
           if (matchingFormat) {
             setCurrentFormat(matchingFormat);
             setPreviousFormat(matchingFormat);
           }
-          fabricCanvas.clear();
-          fabricCanvas.backgroundColor = "#ffffff";
-          await fabricCanvas.loadFromJSON(canvasData);
+          
+          // CRITICAL FIX: Do NOT wipe canvas - transform existing content instead
+          // If canvasData is provided, merge it intelligently
+          if (canvasData && canvasData.objects) {
+            // Get existing objects to preserve
+            const existingObjects = fabricCanvas.toJSON().objects || [];
+            
+            // Merge: keep existing, add new from campaign if not duplicates
+            const mergedData = {
+              ...canvasData,
+              objects: [...existingObjects, ...(canvasData.objects || [])]
+            };
+            
+            fabricCanvas.clear();
+            fabricCanvas.backgroundColor = canvasData.backgroundColor || "#ffffff";
+            await fabricCanvas.loadFromJSON(mergedData);
+          }
+          
+          // Enforce constraints: max 18px font, center alignment, draggable
+          fabricCanvas.getObjects().forEach(obj => {
+            obj.set({ 
+              left: fabricCanvas.getWidth() / 2, 
+              originX: 'center',
+              selectable: true,
+              evented: true,
+            });
+            if (obj.type === 'i-text' || obj.type === 'text' || obj.type === 'textbox') {
+              const textObj = obj as any;
+              if ((textObj.fontSize || 0) > 18) {
+                textObj.set({ fontSize: 18 });
+              }
+            }
+            obj.setCoords();
+          });
+          
           fabricCanvas.renderAll();
           updateCompliance();
         }}
@@ -1908,6 +1966,11 @@ const CreativeBuilder = () => {
                       </div>
                     ))}
                   </div>
+                </div>
+
+                {/* Brand Kit Todo Panel - Real-time compliance status */}
+                <div className="p-5 border-b border-border/30">
+                  <BrandKitTodoPanel />
                 </div>
 
                 {/* Color Palette Generator */}

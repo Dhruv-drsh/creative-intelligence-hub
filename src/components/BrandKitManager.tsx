@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Upload, Palette, Type, FileText, Save, Plus, Trash2 } from "lucide-react";
+import { X, Upload, Palette, Type, FileText, Save, Plus, Trash2, Dna, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import { useAuth } from "@/contexts/AuthContext";
@@ -47,7 +47,13 @@ export const BrandKitManager = ({ isOpen, onClose, onSelectBrandKit }: BrandKitM
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [logoFile, setLogoFile] = useState<File | null>(null);
-  const [activeTab, setActiveTab] = useState<"list" | "edit">("list");
+  const [activeTab, setActiveTab] = useState<"list" | "edit" | "dna">("list");
+  
+  // Brand DNA state
+  const [dnaImagePreview, setDnaImagePreview] = useState<string | null>(null);
+  const [dnaAnalyzing, setDnaAnalyzing] = useState(false);
+  const [dnaBrandName, setDnaBrandName] = useState("");
+  const [extractedKit, setExtractedKit] = useState<BrandKit | null>(null);
 
   const fetchBrandKits = useCallback(async () => {
     if (!user) return;
@@ -164,6 +170,65 @@ export const BrandKitManager = ({ isOpen, onClose, onSelectBrandKit }: BrandKitM
     setActiveTab("edit");
   };
 
+  // Brand DNA extraction
+  const handleDnaImageUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setDnaImagePreview(event.target?.result as string);
+        setExtractedKit(null);
+      };
+      reader.readAsDataURL(file);
+    }
+  }, []);
+
+  const analyzeBrandDNA = async () => {
+    if (!dnaImagePreview) {
+      toast.error("Please upload an image first");
+      return;
+    }
+
+    setDnaAnalyzing(true);
+
+    try {
+      const { data, error } = await supabase.functions.invoke('ai-brand-dna', {
+        body: {
+          imageBase64: dnaImagePreview,
+          brandName: dnaBrandName
+        }
+      });
+
+      if (error) throw error;
+
+      const kit: BrandKit = {
+        name: dnaBrandName || "Extracted Brand Kit",
+        primary_color: data.brandKit?.primary_color || "#22C55E",
+        secondary_color: data.brandKit?.secondary_color || "#38BDF8",
+        accent_color: data.brandKit?.accent_color || "#F59E0B",
+        font_heading: data.brandKit?.font_heading || "Inter",
+        font_body: data.brandKit?.font_body || "Inter",
+        guidelines: data.brandKit?.guidelines || "",
+      };
+      
+      setExtractedKit(kit);
+      toast.success("Brand DNA extracted successfully!");
+    } catch (error) {
+      console.error("Error analyzing brand:", error);
+      toast.error("Failed to analyze brand DNA");
+    } finally {
+      setDnaAnalyzing(false);
+    }
+  };
+
+  const applyExtractedKit = () => {
+    if (extractedKit && onSelectBrandKit) {
+      onSelectBrandKit(extractedKit);
+      onClose();
+      toast.success("Brand kit applied to canvas!");
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -194,7 +259,7 @@ export const BrandKitManager = ({ isOpen, onClose, onSelectBrandKit }: BrandKitM
               </Button>
             </div>
 
-            {/* Tabs */}
+            {/* Tabs - Now includes Brand DNA */}
             <div className="flex border-b border-border/50">
               <button
                 onClick={() => setActiveTab("list")}
@@ -204,7 +269,7 @@ export const BrandKitManager = ({ isOpen, onClose, onSelectBrandKit }: BrandKitM
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
-                My Brand Kits
+                My Kits
               </button>
               <button
                 onClick={() => {
@@ -217,7 +282,18 @@ export const BrandKitManager = ({ isOpen, onClose, onSelectBrandKit }: BrandKitM
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
-                {currentKit.id ? "Edit Kit" : "Create New"}
+                {currentKit.id ? "Edit" : "Create"}
+              </button>
+              <button
+                onClick={() => setActiveTab("dna")}
+                className={`flex-1 py-3 text-sm font-medium transition-colors flex items-center justify-center gap-1.5 ${
+                  activeTab === "dna"
+                    ? "text-accent border-b-2 border-accent"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <Dna className="w-4 h-4" />
+                Brand DNA
               </button>
             </div>
 
@@ -272,7 +348,7 @@ export const BrandKitManager = ({ isOpen, onClose, onSelectBrandKit }: BrandKitM
                     ))
                   )}
                 </div>
-              ) : (
+              ) : activeTab === "edit" ? (
                 <div className="space-y-6">
                   {/* Name */}
                   <div>
@@ -383,6 +459,74 @@ export const BrandKitManager = ({ isOpen, onClose, onSelectBrandKit }: BrandKitM
                     <Save className="w-4 h-4 mr-2" />
                     {isLoading ? "Saving..." : currentKit.id ? "Update Brand Kit" : "Create Brand Kit"}
                   </Button>
+                </div>
+              ) : activeTab === "dna" ? (
+                <div className="space-y-6">
+                  {/* Brand DNA Extractor Tab */}
+                  <div>
+                    <label className="text-sm font-medium text-foreground mb-2 block">
+                      Brand Name (optional)
+                    </label>
+                    <input
+                      type="text"
+                      value={dnaBrandName}
+                      onChange={(e) => setDnaBrandName(e.target.value)}
+                      placeholder="e.g., Apple, Nike, Your Brand..."
+                      className="w-full bg-muted/50 border border-border rounded-lg px-4 py-3 text-foreground placeholder:text-muted-foreground"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-medium text-foreground mb-2 block">
+                      Upload Product/Brand Image
+                    </label>
+                    <div className={`relative border-2 border-dashed rounded-xl transition-all duration-200 overflow-hidden ${
+                      dnaImagePreview ? "border-accent bg-accent/5" : "border-border hover:border-accent/50"
+                    }`}>
+                      {dnaImagePreview ? (
+                        <div className="relative aspect-video">
+                          <img src={dnaImagePreview} alt="Preview" className="w-full h-full object-contain bg-muted/20" />
+                          <button
+                            onClick={() => { setDnaImagePreview(null); setExtractedKit(null); }}
+                            className="absolute top-3 right-3 w-8 h-8 rounded-full bg-destructive/90 flex items-center justify-center text-destructive-foreground"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ) : (
+                        <label className="flex flex-col items-center justify-center py-12 cursor-pointer">
+                          <Upload className="w-8 h-8 text-muted-foreground mb-3" />
+                          <span className="text-sm text-muted-foreground">Drop an image or click to upload</span>
+                          <input type="file" accept="image/*" onChange={handleDnaImageUpload} className="hidden" />
+                        </label>
+                      )}
+                    </div>
+                  </div>
+
+                  {!extractedKit ? (
+                    <Button variant="ai" size="lg" className="w-full" onClick={analyzeBrandDNA} disabled={!dnaImagePreview || dnaAnalyzing}>
+                      {dnaAnalyzing ? (
+                        <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Analyzing...</>
+                      ) : (
+                        <><Dna className="w-4 h-4 mr-2" /> Extract Brand DNA</>
+                      )}
+                    </Button>
+                  ) : (
+                    <div className="space-y-4">
+                      <div className="p-4 rounded-xl bg-gradient-to-br from-accent/10 to-highlight/10 border border-accent/30">
+                        <h4 className="text-sm font-semibold text-foreground mb-3">Extracted Brand Kit</h4>
+                        <div className="flex gap-2 mb-3">
+                          <div className="w-10 h-10 rounded-lg" style={{ backgroundColor: extractedKit.primary_color }} />
+                          <div className="w-10 h-10 rounded-lg" style={{ backgroundColor: extractedKit.secondary_color }} />
+                          <div className="w-10 h-10 rounded-lg" style={{ backgroundColor: extractedKit.accent_color }} />
+                        </div>
+                        <p className="text-xs text-muted-foreground mb-2">{extractedKit.font_heading} / {extractedKit.font_body}</p>
+                      </div>
+                      <Button variant="ai" className="w-full" onClick={applyExtractedKit}>
+                        Apply Brand Kit to Canvas
+                      </Button>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
