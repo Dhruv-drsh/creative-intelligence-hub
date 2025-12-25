@@ -90,14 +90,14 @@ export function EmotionToDesign({ isOpen, onClose, onApplyDesign }: EmotionToDes
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-2xl max-h-[85vh] p-0 overflow-hidden flex flex-col">
+      <DialogContent className="max-w-2xl max-h-[85vh] p-0 overflow-hidden flex flex-col fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%]">
         <DialogHeader className="flex-shrink-0 p-6 pb-4 border-b border-border/50">
           <DialogTitle className="flex items-center gap-2 text-xl">
             <Heart className="w-5 h-5 text-rose-500" />
             Emotion to Design
           </DialogTitle>
           <DialogDescription className="text-sm text-muted-foreground">
-            Translate emotions into visual design parameters
+            Translate emotions into visual design parameters (max 18px fonts, centered)
           </DialogDescription>
         </DialogHeader>
 

@@ -49,8 +49,10 @@ import { useCanvasHistory } from "@/hooks/useCanvasHistory";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { useAutoCorrection } from "@/hooks/useAutoCorrection";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { BrandIconLibrary } from "@/components/BrandIconLibrary";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { MAX_FONT_SIZE, resetCenterStack, placeAIElement, enforceAllConstraints } from "@/utils/canvasUtils";
 
 // Sample assets for the panel with better images
 const sampleAssets = [
@@ -155,6 +157,7 @@ const CreativeBuilder = () => {
   const [showCollaborative, setShowCollaborative] = useState(false);
   const [showDirectPublishing, setShowDirectPublishing] = useState(false);
   const [showShareDialog, setShowShareDialog] = useState(false);
+  const [showIconLibrary, setShowIconLibrary] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(() => {
     // Show onboarding if user hasn't completed it before
     const hasCompletedOnboarding = localStorage.getItem('creato-onboarding-completed');
@@ -866,24 +869,43 @@ const CreativeBuilder = () => {
       <CopywritingEngine
         isOpen={showCopywriting}
         onClose={() => setShowCopywriting(false)}
-        onSelectCopy={(text, type) => {
+        onSelectCopy={(text, type, fontSize) => {
           if (!fabricCanvas) return;
+          // Reset center stack for fresh placement
+          resetCenterStack(fabricCanvas, currentFormat.id);
           // HARD CONSTRAINT: Max 18px for all AI-generated text
-          const fontSize = Math.min(18, type === "headline" ? 18 : type === "cta" ? 16 : 14);
+          const clampedFontSize = Math.min(MAX_FONT_SIZE, fontSize);
           const newText = new IText(text, {
-            left: fabricCanvas.getWidth() / 2,
-            top: type === "cta" ? fabricCanvas.getHeight() - 100 : fabricCanvas.getHeight() / 3,
-            fontSize,
+            fontSize: clampedFontSize,
             fontFamily: "Inter",
             fontWeight: type === "headline" ? "700" : "600",
             fill: "#020617",
-            originX: "center",
-            originY: "center",
-            selectable: true,
-            evented: true,
+            textAlign: "center",
           });
+          // Use unified placement engine
+          placeAIElement(fabricCanvas, newText, currentFormat.id);
           fabricCanvas.add(newText);
           fabricCanvas.setActiveObject(newText);
+          fabricCanvas.renderAll();
+          updateCompliance();
+        }}
+      />
+      <BrandIconLibrary
+        isOpen={showIconLibrary}
+        onClose={() => setShowIconLibrary(false)}
+        onSelectIcon={(iconName, color) => {
+          if (!fabricCanvas) return;
+          // Create icon as text (simplified - could use SVG in production)
+          const iconText = new IText(iconName.charAt(0), {
+            fontSize: MAX_FONT_SIZE,
+            fontFamily: "Arial",
+            fontWeight: "700",
+            fill: color,
+            textAlign: "center",
+          });
+          placeAIElement(fabricCanvas, iconText, currentFormat.id);
+          fabricCanvas.add(iconText);
+          fabricCanvas.setActiveObject(iconText);
           fabricCanvas.renderAll();
         }}
       />
@@ -892,28 +914,12 @@ const CreativeBuilder = () => {
         onOpenChange={setShowMultiverse}
         onApplyVariation={async (canvasData) => {
           if (!fabricCanvas) return;
-          // Load new canvas data but ensure max font size and center alignment
+          // Load new canvas data
           fabricCanvas.clear();
           fabricCanvas.backgroundColor = "#ffffff";
           await fabricCanvas.loadFromJSON(canvasData);
-          // Enforce constraints after loading
-          fabricCanvas.getObjects().forEach(obj => {
-            // Center horizontally
-            obj.set({ 
-              left: fabricCanvas.getWidth() / 2, 
-              originX: 'center',
-              selectable: true,
-              evented: true,
-            });
-            // Enforce max 18px font
-            if (obj.type === 'i-text' || obj.type === 'text' || obj.type === 'textbox') {
-              const textObj = obj as any;
-              if ((textObj.fontSize || 0) > 18) {
-                textObj.set({ fontSize: 18 });
-              }
-            }
-            obj.setCoords();
-          });
+          // ENFORCE ALL CONSTRAINTS: 18px max, center, safe zones, draggable
+          enforceAllConstraints(fabricCanvas, currentFormat.id);
           fabricCanvas.renderAll();
           updateCompliance();
         }}
@@ -933,12 +939,8 @@ const CreativeBuilder = () => {
           }
           
           // CRITICAL FIX: Do NOT wipe canvas - transform existing content instead
-          // If canvasData is provided, merge it intelligently
           if (canvasData && canvasData.objects) {
-            // Get existing objects to preserve
             const existingObjects = fabricCanvas.toJSON().objects || [];
-            
-            // Merge: keep existing, add new from campaign if not duplicates
             const mergedData = {
               ...canvasData,
               objects: [...existingObjects, ...(canvasData.objects || [])]
@@ -949,22 +951,8 @@ const CreativeBuilder = () => {
             await fabricCanvas.loadFromJSON(mergedData);
           }
           
-          // Enforce constraints: max 18px font, center alignment, draggable
-          fabricCanvas.getObjects().forEach(obj => {
-            obj.set({ 
-              left: fabricCanvas.getWidth() / 2, 
-              originX: 'center',
-              selectable: true,
-              evented: true,
-            });
-            if (obj.type === 'i-text' || obj.type === 'text' || obj.type === 'textbox') {
-              const textObj = obj as any;
-              if ((textObj.fontSize || 0) > 18) {
-                textObj.set({ fontSize: 18 });
-              }
-            }
-            obj.setCoords();
-          });
+          // ENFORCE ALL CONSTRAINTS: 18px max, center, safe zones, draggable
+          enforceAllConstraints(fabricCanvas, currentFormat.id);
           
           fabricCanvas.renderAll();
           updateCompliance();
