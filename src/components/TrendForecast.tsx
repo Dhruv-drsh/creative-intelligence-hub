@@ -107,14 +107,14 @@ export function TrendForecast({ isOpen, onClose }: TrendForecastProps) {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-3xl max-h-[85vh] p-0 overflow-hidden flex flex-col fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%]">
-        <DialogHeader className="flex-shrink-0 p-6 pb-4 border-b border-border/50">
-          <DialogTitle className="flex items-center gap-2 text-xl">
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()} modal>
+      <DialogContent className="w-[95vw] max-w-3xl max-h-[85vh] p-0 overflow-hidden flex flex-col">
+        <DialogHeader className="flex-shrink-0 p-4 sm:p-6 pb-4 border-b border-border/50">
+          <DialogTitle className="flex items-center gap-2 text-lg sm:text-xl">
             <TrendingUp className="w-5 h-5 text-green-500" />
             Trend Forecast
           </DialogTitle>
-          <DialogDescription className="text-sm text-muted-foreground">
+          <DialogDescription className="text-xs sm:text-sm text-muted-foreground">
             Monitor current creative trends and get actionable insights
           </DialogDescription>
         </DialogHeader>
@@ -122,7 +122,7 @@ export function TrendForecast({ isOpen, onClose }: TrendForecastProps) {
         <ScrollArea className="flex-1 min-h-0">
           <div className="p-6 space-y-6">
             {/* Filters */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <label className="text-sm font-medium">Industry</label>
                 <Select value={industry} onValueChange={setIndustry}>

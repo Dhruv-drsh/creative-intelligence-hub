@@ -40,6 +40,8 @@ import { OnboardingTutorial } from "@/components/OnboardingTutorial";
 import { ColorPaletteGenerator } from "@/components/ColorPaletteGenerator";
 import { ShareDialog } from "@/components/ShareDialog";
 import { BrandKitTodoPanel } from "@/components/BrandKitTodoPanel";
+import { QuickExport } from "@/components/QuickExport";
+import { CollaborationCursors } from "@/components/CollaborationCursors";
 import { useCreativeStore } from "@/store/creativeStore";
 import { useComplianceEngine, type ComplianceCheck } from "@/hooks/useComplianceEngine";
 import { useAICanvasControl } from "@/hooks/useAICanvasControl";
@@ -158,6 +160,8 @@ const CreativeBuilder = () => {
   const [showDirectPublishing, setShowDirectPublishing] = useState(false);
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [showIconLibrary, setShowIconLibrary] = useState(false);
+  const [showQuickExport, setShowQuickExport] = useState(false);
+  const [showCollabCursors, setShowCollabCursors] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(() => {
     // Show onboarding if user hasn't completed it before
     const hasCompletedOnboarding = localStorage.getItem('creato-onboarding-completed');
@@ -1110,18 +1114,24 @@ const CreativeBuilder = () => {
         projectName={projectName}
         projectId={searchParams.get("project") ?? undefined}
       />
+      <QuickExport
+        isOpen={showQuickExport}
+        onClose={() => setShowQuickExport(false)}
+        fabricCanvas={fabricCanvas}
+        currentFormat={currentFormat}
+      />
 
-      {/* Top Bar - Enhanced */}
-      <header className="h-16 border-b border-border/30 glass flex items-center justify-between px-5 shrink-0 backdrop-blur-xl">
-        <div className="flex items-center gap-4">
+      {/* Top Bar - Responsive */}
+      <header className="h-14 sm:h-16 border-b border-border/30 glass flex items-center justify-between px-3 sm:px-5 shrink-0 backdrop-blur-xl">
+        <div className="flex items-center gap-2 sm:gap-4">
           <Link to="/dashboard">
             <Button variant="ghost" size="icon-sm" className="hover:bg-muted/50">
               <ChevronLeft className="w-4 h-4" />
             </Button>
           </Link>
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent via-highlight to-accent flex items-center justify-center shadow-glow-accent">
-              <Sparkles className="w-4 h-4 text-primary-foreground" />
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-gradient-to-br from-accent via-highlight to-accent flex items-center justify-center shadow-glow-accent">
+              <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary-foreground" />
             </div>
             {isEditingName ? (
               <Input
@@ -1129,12 +1139,12 @@ const CreativeBuilder = () => {
                 onChange={(e) => setProjectName(e.target.value)}
                 onBlur={() => setIsEditingName(false)}
                 onKeyDown={(e) => e.key === 'Enter' && setIsEditingName(false)}
-                className="h-8 w-48 text-sm font-medium bg-muted/30 border-accent/30"
+                className="h-7 sm:h-8 w-32 sm:w-48 text-xs sm:text-sm font-medium bg-muted/30 border-accent/30"
                 autoFocus
               />
             ) : (
               <span 
-                className="font-semibold text-foreground cursor-pointer hover:text-accent transition-colors"
+                className="font-semibold text-foreground cursor-pointer hover:text-accent transition-colors text-sm sm:text-base truncate max-w-[100px] sm:max-w-[200px]"
                 onClick={() => setIsEditingName(true)}
               >
                 {projectName}
@@ -1143,15 +1153,15 @@ const CreativeBuilder = () => {
           </div>
         </div>
 
-        {/* Format Selector - Enhanced */}
-        <div className="flex items-center gap-3">
+        {/* Format Selector - Hidden on mobile, shown on tablet+ */}
+        <div className="hidden md:flex items-center gap-3">
           <div className="flex gap-1 bg-secondary/30 rounded-xl p-1.5 backdrop-blur-sm border border-border/30">
             {availableFormats.slice(0, 4).map((format) => (
               <button
                 key={format.id}
                 onClick={() => handleFormatChange(format)}
                 className={cn(
-                  "px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-300",
+                  "px-3 lg:px-4 py-1.5 lg:py-2 rounded-lg text-xs font-semibold transition-all duration-300",
                   currentFormat.id === format.id
                     ? "bg-gradient-to-r from-accent to-highlight text-accent-foreground shadow-md"
                     : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
@@ -1161,16 +1171,17 @@ const CreativeBuilder = () => {
               </button>
             ))}
           </div>
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-secondary/30 border border-border/30">
+          <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-secondary/30 border border-border/30">
             <ComplianceScore score={calculatedScore} size="sm" showLabel={false} />
             <span className="text-xs font-medium text-muted-foreground">Score</span>
           </div>
           <AIIndicator status={aiStatus} />
         </div>
 
-        {/* Actions - Enhanced */}
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1 p-1 rounded-lg bg-secondary/30 border border-border/30">
+
+        {/* Actions - Responsive */}
+        <div className="flex items-center gap-1 sm:gap-2">
+          <div className="hidden sm:flex items-center gap-1 p-1 rounded-lg bg-secondary/30 border border-border/30">
             <Button 
               variant="ghost" 
               size="icon-sm"
@@ -1191,44 +1202,42 @@ const CreativeBuilder = () => {
             >
               <Redo2 className="w-4 h-4" />
             </Button>
-            <KeyboardShortcutsTooltip />
-            {/* Help button to restart onboarding */}
-            <Button 
-              variant="ghost" 
-              size="icon-sm"
-              onClick={handleRestartOnboarding}
-              title="Show tutorial"
-              className="hover:bg-accent/10 hover:text-accent"
-            >
-              <HelpCircle className="w-4 h-4" />
-            </Button>
           </div>
           <Button 
             variant="outline" 
             size="sm" 
             onClick={saveProject}
             disabled={isSaving}
-            className="border-border/50 hover:border-accent/50 hover:bg-accent/5"
+            className="hidden sm:flex border-border/50 hover:border-accent/50 hover:bg-accent/5"
           >
             {isSaving ? (
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
             ) : (
-              <Save className="w-4 h-4 mr-2" />
+              <Save className="w-4 h-4 sm:mr-2" />
             )}
-            Save
+            <span className="hidden sm:inline">Save</span>
           </Button>
           <Button 
             variant="outline" 
             size="sm" 
-            className="border-border/50 hover:border-highlight/50 hover:bg-highlight/5"
+            className="hidden lg:flex border-border/50 hover:border-highlight/50 hover:bg-highlight/5"
             onClick={() => setShowShareDialog(true)}
           >
             <Share2 className="w-4 h-4 mr-2" />
             Share
           </Button>
+          <Button 
+            variant="ai-outline" 
+            size="sm" 
+            onClick={() => setShowQuickExport(true)}
+            className="hidden md:flex"
+          >
+            <Zap className="w-4 h-4 sm:mr-2" />
+            <span className="hidden sm:inline">Quick</span>
+          </Button>
           <Button variant="ai" size="sm" onClick={() => setShowExportDialog(true)} className="shadow-lg">
-            <Download className="w-4 h-4 mr-2" />
-            Export
+            <Download className="w-4 h-4 sm:mr-2" />
+            <span className="hidden sm:inline">Export</span>
           </Button>
         </div>
       </header>
