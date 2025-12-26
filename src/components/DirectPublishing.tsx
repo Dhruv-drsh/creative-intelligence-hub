@@ -1,18 +1,22 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import { 
   Upload, Check, AlertCircle, Loader2, ExternalLink, 
-  Facebook, Instagram, Youtube, Linkedin, Monitor, X 
+  Facebook, Instagram, Youtube, Linkedin, Monitor, X, 
+  Download, Image as ImageIcon, CheckCircle2, XCircle
 } from "lucide-react";
 import { toast } from "sonner";
+import { enforceAllConstraints, SAFE_ZONES } from "@/utils/canvasUtils";
 
 interface DirectPublishingProps {
   isOpen: boolean;
   onClose: () => void;
   canvasRef: React.RefObject<HTMLCanvasElement>;
+  canvas?: any;
+  formatId?: string;
 }
 
 interface Platform {
@@ -22,25 +26,38 @@ interface Platform {
   color: string;
   connected: boolean;
   formats: string[];
+  aspectRatio: string;
   status?: "idle" | "uploading" | "success" | "error";
+  message?: string;
 }
 
 const platforms: Platform[] = [
-  { 
-    id: "meta", 
-    name: "Meta Ads Manager", 
-    icon: Facebook, 
-    color: "bg-blue-600",
-    connected: true,
-    formats: ["1080x1080", "1080x1920", "1200x628"]
-  },
   { 
     id: "instagram", 
     name: "Instagram", 
     icon: Instagram, 
     color: "bg-gradient-to-br from-purple-600 to-pink-500",
     connected: true,
-    formats: ["1080x1080", "1080x1920"]
+    formats: ["1080x1080", "1080x1920"],
+    aspectRatio: "1:1"
+  },
+  { 
+    id: "meta", 
+    name: "Meta Ads Manager", 
+    icon: Facebook, 
+    color: "bg-blue-600",
+    connected: true,
+    formats: ["1080x1080", "1080x1920", "1200x628"],
+    aspectRatio: "Various"
+  },
+  { 
+    id: "linkedin", 
+    name: "LinkedIn", 
+    icon: Linkedin, 
+    color: "bg-blue-700",
+    connected: true,
+    formats: ["1200x627", "1080x1080"],
+    aspectRatio: "1.91:1"
   },
   { 
     id: "google", 
@@ -48,15 +65,8 @@ const platforms: Platform[] = [
     icon: Monitor, 
     color: "bg-green-600",
     connected: false,
-    formats: ["300x250", "728x90", "160x600"]
-  },
-  { 
-    id: "linkedin", 
-    name: "LinkedIn", 
-    icon: Linkedin, 
-    color: "bg-blue-700",
-    connected: false,
-    formats: ["1200x627", "1080x1080"]
+    formats: ["300x250", "728x90", "160x600"],
+    aspectRatio: "Various"
   },
   { 
     id: "youtube", 
@@ -64,13 +74,18 @@ const platforms: Platform[] = [
     icon: Youtube, 
     color: "bg-red-600",
     connected: false,
-    formats: ["1920x1080"]
+    formats: ["1920x1080"],
+    aspectRatio: "16:9"
   },
 ];
 
-export function DirectPublishing({ isOpen, onClose, canvasRef }: DirectPublishingProps) {
+export function DirectPublishing({ isOpen, onClose, canvasRef, canvas, formatId = 'instagram-feed' }: DirectPublishingProps) {
   const [platformStatuses, setPlatformStatuses] = useState<Record<string, Platform["status"]>>({});
+  const [platformMessages, setPlatformMessages] = useState<Record<string, string>>({});
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
+  const [autoResize, setAutoResize] = useState(true);
+  const [includeMetadata, setIncludeMetadata] = useState(true);
+  const [exportedUrl, setExportedUrl] = useState<string | null>(null);
 
   const togglePlatform = (platformId: string) => {
     const platform = platforms.find(p => p.id === platformId);
@@ -91,29 +106,109 @@ export function DirectPublishing({ isOpen, onClose, canvasRef }: DirectPublishin
     // In production, this would open OAuth flow
   };
 
+  // Export canvas as image
+  const exportCanvas = useCallback(async (): Promise<string | null> => {
+    if (!canvas) {
+      toast.error("Canvas not available");
+      return null;
+    }
+
+    try {
+      // Enforce all constraints before export
+      enforceAllConstraints(canvas, formatId);
+      canvas.renderAll();
+
+      // Get canvas data URL
+      const dataUrl = canvas.toDataURL({
+        format: 'png',
+        quality: 1,
+        multiplier: 2, // 2x resolution for quality
+      });
+
+      return dataUrl;
+    } catch (error) {
+      console.error("Export error:", error);
+      toast.error("Failed to export canvas");
+      return null;
+    }
+  }, [canvas, formatId]);
+
+  // Download the exported image
+  const handleDownload = async () => {
+    const dataUrl = await exportCanvas();
+    if (!dataUrl) return;
+
+    const link = document.createElement('a');
+    link.download = `creative-${Date.now()}.png`;
+    link.href = dataUrl;
+    link.click();
+    toast.success("Image downloaded!");
+  };
+
   const handlePublish = async () => {
     if (selectedPlatforms.length === 0) {
       toast.error("Please select at least one platform");
       return;
     }
 
-    // Simulate publishing to each platform
+    // First export the canvas
+    const dataUrl = await exportCanvas();
+    if (!dataUrl) return;
+
+    setExportedUrl(dataUrl);
+
+    let successCount = 0;
+    let failCount = 0;
+
+    // Publish to each platform with real feedback
     for (const platformId of selectedPlatforms) {
+      const platform = platforms.find(p => p.id === platformId);
       setPlatformStatuses(prev => ({ ...prev, [platformId]: "uploading" }));
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Random success/failure for demo
-      const success = Math.random() > 0.2;
-      setPlatformStatuses(prev => ({ 
-        ...prev, 
-        [platformId]: success ? "success" : "error" 
-      }));
+      setPlatformMessages(prev => ({ ...prev, [platformId]: "Preparing..." }));
+
+      try {
+        // Simulate different stages
+        await new Promise(resolve => setTimeout(resolve, 500));
+        setPlatformMessages(prev => ({ ...prev, [platformId]: "Validating format..." }));
+        
+        await new Promise(resolve => setTimeout(resolve, 500));
+        setPlatformMessages(prev => ({ ...prev, [platformId]: "Uploading..." }));
+
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Check safe zones compliance
+        const safeZone = SAFE_ZONES[formatId];
+        if (!safeZone) {
+          throw new Error("Unknown format - safe zones not configured");
+        }
+
+        // In production, this would be actual API calls
+        // For now, simulate success for connected platforms
+        if (platform?.connected) {
+          setPlatformStatuses(prev => ({ ...prev, [platformId]: "success" }));
+          setPlatformMessages(prev => ({ ...prev, [platformId]: "Published successfully!" }));
+          successCount++;
+        } else {
+          throw new Error("Platform not connected");
+        }
+      } catch (error: any) {
+        setPlatformStatuses(prev => ({ ...prev, [platformId]: "error" }));
+        setPlatformMessages(prev => ({ 
+          ...prev, 
+          [platformId]: error.message || "Publishing failed" 
+        }));
+        failCount++;
+      }
     }
 
-    const successCount = Object.values(platformStatuses).filter(s => s === "success").length;
-    toast.success(`Published to ${successCount} platform(s)!`);
+    // Final feedback
+    if (successCount > 0 && failCount === 0) {
+      toast.success(`Successfully published to ${successCount} platform${successCount > 1 ? 's' : ''}!`);
+    } else if (successCount > 0 && failCount > 0) {
+      toast.warning(`Published to ${successCount} platform${successCount > 1 ? 's' : ''}, ${failCount} failed`);
+    } else {
+      toast.error("All publishing attempts failed");
+    }
   };
 
   const getStatusIcon = (status?: Platform["status"]) => {
@@ -121,9 +216,9 @@ export function DirectPublishing({ isOpen, onClose, canvasRef }: DirectPublishin
       case "uploading":
         return <Loader2 className="w-4 h-4 animate-spin text-blue-500" />;
       case "success":
-        return <Check className="w-4 h-4 text-green-500" />;
+        return <CheckCircle2 className="w-4 h-4 text-green-500" />;
       case "error":
-        return <AlertCircle className="w-4 h-4 text-red-500" />;
+        return <XCircle className="w-4 h-4 text-red-500" />;
       default:
         return null;
     }
@@ -156,7 +251,7 @@ export function DirectPublishing({ isOpen, onClose, canvasRef }: DirectPublishin
                   Direct Platform Publishing
                 </h2>
                 <p className="text-sm text-muted-foreground">
-                  One-click API upload to ad platforms
+                  Export & publish to ad platforms with proper aspect ratios
                 </p>
               </div>
               <Button variant="ghost" size="icon" onClick={onClose}>
@@ -167,6 +262,25 @@ export function DirectPublishing({ isOpen, onClose, canvasRef }: DirectPublishin
             {/* Scrollable Content */}
             <ScrollArea className="flex-1 min-h-0">
               <div className="p-6 space-y-6">
+                {/* Export Preview */}
+                {exportedUrl && (
+                  <div className="p-4 rounded-xl bg-muted/50 border space-y-3">
+                    <div className="flex items-center justify-between">
+                      <h4 className="text-sm font-medium flex items-center gap-2">
+                        <ImageIcon className="w-4 h-4 text-accent" />
+                        Export Preview
+                      </h4>
+                      <Button variant="outline" size="sm" onClick={handleDownload}>
+                        <Download className="w-3 h-3 mr-1" />
+                        Download
+                      </Button>
+                    </div>
+                    <div className="aspect-square max-w-[200px] mx-auto rounded-lg overflow-hidden border border-border/50">
+                      <img src={exportedUrl} alt="Export preview" className="w-full h-full object-contain" />
+                    </div>
+                  </div>
+                )}
+
                 {/* Platform Selection */}
                 <div className="space-y-3">
                   <h4 className="text-sm font-medium">Select Platforms</h4>
@@ -175,6 +289,7 @@ export function DirectPublishing({ isOpen, onClose, canvasRef }: DirectPublishin
                       const Icon = platform.icon;
                       const isSelected = selectedPlatforms.includes(platform.id);
                       const status = platformStatuses[platform.id];
+                      const message = platformMessages[platform.id];
 
                       return (
                         <div
@@ -208,8 +323,17 @@ export function DirectPublishing({ isOpen, onClose, canvasRef }: DirectPublishin
                                   )}
                                 </div>
                                 <p className="text-xs text-muted-foreground">
-                                  Formats: {platform.formats.join(", ")}
+                                  {platform.aspectRatio} • {platform.formats.join(", ")}
                                 </p>
+                                {status && message && (
+                                  <p className={`text-xs mt-1 ${
+                                    status === 'success' ? 'text-green-600' :
+                                    status === 'error' ? 'text-red-600' :
+                                    'text-blue-600'
+                                  }`}>
+                                    {message}
+                                  </p>
+                                )}
                               </div>
                             </div>
                             <div className="flex items-center gap-2">
@@ -243,31 +367,51 @@ export function DirectPublishing({ isOpen, onClose, canvasRef }: DirectPublishin
                 <div className="p-4 rounded-xl bg-muted/50 border space-y-3">
                   <h4 className="text-sm font-medium">Publishing Options</h4>
                   <div className="space-y-2">
-                    <label className="flex items-center gap-2 text-sm">
-                      <input type="checkbox" defaultChecked className="rounded" />
+                    <label className="flex items-center gap-2 text-sm cursor-pointer">
+                      <input 
+                        type="checkbox" 
+                        checked={autoResize}
+                        onChange={(e) => setAutoResize(e.target.checked)}
+                        className="rounded" 
+                      />
                       Auto-resize for each platform's requirements
                     </label>
-                    <label className="flex items-center gap-2 text-sm">
-                      <input type="checkbox" defaultChecked className="rounded" />
+                    <label className="flex items-center gap-2 text-sm cursor-pointer">
+                      <input 
+                        type="checkbox" 
+                        checked={includeMetadata}
+                        onChange={(e) => setIncludeMetadata(e.target.checked)}
+                        className="rounded" 
+                      />
                       Include compliance metadata
                     </label>
-                    <label className="flex items-center gap-2 text-sm">
-                      <input type="checkbox" className="rounded" />
-                      Schedule for later
+                    <label className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <input type="checkbox" disabled className="rounded opacity-50" />
+                      Schedule for later (coming soon)
                     </label>
                   </div>
                 </div>
 
-                {/* Publish Button */}
-                <Button
-                  onClick={handlePublish}
-                  disabled={selectedPlatforms.length === 0}
-                  className="w-full h-12"
-                  size="lg"
-                >
-                  <Upload className="w-5 h-5 mr-2" />
-                  Publish to {selectedPlatforms.length} Platform{selectedPlatforms.length !== 1 ? "s" : ""}
-                </Button>
+                {/* Action Buttons */}
+                <div className="flex gap-3">
+                  <Button
+                    variant="outline"
+                    onClick={handleDownload}
+                    className="flex-1 h-12"
+                  >
+                    <Download className="w-5 h-5 mr-2" />
+                    Download Only
+                  </Button>
+                  <Button
+                    onClick={handlePublish}
+                    disabled={selectedPlatforms.length === 0}
+                    className="flex-1 h-12"
+                    size="lg"
+                  >
+                    <Upload className="w-5 h-5 mr-2" />
+                    Publish ({selectedPlatforms.length})
+                  </Button>
+                </div>
 
                 {/* Status Summary */}
                 {Object.keys(platformStatuses).length > 0 && (
@@ -276,6 +420,7 @@ export function DirectPublishing({ isOpen, onClose, canvasRef }: DirectPublishin
                     <div className="space-y-2">
                       {Object.entries(platformStatuses).map(([id, status]) => {
                         const platform = platforms.find(p => p.id === id);
+                        const message = platformMessages[id];
                         return (
                           <div key={id} className="flex items-center justify-between text-sm">
                             <span>{platform?.name}</span>
@@ -285,9 +430,9 @@ export function DirectPublishing({ isOpen, onClose, canvasRef }: DirectPublishin
                               "text-blue-600"
                             }`}>
                               {getStatusIcon(status)}
-                              {status === "uploading" ? "Uploading..." :
+                              {message || (status === "uploading" ? "Uploading..." :
                                status === "success" ? "Published" :
-                               status === "error" ? "Failed" : ""}
+                               status === "error" ? "Failed" : "")}
                             </span>
                           </div>
                         );

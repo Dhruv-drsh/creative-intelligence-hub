@@ -1710,6 +1710,7 @@ const CreativeBuilder = () => {
                 canvasWidth={fabricCanvas?.getWidth() || 0}
                 canvasHeight={fabricCanvas?.getHeight() || 0}
                 visible={showSafeZones}
+                formatId={currentFormat.id}
               />
               <AttentionHeatmap
                 canvas={fabricCanvas}
@@ -1817,6 +1818,57 @@ const CreativeBuilder = () => {
                             className="w-full"
                           />
                         </div>
+                        {/* Element Size Controls */}
+                        <div className="pt-3 border-t border-border/30">
+                          <label className="text-xs text-muted-foreground mb-2 block">Element Size</label>
+                          <div className="grid grid-cols-2 gap-2">
+                            <div>
+                              <label className="text-[10px] text-muted-foreground">Width</label>
+                              <Input
+                                type="number"
+                                value={Math.round(selectedObject.width * (selectedObject.scaleX || 1))}
+                                onChange={(e) => {
+                                  const newWidth = parseInt(e.target.value);
+                                  if (newWidth > 0) {
+                                    selectedObject.set({ scaleX: newWidth / selectedObject.width });
+                                    fabricCanvas?.renderAll();
+                                  }
+                                }}
+                                className="h-8 text-xs"
+                              />
+                            </div>
+                            <div>
+                              <label className="text-[10px] text-muted-foreground">Height</label>
+                              <Input
+                                type="number"
+                                value={Math.round(selectedObject.height * (selectedObject.scaleY || 1))}
+                                onChange={(e) => {
+                                  const newHeight = parseInt(e.target.value);
+                                  if (newHeight > 0) {
+                                    selectedObject.set({ scaleY: newHeight / selectedObject.height });
+                                    fabricCanvas?.renderAll();
+                                  }
+                                }}
+                                className="h-8 text-xs"
+                              />
+                            </div>
+                          </div>
+                          <div className="mt-2">
+                            <label className="text-[10px] text-muted-foreground">Scale: {Math.round((selectedObject.scaleX || 1) * 100)}%</label>
+                            <Slider
+                              value={[(selectedObject.scaleX || 1) * 100]}
+                              onValueChange={([val]) => {
+                                const scale = val / 100;
+                                selectedObject.set({ scaleX: scale, scaleY: scale });
+                                fabricCanvas?.renderAll();
+                              }}
+                              min={10}
+                              max={300}
+                              step={5}
+                              className="w-full"
+                            />
+                          </div>
+                        </div>
                       </div>
                     )}
                     
@@ -1876,12 +1928,12 @@ const CreativeBuilder = () => {
                           </Select>
                         </div>
                         <div>
-                          <label className="text-xs text-muted-foreground mb-2 block">Font Size: {selectedFontSize}px</label>
+                          <label className="text-xs text-muted-foreground mb-2 block">Font Size: {selectedFontSize}px (max 18px for AI)</label>
                           <Slider
                             value={[selectedFontSize]}
                             onValueChange={([val]) => updateFontSize(val)}
                             min={8}
-                            max={120}
+                            max={72}
                             step={1}
                             className="w-full"
                           />
