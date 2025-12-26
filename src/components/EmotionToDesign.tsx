@@ -1,11 +1,10 @@
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Heart, Zap, Sun, Moon, Sparkles, Shield, Flame, Leaf, Loader2, Palette } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { AIModal } from "@/components/ui/AIModal";
 
 interface EmotionToDesignProps {
   isOpen: boolean;
@@ -89,153 +88,149 @@ export function EmotionToDesign({ isOpen, onClose, onApplyDesign }: EmotionToDes
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()} modal>
-      <DialogContent className="w-[95vw] max-w-2xl max-h-[85vh] p-0 overflow-hidden flex flex-col">
-        <DialogHeader className="flex-shrink-0 p-4 sm:p-6 pb-4 border-b border-border/50">
-          <DialogTitle className="flex items-center gap-2 text-lg sm:text-xl">
-            <Heart className="w-5 h-5 text-rose-500" />
-            Emotion to Design
-          </DialogTitle>
-          <DialogDescription className="text-xs sm:text-sm text-muted-foreground">
-            Translate emotions into visual design parameters (max 18px fonts, centered)
-          </DialogDescription>
-        </DialogHeader>
-
-        <ScrollArea className="flex-1 min-h-0">
-          <div className="p-6 space-y-6">
-            {/* Emotion Selection */}
-            <div className="space-y-3">
-              <label className="text-sm font-medium">Select Emotion</label>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
-                {emotions.map((emotion) => {
-                  const Icon = emotion.icon;
-                  return (
-                    <button
-                      key={emotion.id}
-                      onClick={() => setSelectedEmotion(emotion.id)}
-                      className={`p-3 sm:p-4 rounded-xl border-2 transition-all text-center ${
-                        selectedEmotion === emotion.id
-                          ? "border-primary bg-primary/10"
-                          : "border-border hover:border-primary/50"
-                      }`}
-                    >
-                      <div className={`w-8 h-8 sm:w-10 sm:h-10 mx-auto rounded-xl bg-gradient-to-br ${emotion.color} flex items-center justify-center mb-2`}>
-                        <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-                      </div>
-                      <span className="text-[10px] sm:text-xs font-medium">{emotion.name}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Intensity Slider */}
-            <div className="space-y-3">
-              <div className="flex justify-between">
-                <label className="text-sm font-medium">Intensity</label>
-                <span className="text-sm text-muted-foreground">{intensity[0]}/10</span>
-              </div>
-              <Slider
-                value={intensity}
-                onValueChange={setIntensity}
-                min={1}
-                max={10}
-                step={1}
-              />
-              <div className="flex justify-between text-xs text-muted-foreground">
-                <span>Subtle</span>
-                <span>Bold</span>
-              </div>
-            </div>
-
-            {/* Context Input */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Context (Optional)</label>
-              <input
-                type="text"
-                value={context}
-                onChange={(e) => setContext(e.target.value)}
-                placeholder="e.g., Summer sale campaign, Luxury watch ad..."
-                className="w-full px-4 py-2 rounded-lg border bg-background text-sm"
-              />
-            </div>
-
-            {/* Generate Button */}
-            <Button
-              onClick={handleGenerate}
-              disabled={!selectedEmotion || isGenerating}
-              className="w-full"
-              variant="ai"
-            >
-              {isGenerating ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Generating Design...
-                </>
-              ) : (
-                <>
-                  <Sparkles className="w-4 h-4 mr-2" />
-                  Generate Design Parameters
-                </>
-              )}
-            </Button>
-
-            {/* Results */}
-            {designParams && (
-              <div className="space-y-4 p-4 rounded-xl bg-muted/50 border">
-                <h4 className="font-medium flex items-center gap-2">
-                  <Palette className="w-4 h-4" />
-                  Generated Design
-                </h4>
-
-                {/* Color Palette */}
-                <div className="space-y-2">
-                  <span className="text-xs text-muted-foreground">Color Palette</span>
-                  <div className="flex gap-2">
-                    {Object.entries(designParams.colors).map(([key, color]) => (
-                      <div key={key} className="text-center">
-                        <div
-                          className="w-12 h-12 rounded-lg border shadow-sm"
-                          style={{ backgroundColor: color }}
-                        />
-                        <span className="text-[10px] text-muted-foreground capitalize">{key}</span>
-                      </div>
-                    ))}
+    <AIModal
+      open={isOpen}
+      onOpenChange={(open) => !open && onClose()}
+      title="Emotion to Design"
+      description="Translate emotions into visual design parameters (max 18px fonts, centered)"
+      icon={<Heart className="w-5 h-5 text-rose-500" />}
+      maxWidth="2xl"
+      footer={
+        designParams ? (
+          <Button onClick={handleApply} className="w-full" variant="default">
+            Apply to Canvas
+          </Button>
+        ) : undefined
+      }
+    >
+      <div className="space-y-6">
+        {/* Emotion Selection */}
+        <div className="space-y-3">
+          <label className="text-sm font-medium">Select Emotion</label>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
+            {emotions.map((emotion) => {
+              const Icon = emotion.icon;
+              return (
+                <button
+                  key={emotion.id}
+                  onClick={() => setSelectedEmotion(emotion.id)}
+                  className={`p-3 sm:p-4 rounded-xl border-2 transition-all text-center ${
+                    selectedEmotion === emotion.id
+                      ? "border-primary bg-primary/10"
+                      : "border-border hover:border-primary/50"
+                  }`}
+                >
+                  <div className={`w-8 h-8 sm:w-10 sm:h-10 mx-auto rounded-xl bg-gradient-to-br ${emotion.color} flex items-center justify-center mb-2`}>
+                    <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                   </div>
-                </div>
-
-                {/* Typography */}
-                <div className="space-y-1">
-                  <span className="text-xs text-muted-foreground">Typography</span>
-                  <p className="text-sm">
-                    <strong>Heading:</strong> {designParams.typography.headingFont} ({designParams.typography.headingWeight})
-                  </p>
-                  <p className="text-sm">
-                    <strong>Body:</strong> {designParams.typography.bodyFont}
-                  </p>
-                </div>
-
-                {/* Mood */}
-                <div className="space-y-1">
-                  <span className="text-xs text-muted-foreground">Mood</span>
-                  <p className="text-sm">{designParams.mood.description}</p>
-                  <div className="flex flex-wrap gap-1 mt-2">
-                    {designParams.mood.keywords.map((keyword, i) => (
-                      <span key={i} className="px-2 py-0.5 bg-primary/10 text-primary text-xs rounded-full">
-                        {keyword}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                <Button onClick={handleApply} className="w-full" variant="default">
-                  Apply to Canvas
-                </Button>
-              </div>
-            )}
+                  <span className="text-[10px] sm:text-xs font-medium">{emotion.name}</span>
+                </button>
+              );
+            })}
           </div>
-        </ScrollArea>
-      </DialogContent>
-    </Dialog>
+        </div>
+
+        {/* Intensity Slider */}
+        <div className="space-y-3">
+          <div className="flex justify-between">
+            <label className="text-sm font-medium">Intensity</label>
+            <span className="text-sm text-muted-foreground">{intensity[0]}/10</span>
+          </div>
+          <Slider
+            value={intensity}
+            onValueChange={setIntensity}
+            min={1}
+            max={10}
+            step={1}
+          />
+          <div className="flex justify-between text-xs text-muted-foreground">
+            <span>Subtle</span>
+            <span>Bold</span>
+          </div>
+        </div>
+
+        {/* Context Input */}
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Context (Optional)</label>
+          <input
+            type="text"
+            value={context}
+            onChange={(e) => setContext(e.target.value)}
+            placeholder="e.g., Summer sale campaign, Luxury watch ad..."
+            className="w-full px-4 py-2 rounded-lg border bg-background text-sm"
+          />
+        </div>
+
+        {/* Generate Button */}
+        <Button
+          onClick={handleGenerate}
+          disabled={!selectedEmotion || isGenerating}
+          className="w-full"
+          variant="ai"
+        >
+          {isGenerating ? (
+            <>
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              Generating Design...
+            </>
+          ) : (
+            <>
+              <Sparkles className="w-4 h-4 mr-2" />
+              Generate Design Parameters
+            </>
+          )}
+        </Button>
+
+        {/* Results */}
+        {designParams && (
+          <div className="space-y-4 p-4 rounded-xl bg-muted/50 border">
+            <h4 className="font-medium flex items-center gap-2">
+              <Palette className="w-4 h-4" />
+              Generated Design
+            </h4>
+
+            {/* Color Palette */}
+            <div className="space-y-2">
+              <span className="text-xs text-muted-foreground">Color Palette</span>
+              <div className="flex gap-2">
+                {Object.entries(designParams.colors).map(([key, color]) => (
+                  <div key={key} className="text-center">
+                    <div
+                      className="w-12 h-12 rounded-lg border shadow-sm"
+                      style={{ backgroundColor: color }}
+                    />
+                    <span className="text-[10px] text-muted-foreground capitalize">{key}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Typography */}
+            <div className="space-y-1">
+              <span className="text-xs text-muted-foreground">Typography</span>
+              <p className="text-sm">
+                <strong>Heading:</strong> {designParams.typography.headingFont} ({designParams.typography.headingWeight})
+              </p>
+              <p className="text-sm">
+                <strong>Body:</strong> {designParams.typography.bodyFont}
+              </p>
+            </div>
+
+            {/* Mood */}
+            <div className="space-y-1">
+              <span className="text-xs text-muted-foreground">Mood</span>
+              <p className="text-sm">{designParams.mood.description}</p>
+              <div className="flex flex-wrap gap-1 mt-2">
+                {designParams.mood.keywords.map((keyword, i) => (
+                  <span key={i} className="px-2 py-0.5 bg-primary/10 text-primary text-xs rounded-full">
+                    {keyword}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </AIModal>
   );
 }
