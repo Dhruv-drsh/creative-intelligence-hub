@@ -1,14 +1,15 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Progress } from "@/components/ui/progress";
 import { GlassPanel } from "@/components/ui/GlassPanel";
-import { Eye, Sparkles, Loader2, AlertTriangle, CheckCircle, Lightbulb, Zap, Target, X, Wrench } from "lucide-react";
+import { Eye, Sparkles, Loader2, AlertTriangle, CheckCircle, Lightbulb, Zap, Target, X, Wrench, Type, AlignCenter, Shield, Maximize2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useUnifiedAIState } from "@/hooks/useUnifiedAIState";
+import { MAX_FONT_SIZE, SAFE_ZONES } from "@/utils/canvasUtils";
 
 interface AuditCategory {
   name: string;
@@ -28,18 +29,33 @@ interface DesignAudit {
   advancedTips: string[];
 }
 
+interface LocalViolation {
+  id: string;
+  type: 'font-size' | 'off-center' | 'outside-safe-zone' | 'hidden';
+  element: string;
+  message: string;
+  severity: 'error' | 'warning' | 'info';
+  fixable: boolean;
+}
+
 interface VisualAuditorProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   canvasState: any;
+  canvas?: any;
+  formatId?: string;
   onApplyFixes?: (fixes: { type: string; action: string }[]) => void;
+  onEnforceConstraints?: () => void;
 }
 
 export const VisualAuditor = ({
   open,
   onOpenChange,
   canvasState,
+  canvas,
+  formatId = 'instagram-feed',
   onApplyFixes,
+  onEnforceConstraints,
 }: VisualAuditorProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [designGoal, setDesignGoal] = useState("");
@@ -47,6 +63,70 @@ export const VisualAuditor = ({
   const [isApplyingFixes, setIsApplyingFixes] = useState(false);
   
   const { syncFromVisualAuditor, markTodosByCategory } = useUnifiedAIState();
+
+  // Local constraint checking
+  const localViolations = useMemo((): LocalViolation[] => {
+    if (!canvas || !canvasState?.objects) return [];
+    
+    const violations: LocalViolation[] = [];
+    const safeZone = SAFE_ZONES[formatId] || SAFE_ZONES['instagram-feed'];
+    const canvasWidth = canvas.getWidth?.() || 1080;
+    const canvasHeight = canvas.getHeight?.() || 1080;
+    
+    canvasState.objects.forEach((obj: any, index: number) => {
+      const elementName = obj.text?.substring(0, 20) || obj.type || `Element ${index + 1}`;
+      
+      // Check font size violations (must be ≤ 18px)
+      if ((obj.type === 'i-text' || obj.type === 'text' || obj.type === 'textbox') && obj.fontSize > MAX_FONT_SIZE) {
+        violations.push({
+          id: `font-${index}`,
+          type: 'font-size',
+          element: elementName,
+          message: `Font size ${obj.fontSize}px exceeds max ${MAX_FONT_SIZE}px`,
+          severity: 'error',
+          fixable: true,
+        });
+      }
+      
+      // Check center alignment (check if not horizontally centered)
+      const objCenter = (obj.left || 0) + (obj.width || 0) / 2;
+      const canvasCenter = canvasWidth / 2;
+      const centerThreshold = 20;
+      
+      if (obj.originX !== 'center' && Math.abs(objCenter - canvasCenter) > centerThreshold) {
+        violations.push({
+          id: `center-${index}`,
+          type: 'off-center',
+          element: elementName,
+          message: `Not centered (${Math.round(Math.abs(objCenter - canvasCenter))}px off)`,
+          severity: 'warning',
+          fixable: true,
+        });
+      }
+      
+      // Check safe zone violations
+      const objLeft = obj.left || 0;
+      const objTop = obj.top || 0;
+      const objRight = objLeft + (obj.width || 0);
+      const objBottom = objTop + (obj.height || 0);
+      
+      if (objLeft < safeZone.left || 
+          objRight > canvasWidth - safeZone.right ||
+          objTop < safeZone.top ||
+          objBottom > canvasHeight - safeZone.bottom) {
+        violations.push({
+          id: `safe-${index}`,
+          type: 'outside-safe-zone',
+          element: elementName,
+          message: 'Element crosses safe zone boundary',
+          severity: 'warning',
+          fixable: true,
+        });
+      }
+    });
+    
+    return violations;
+  }, [canvas, canvasState, formatId]);
 
   const runAudit = async () => {
     setIsLoading(true);
@@ -91,26 +171,29 @@ export const VisualAuditor = ({
   };
   
   const handleFixAll = () => {
-    if (!audit || !onApplyFixes) return;
-    
     setIsApplyingFixes(true);
     
-    // Collect all fixable issues
-    const fixes = audit.categories
-      .filter(cat => cat.score < 8)
-      .map(cat => ({
-        type: getCategoryType(cat.name),
-        action: cat.actionable,
-      }));
-    
-    onApplyFixes(fixes);
+    // Call the enforceConstraints callback which uses enforceAllConstraints
+    if (onEnforceConstraints) {
+      onEnforceConstraints();
+      toast.success(`Fixed ${localViolations.length} violations with enforceAllConstraints`);
+    } else if (onApplyFixes && audit) {
+      const fixes = audit.categories
+        .filter(cat => cat.score < 8)
+        .map(cat => ({
+          type: getCategoryType(cat.name),
+          action: cat.actionable,
+        }));
+      
+      onApplyFixes(fixes);
+      toast.success(`Applied ${fixes.length} automatic fixes!`);
+    }
     
     // Mark relevant todos as done
     markTodosByCategory('layout', 'done');
     markTodosByCategory('compliance', 'done');
     
     setIsApplyingFixes(false);
-    toast.success(`Applied ${fixes.length} automatic fixes!`);
   };
 
   const getScoreColor = (score: number) => {
@@ -125,7 +208,19 @@ export const VisualAuditor = ({
     return "from-orange-500 to-red-500";
   };
 
+  const getViolationIcon = (type: LocalViolation['type']) => {
+    switch (type) {
+      case 'font-size': return <Type className="w-4 h-4" />;
+      case 'off-center': return <AlignCenter className="w-4 h-4" />;
+      case 'outside-safe-zone': return <Shield className="w-4 h-4" />;
+      case 'hidden': return <Eye className="w-4 h-4" />;
+    }
+  };
+
   if (!open) return null;
+
+  // Calculate local score based on violations
+  const localScore = Math.max(0, 100 - (localViolations.filter(v => v.severity === 'error').length * 15) - (localViolations.filter(v => v.severity === 'warning').length * 5));
 
   return (
     <AnimatePresence>
@@ -152,7 +247,7 @@ export const VisualAuditor = ({
                 </div>
                 <div>
                   <h2 className="font-display text-xl text-foreground">Visual Improvement Auditor</h2>
-                  <p className="text-sm text-muted-foreground">AI-powered design feedback & analysis</p>
+                  <p className="text-sm text-muted-foreground">AI-powered design feedback & constraint enforcement</p>
                 </div>
               </div>
               <Button variant="ghost" size="icon-sm" onClick={() => onOpenChange(false)}>
@@ -162,7 +257,62 @@ export const VisualAuditor = ({
 
             {/* Scrollable Content */}
             <ScrollArea className="flex-1 min-h-0">
-              <div className="p-6">
+              <div className="p-6 space-y-6">
+                {/* Local Violations Section - Always visible */}
+                <div className="p-4 rounded-xl bg-muted/30 border border-border/50">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2">
+                      <Shield className="w-5 h-5 text-accent" />
+                      <h3 className="font-semibold">Constraint Check</h3>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className={`text-2xl font-bold ${getScoreColor(localScore)}`}>
+                        {localScore}
+                      </div>
+                      {localViolations.length > 0 && onEnforceConstraints && (
+                        <Button 
+                          variant="ai" 
+                          size="sm"
+                          onClick={handleFixAll}
+                          disabled={isApplyingFixes}
+                        >
+                          <Wrench className="w-3 h-3 mr-1" />
+                          Fix All ({localViolations.length})
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {localViolations.length === 0 ? (
+                    <div className="flex items-center gap-2 text-green-600 text-sm">
+                      <CheckCircle className="w-4 h-4" />
+                      All constraints satisfied! (Max {MAX_FONT_SIZE}px font, centered, within safe zones)
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      {localViolations.map((violation) => (
+                        <div 
+                          key={violation.id}
+                          className={`flex items-center gap-3 p-2 rounded-lg border ${
+                            violation.severity === 'error' 
+                              ? 'bg-red-500/10 border-red-500/30 text-red-600'
+                              : 'bg-yellow-500/10 border-yellow-500/30 text-yellow-600'
+                          }`}
+                        >
+                          {getViolationIcon(violation.type)}
+                          <div className="flex-1">
+                            <span className="text-sm font-medium">{violation.element}</span>
+                            <span className="text-xs opacity-75 ml-2">{violation.message}</span>
+                          </div>
+                          {violation.fixable && (
+                            <span className="text-[10px] px-2 py-0.5 rounded bg-background/50">Auto-fixable</span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
                 {!audit ? (
                 <motion.div
                   initial={{ opacity: 0 }}
@@ -205,14 +355,14 @@ export const VisualAuditor = ({
                       ) : (
                         <>
                           <Sparkles className="w-4 h-4 mr-2" />
-                          Run Design Audit
+                          Run Full Design Audit
                         </>
                       )}
                     </Button>
                   </div>
                 </motion.div>
               ) : (
-                <ScrollArea className="h-[500px] pr-4">
+                <ScrollArea className="h-[400px] pr-4">
                   <AnimatePresence>
                     <motion.div
                       initial={{ opacity: 0, y: 20 }}
