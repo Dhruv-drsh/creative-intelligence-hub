@@ -89,14 +89,14 @@ export function EmotionToDesign({ isOpen, onClose, onApplyDesign }: EmotionToDes
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-2xl max-h-[85vh] p-0 overflow-hidden flex flex-col fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%]">
-        <DialogHeader className="flex-shrink-0 p-6 pb-4 border-b border-border/50">
-          <DialogTitle className="flex items-center gap-2 text-xl">
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()} modal>
+      <DialogContent className="w-[95vw] max-w-2xl max-h-[85vh] p-0 overflow-hidden flex flex-col">
+        <DialogHeader className="flex-shrink-0 p-4 sm:p-6 pb-4 border-b border-border/50">
+          <DialogTitle className="flex items-center gap-2 text-lg sm:text-xl">
             <Heart className="w-5 h-5 text-rose-500" />
             Emotion to Design
           </DialogTitle>
-          <DialogDescription className="text-sm text-muted-foreground">
+          <DialogDescription className="text-xs sm:text-sm text-muted-foreground">
             Translate emotions into visual design parameters (max 18px fonts, centered)
           </DialogDescription>
         </DialogHeader>
@@ -106,23 +106,23 @@ export function EmotionToDesign({ isOpen, onClose, onApplyDesign }: EmotionToDes
             {/* Emotion Selection */}
             <div className="space-y-3">
               <label className="text-sm font-medium">Select Emotion</label>
-              <div className="grid grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
                 {emotions.map((emotion) => {
                   const Icon = emotion.icon;
                   return (
                     <button
                       key={emotion.id}
                       onClick={() => setSelectedEmotion(emotion.id)}
-                      className={`p-4 rounded-xl border-2 transition-all text-center ${
+                      className={`p-3 sm:p-4 rounded-xl border-2 transition-all text-center ${
                         selectedEmotion === emotion.id
                           ? "border-primary bg-primary/10"
                           : "border-border hover:border-primary/50"
                       }`}
                     >
-                      <div className={`w-10 h-10 mx-auto rounded-xl bg-gradient-to-br ${emotion.color} flex items-center justify-center mb-2`}>
-                        <Icon className="w-5 h-5 text-white" />
+                      <div className={`w-8 h-8 sm:w-10 sm:h-10 mx-auto rounded-xl bg-gradient-to-br ${emotion.color} flex items-center justify-center mb-2`}>
+                        <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                       </div>
-                      <span className="text-xs font-medium">{emotion.name}</span>
+                      <span className="text-[10px] sm:text-xs font-medium">{emotion.name}</span>
                     </button>
                   );
                 })}
