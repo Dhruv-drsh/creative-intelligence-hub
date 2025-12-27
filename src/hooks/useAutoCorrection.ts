@@ -111,7 +111,7 @@ export function useAutoCorrection(canvas: FabricCanvas | null, safeZones: SafeZo
       const bounds = obj.getBoundingRect();
       const objType = obj.type || "";
       
-      // Skip backgrounds
+      // Skip backgrounds (large images covering most of canvas)
       if (
         objType === "image" && 
         bounds.width >= canvasWidth * 0.9 && 
@@ -125,6 +125,7 @@ export function useAutoCorrection(canvas: FabricCanvas | null, safeZones: SafeZo
         if (zone.bottom > 0 && bounds.top < zone.bottom) {
           const newTop = zone.bottom + 10;
           obj.set({ top: newTop });
+          obj.setCoords();
           fixedCount++;
         }
 
@@ -133,7 +134,8 @@ export function useAutoCorrection(canvas: FabricCanvas | null, safeZones: SafeZo
           const bottomZoneTop = canvasHeight - zone.right;
           if (bounds.top + bounds.height > bottomZoneTop) {
             const newTop = bottomZoneTop - bounds.height - 10;
-            obj.set({ top: Math.max(0, newTop) });
+            obj.set({ top: Math.max(zone.bottom + 10, newTop) });
+            obj.setCoords();
             fixedCount++;
           }
         }
@@ -181,24 +183,135 @@ export function useAutoCorrection(canvas: FabricCanvas | null, safeZones: SafeZo
     return fixedCount;
   }, [canvas]);
 
+  // Center all elements horizontally
+  const centerAllElements = useCallback(() => {
+    if (!canvas) return 0;
+
+    const canvasWidth = canvas.getWidth();
+    const objects = canvas.getObjects();
+    let fixedCount = 0;
+
+    objects.forEach((obj: FabricObject) => {
+      const bounds = obj.getBoundingRect();
+      const objType = obj.type || "";
+      
+      // Skip backgrounds
+      if (objType === "image" && bounds.width >= canvasWidth * 0.9) {
+        return;
+      }
+
+      // Center horizontally
+      const centerX = canvasWidth / 2;
+      const currentCenterX = bounds.left + bounds.width / 2;
+      const offset = Math.abs(centerX - currentCenterX);
+      
+      // Only fix if significantly off-center (more than 50px)
+      if (offset > 50) {
+        obj.set({ 
+          left: centerX,
+          originX: 'center'
+        });
+        obj.setCoords();
+        fixedCount++;
+      }
+    });
+
+    if (fixedCount > 0) {
+      canvas.renderAll();
+    }
+
+    return fixedCount;
+  }, [canvas]);
+
+  // Fix font sizes (max 18px for compliance)
+  const fixFontSizes = useCallback(() => {
+    if (!canvas) return 0;
+
+    const objects = canvas.getObjects();
+    let fixedCount = 0;
+    const maxFontSize = 18;
+
+    objects.forEach((obj: FabricObject) => {
+      const objType = obj.type || "";
+      
+      if (objType === "i-text" || objType === "text" || objType === "textbox") {
+        const textObj = obj as any;
+        const fontSize = textObj.fontSize || 16;
+        
+        if (fontSize > maxFontSize) {
+          textObj.set("fontSize", maxFontSize);
+          textObj.setCoords();
+          fixedCount++;
+        }
+      }
+    });
+
+    if (fixedCount > 0) {
+      canvas.renderAll();
+    }
+
+    return fixedCount;
+  }, [canvas]);
+
+  // Make all elements selectable/draggable
+  const makeAllDraggable = useCallback(() => {
+    if (!canvas) return 0;
+
+    const objects = canvas.getObjects();
+    let fixedCount = 0;
+
+    objects.forEach((obj: FabricObject) => {
+      if (!obj.selectable || !obj.evented) {
+        obj.set({ 
+          selectable: true, 
+          evented: true,
+          hasControls: true,
+          hasBorders: true,
+        });
+        fixedCount++;
+      }
+    });
+
+    if (fixedCount > 0) {
+      canvas.renderAll();
+    }
+
+    return fixedCount;
+  }, [canvas]);
+
   // Fix all compliance issues
   const autoFixAll = useCallback(() => {
-    const zonesFixed = fixSafeZoneViolations();
-    const contrastFixed = fixContrastIssues();
-    const totalFixed = zonesFixed + contrastFixed;
+    const results = {
+      safeZones: fixSafeZoneViolations(),
+      contrast: fixContrastIssues(),
+      centered: centerAllElements(),
+      fontSizes: fixFontSizes(),
+      draggable: makeAllDraggable(),
+    };
+
+    const totalFixed = Object.values(results).reduce((sum, count) => sum + count, 0);
 
     if (totalFixed > 0) {
-      toast.success(`Auto-fixed ${totalFixed} issue${totalFixed > 1 ? 's' : ''}`);
+      const details: string[] = [];
+      if (results.safeZones > 0) details.push(`${results.safeZones} safe zone issue${results.safeZones > 1 ? 's' : ''}`);
+      if (results.contrast > 0) details.push(`${results.contrast} contrast issue${results.contrast > 1 ? 's' : ''}`);
+      if (results.centered > 0) details.push(`${results.centered} alignment fix${results.centered > 1 ? 'es' : ''}`);
+      if (results.fontSizes > 0) details.push(`${results.fontSizes} font size${results.fontSizes > 1 ? 's' : ''}`);
+      
+      toast.success(`Fixed ${totalFixed} issues: ${details.join(', ')}`);
     } else {
-      toast.info("No issues to fix");
+      toast.success("All compliance checks passed!");
     }
 
     return totalFixed;
-  }, [fixSafeZoneViolations, fixContrastIssues]);
+  }, [fixSafeZoneViolations, fixContrastIssues, centerAllElements, fixFontSizes, makeAllDraggable]);
 
   return {
     fixSafeZoneViolations,
     fixContrastIssues,
+    centerAllElements,
+    fixFontSizes,
+    makeAllDraggable,
     autoFixAll,
   };
 }

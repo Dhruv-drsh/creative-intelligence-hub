@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GlassPanel } from "@/components/ui/GlassPanel";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 
 interface AIModalProps {
@@ -92,8 +91,8 @@ export function AIModal({
           onClick={(e) => e.stopPropagation()}
         >
           <GlassPanel padding="none" className="flex flex-col max-h-[85vh] overflow-hidden">
-            {/* Header */}
-            <div className="flex-shrink-0 flex items-center justify-between p-4 sm:p-6 border-b border-border/50">
+            {/* Header - Sticky */}
+            <div className="flex-shrink-0 flex items-center justify-between p-4 sm:p-6 border-b border-border/50 bg-card/95 backdrop-blur-sm sticky top-0 z-10">
               <div className="flex items-center gap-3">
                 {icon && (
                   <div className="hidden sm:flex w-10 h-10 rounded-xl bg-gradient-to-br from-accent/30 to-highlight/30 items-center justify-center">
@@ -117,16 +116,16 @@ export function AIModal({
               </Button>
             </div>
 
-            {/* Content */}
-            <ScrollArea className="flex-1 min-h-0">
+            {/* Content - Scrollable with visible scrollbar */}
+            <div className="flex-1 min-h-0 modal-scrollbar">
               <div className="p-4 sm:p-6">
                 {children}
               </div>
-            </ScrollArea>
+            </div>
 
-            {/* Footer */}
+            {/* Footer - Sticky */}
             {footer && (
-              <div className="flex-shrink-0 p-4 sm:p-6 pt-4 border-t border-border/50">
+              <div className="flex-shrink-0 p-4 sm:p-6 pt-4 border-t border-border/50 bg-card/95 backdrop-blur-sm sticky bottom-0 z-10">
                 {footer}
               </div>
             )}
