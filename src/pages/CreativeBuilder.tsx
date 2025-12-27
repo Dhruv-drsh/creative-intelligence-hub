@@ -7,7 +7,7 @@ import {
   ZoomIn, ZoomOut, MousePointer2, Square, Circle as CircleIcon,
   Type, Image, Trash2, Copy, Layers, Upload, Send, Settings,
   Check, AlertTriangle, X, Menu, Eye as EyeIcon, Palette, Wand2, Save, Loader2, Heart, TrendingUp, Users,
-  PenTool, Zap, FileText, Triangle, Star, ArrowRight, Grid3X3, Dna, Bold, Italic, HelpCircle
+  PenTool, Zap, FileText, Triangle, Star, ArrowRight, Grid3X3, Dna, Bold, Italic, HelpCircle, PanelLeftClose, PanelRightClose
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -42,6 +42,9 @@ import { ShareDialog } from "@/components/ShareDialog";
 import { BrandKitTodoPanel } from "@/components/BrandKitTodoPanel";
 import { QuickExport } from "@/components/QuickExport";
 import { CollaborationCursors } from "@/components/CollaborationCursors";
+import { MobileBottomNav } from "@/components/MobileBottomNav";
+import { DraggableIconLibrary } from "@/components/DraggableIconLibrary";
+import { RealtimeCursors } from "@/components/RealtimeCursors";
 import { useCreativeStore } from "@/store/creativeStore";
 import { useComplianceEngine, type ComplianceCheck } from "@/hooks/useComplianceEngine";
 import { useAICanvasControl } from "@/hooks/useAICanvasControl";
@@ -50,7 +53,10 @@ import { useFormatResize } from "@/hooks/useFormatResize";
 import { useCanvasHistory } from "@/hooks/useCanvasHistory";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { useAutoCorrection } from "@/hooks/useAutoCorrection";
+import { useRealtimeCollaboration } from "@/hooks/useRealtimeCollaboration";
+import { useTouchGestures } from "@/hooks/useTouchGestures";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { BrandIconLibrary } from "@/components/BrandIconLibrary";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -161,7 +167,11 @@ const CreativeBuilder = () => {
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [showIconLibrary, setShowIconLibrary] = useState(false);
   const [showQuickExport, setShowQuickExport] = useState(false);
-  const [showCollabCursors, setShowCollabCursors] = useState(false);
+  const [showCollabCursors, setShowCollabCursors] = useState(true);
+  const [showDraggableIcons, setShowDraggableIcons] = useState(false);
+  const [showMobileAITools, setShowMobileAITools] = useState(false);
+  const [mobileLeftDrawerOpen, setMobileLeftDrawerOpen] = useState(false);
+  const [mobileRightDrawerOpen, setMobileRightDrawerOpen] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(() => {
     // Show onboarding if user hasn't completed it before
     const hasCompletedOnboarding = localStorage.getItem('creato-onboarding-completed');
@@ -212,6 +222,19 @@ const CreativeBuilder = () => {
   // History and keyboard shortcuts
   const { undo, redo, canUndo, canRedo } = useCanvasHistory(fabricCanvas);
   const { autoFixAll } = useAutoCorrection(fabricCanvas, safeZones);
+  
+  // Realtime collaboration
+  const { cursors, activeUsers, broadcastCursor } = useRealtimeCollaboration(
+    searchParams.get("project") || "default",
+    containerRef
+  );
+  
+  // Touch gestures for mobile
+  useTouchGestures({
+    canvas: fabricCanvas,
+    containerRef,
+    onZoomChange: setZoom,
+  });
   
   // Keyboard shortcuts
   useKeyboardShortcuts({
@@ -1244,15 +1267,15 @@ const CreativeBuilder = () => {
 
       {/* Main Content */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Left Panel - Assets & Layers */}
+        {/* Left Panel - Hidden on mobile, shown on tablet+ */}
         <AnimatePresence>
           {leftPanelOpen && (
             <motion.aside
               initial={{ width: 0, opacity: 0 }}
-              animate={{ width: 300, opacity: 1 }}
+              animate={{ width: 280, opacity: 1 }}
               exit={{ width: 0, opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="border-r border-border/30 bg-gradient-to-b from-card/80 to-card/40 flex flex-col shrink-0 overflow-hidden backdrop-blur-sm"
+              className="hidden md:flex border-r border-border/30 bg-gradient-to-b from-card/80 to-card/40 flex-col shrink-0 overflow-hidden backdrop-blur-sm"
             >
               {/* Tabs - Enhanced */}
               <div className="flex border-b border-border/30 shrink-0 bg-secondary/20">
@@ -1565,8 +1588,8 @@ const CreativeBuilder = () => {
 
         {/* Canvas Area */}
         <div className="flex-1 flex flex-col overflow-hidden">
-          {/* Tools Bar - Enhanced */}
-          <div className="h-14 border-b border-border/30 flex items-center justify-between px-5 bg-gradient-to-r from-card/50 to-card/30 shrink-0 backdrop-blur-sm">
+          {/* Tools Bar - Responsive */}
+          <div className="h-12 md:h-14 border-b border-border/30 hidden md:flex items-center justify-between px-3 md:px-5 bg-gradient-to-r from-card/50 to-card/30 shrink-0 backdrop-blur-sm">
             <div className="flex items-center gap-2">
               <Button
                 variant="ghost"
@@ -1574,9 +1597,9 @@ const CreativeBuilder = () => {
                 onClick={() => setLeftPanelOpen(!leftPanelOpen)}
                 className="hover:bg-muted/50"
               >
-                <Menu className="w-4 h-4" />
+                {leftPanelOpen ? <PanelLeftClose className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
               </Button>
-              <div className="w-px h-6 bg-border/50 mx-2" />
+              <div className="w-px h-6 bg-border/50 mx-1 md:mx-2" />
               
               {/* Tool Buttons - Enhanced */}
               <div className="flex items-center gap-1 p-1 rounded-xl bg-secondary/30 border border-border/30">
@@ -1707,10 +1730,10 @@ const CreativeBuilder = () => {
           {/* Canvas */}
           <div 
             ref={containerRef}
-            className="flex-1 flex items-center justify-center bg-gradient-to-br from-background via-background to-secondary/10 p-10 overflow-auto"
+            className="flex-1 flex items-center justify-center bg-gradient-to-br from-background via-background to-secondary/10 p-4 sm:p-6 md:p-10 overflow-auto pb-20 md:pb-10"
           >
             <div 
-              className="canvas-container shadow-premium relative ring-1 ring-border/20"
+              className="canvas-container shadow-premium relative ring-1 ring-border/20 touch-none"
               style={{ transform: `scale(${zoom / 100})`, transformOrigin: 'center' }}
             >
               <canvas ref={canvasRef} />
@@ -1729,19 +1752,26 @@ const CreativeBuilder = () => {
                 visible={showHeatmap}
                 onToggle={() => setShowHeatmap(false)}
               />
+              {/* Realtime Collaboration Cursors */}
+              {showCollabCursors && (
+                <RealtimeCursors 
+                  cursors={cursors} 
+                  containerRef={containerRef}
+                />
+              )}
             </div>
           </div>
         </div>
 
-        {/* Right Panel - AI Chat & Compliance - Enhanced */}
+        {/* Right Panel - Hidden on mobile */}
         <AnimatePresence>
           {rightPanelOpen && (
             <motion.aside
               initial={{ width: 0, opacity: 0 }}
-              animate={{ width: 340, opacity: 1 }}
+              animate={{ width: 320, opacity: 1 }}
               exit={{ width: 0, opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="border-l border-border/30 bg-gradient-to-b from-card/80 to-card/40 flex flex-col shrink-0 backdrop-blur-sm"
+              className="hidden lg:flex border-l border-border/30 bg-gradient-to-b from-card/80 to-card/40 flex-col shrink-0 backdrop-blur-sm"
             >
               <ScrollArea className="flex-1">
                 {/* Object Formatting Section */}
@@ -2139,6 +2169,141 @@ const CreativeBuilder = () => {
           localStorage.setItem('creato-onboarding-completed', 'true');
         }}
       />
+
+      {/* Mobile Bottom Navigation */}
+      <MobileBottomNav
+        onToolSelect={handleToolClick}
+        onOpenAITools={() => setShowMobileAITools(true)}
+        onOpenLayers={() => setMobileLeftDrawerOpen(true)}
+        onOpenExport={() => setShowExportDialog(true)}
+        onOpenShare={() => setShowShareDialog(true)}
+        onToggleSafeZones={() => setShowSafeZones(!showSafeZones)}
+        showSafeZones={showSafeZones}
+        activeTool={activeTool}
+      />
+
+      {/* Draggable Icon Library */}
+      <DraggableIconLibrary
+        isOpen={showDraggableIcons}
+        onClose={() => setShowDraggableIcons(false)}
+        onDropIcon={(iconName, color, x, y) => {
+          if (!fabricCanvas) return;
+          const iconText = new IText(iconName.charAt(0), {
+            left: x,
+            top: y,
+            fontSize: MAX_FONT_SIZE,
+            fontFamily: "Arial",
+            fontWeight: "700",
+            fill: color,
+            textAlign: "center",
+          });
+          fabricCanvas.add(iconText);
+          fabricCanvas.setActiveObject(iconText);
+          fabricCanvas.renderAll();
+        }}
+        canvasRef={containerRef}
+      />
+
+      {/* Mobile AI Tools Sheet */}
+      <Sheet open={showMobileAITools} onOpenChange={setShowMobileAITools}>
+        <SheetContent side="bottom" className="h-[70vh] rounded-t-2xl">
+          <ScrollArea className="h-full pr-4">
+            <div className="space-y-3 py-4">
+              <h3 className="font-semibold text-lg mb-4">AI Tools</h3>
+              <Button
+                variant="ai"
+                size="sm"
+                className="w-full justify-start h-12"
+                onClick={() => { setShowAIBackground(true); setShowMobileAITools(false); }}
+              >
+                <Wand2 className="w-4 h-4 mr-3" />
+                Generate AI Background
+              </Button>
+              <Button
+                variant="ai-outline"
+                size="sm"
+                className="w-full justify-start h-12"
+                onClick={() => { setShowCopywriting(true); setShowMobileAITools(false); }}
+              >
+                <FileText className="w-4 h-4 mr-3" />
+                AI Copywriting Engine
+              </Button>
+              <Button
+                variant="ai-outline"
+                size="sm"
+                className="w-full justify-start h-12"
+                onClick={() => { setShowMultiverse(true); setShowMobileAITools(false); }}
+              >
+                <Grid3X3 className="w-4 h-4 mr-3" />
+                Creative Multiverse
+              </Button>
+              <Button
+                variant="ai-outline"
+                size="sm"
+                className="w-full justify-start h-12"
+                onClick={() => { setShowCampaignCreator(true); setShowMobileAITools(false); }}
+              >
+                <Layers className="w-4 h-4 mr-3" />
+                Campaign Set Creator
+              </Button>
+              <Button
+                variant="ai-outline"
+                size="sm"
+                className="w-full justify-start h-12"
+                onClick={() => { setShowEmotionDesign(true); setShowMobileAITools(false); }}
+              >
+                <Heart className="w-4 h-4 mr-3" />
+                Emotion to Design
+              </Button>
+              <Button
+                variant="ai-outline"
+                size="sm"
+                className="w-full justify-start h-12"
+                onClick={() => { setShowTrendForecast(true); setShowMobileAITools(false); }}
+              >
+                <TrendingUp className="w-4 h-4 mr-3" />
+                Trend Forecast
+              </Button>
+              <Button
+                variant="ai-outline"
+                size="sm"
+                className="w-full justify-start h-12"
+                onClick={() => { setShowTypography(true); setShowMobileAITools(false); }}
+              >
+                <Type className="w-4 h-4 mr-3" />
+                Typography Harmony
+              </Button>
+              <Button
+                variant="ai-outline"
+                size="sm"
+                className="w-full justify-start h-12"
+                onClick={() => { setShowVisualAuditor(true); setShowMobileAITools(false); }}
+              >
+                <EyeIcon className="w-4 h-4 mr-3" />
+                Visual Auditor
+              </Button>
+              <Button
+                variant="ai-outline"
+                size="sm"
+                className="w-full justify-start h-12"
+                onClick={() => { setShowColorPsychology(true); setShowMobileAITools(false); }}
+              >
+                <Palette className="w-4 h-4 mr-3" />
+                Color Psychology
+              </Button>
+              <Button
+                variant="ai-outline"
+                size="sm"
+                className="w-full justify-start h-12"
+                onClick={() => { setShowDraggableIcons(true); setShowMobileAITools(false); }}
+              >
+                <Image className="w-4 h-4 mr-3" />
+                Icon Library
+              </Button>
+            </div>
+          </ScrollArea>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 };
