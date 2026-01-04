@@ -97,85 +97,85 @@
     --sidebar-ring: 173 58% 39%;
   }
 
-  /* DARK MODE - Teal/Cyan Premium Theme (Matching Screenshot) */
+  /* DARK MODE - Completely Dark with Subtle Colors */
   .dark {
-    /* Core Brand Colors - Deep navy with teal accents */
-    --background: 195 25% 10%;
-    --foreground: 185 15% 80%;
+    /* Core - Very dark backgrounds */
+    --background: 200 20% 7%;
+    --foreground: 200 10% 65%;
 
-    --card: 195 22% 12%;
-    --card-foreground: 185 12% 85%;
+    --card: 200 18% 10%;
+    --card-foreground: 200 8% 70%;
 
-    --popover: 195 22% 13%;
-    --popover-foreground: 185 12% 85%;
+    --popover: 200 18% 11%;
+    --popover-foreground: 200 8% 70%;
 
-    /* Primary - Teal/Cyan */
-    --primary: 173 58% 45%;
-    --primary-foreground: 195 25% 8%;
+    /* Primary - Muted teal */
+    --primary: 175 40% 40%;
+    --primary-foreground: 200 20% 5%;
 
-    /* Secondary - Dark teal-blue */
-    --secondary: 195 20% 15%;
-    --secondary-foreground: 185 12% 75%;
+    /* Secondary - Very dark */
+    --secondary: 200 15% 12%;
+    --secondary-foreground: 200 8% 60%;
 
-    /* AI Accent - Vibrant teal */
-    --accent: 173 58% 45%;
-    --accent-foreground: 0 0% 100%;
+    /* AI Accent - Soft teal */
+    --accent: 175 45% 38%;
+    --accent-foreground: 0 0% 98%;
 
-    /* Highlight - Bright cyan */
-    --highlight: 187 75% 50%;
-    --highlight-foreground: 195 25% 8%;
+    /* Highlight - Muted cyan */
+    --highlight: 185 50% 42%;
+    --highlight-foreground: 200 20% 5%;
 
-    /* Muted - Soft dark teal */
-    --muted: 195 18% 18%;
-    --muted-foreground: 185 10% 55%;
+    /* Muted - Dark subtle */
+    --muted: 200 12% 14%;
+    --muted-foreground: 200 8% 45%;
 
-    /* System Colors */
-    --destructive: 0 55% 50%;
-    --destructive-foreground: 0 0% 100%;
+    /* System Colors - Softer */
+    --destructive: 0 45% 45%;
+    --destructive-foreground: 0 0% 95%;
 
-    --warning: 38 65% 50%;
-    --warning-foreground: 195 25% 8%;
+    --warning: 38 50% 45%;
+    --warning-foreground: 200 20% 5%;
 
-    --success: 160 55% 45%;
-    --success-foreground: 0 0% 100%;
+    --success: 160 45% 38%;
+    --success-foreground: 0 0% 95%;
 
     /* Canvas - Light for contrast */
-    --canvas: 210 15% 92%;
-    --canvas-foreground: 195 25% 8%;
+    --canvas: 210 12% 90%;
+    --canvas-foreground: 200 20% 8%;
 
-    /* Borders & Inputs - Subtle teal tint */
-    --border: 195 15% 22%;
-    --input: 195 15% 20%;
-    --ring: 173 58% 45%;
+    /* Borders & Inputs - Very subtle */
+    --border: 200 10% 18%;
+    --input: 200 10% 15%;
+    --ring: 175 40% 40%;
 
-    /* Glass Effects - Dark Mode */
-    --glass: 195 22% 12% / 0.95;
-    --glass-border: 195 15% 28% / 0.5;
-    --glass-highlight: 173 58% 45% / 0.05;
+    /* Glass Effects */
+    --glass: 200 18% 10% / 0.95;
+    --glass-border: 200 10% 22% / 0.4;
+    --glass-highlight: 175 40% 40% / 0.03;
 
-    /* Gradients - Dark Mode (Teal Theme) */
-    --gradient-ai: linear-gradient(135deg, hsl(173 58% 45%), hsl(187 75% 50%));
-    --gradient-premium: linear-gradient(135deg, hsl(195 22% 14%), hsl(195 25% 10%));
-    --gradient-glow: radial-gradient(ellipse at center, hsl(173 58% 45% / 0.12), transparent 70%);
-    --gradient-accent: linear-gradient(135deg, hsl(173 58% 45% / 0.15), hsl(187 75% 50% / 0.15));
+    /* Gradients */
+    --gradient-ai: linear-gradient(135deg, hsl(175 45% 38%), hsl(185 50% 42%));
+    --gradient-premium: linear-gradient(135deg, hsl(200 18% 11%), hsl(200 20% 7%));
+    --gradient-glow: radial-gradient(ellipse at center, hsl(175 40% 40% / 0.08), transparent 70%);
+    --gradient-accent: linear-gradient(135deg, hsl(175 40% 40% / 0.1), hsl(185 50% 42% / 0.1));
 
-    /* Shadows - Dark Mode with teal glow */
-    --shadow-sm: 0 2px 8px hsl(195 30% 5% / 0.4);
-    --shadow-md: 0 4px 16px hsl(195 30% 5% / 0.5);
-    --shadow-lg: 0 8px 32px hsl(195 30% 5% / 0.6);
-    --shadow-glow: 0 0 30px hsl(173 58% 45% / 0.2);
-    --shadow-accent: 0 0 25px hsl(173 58% 45% / 0.15);
-    --shadow-purple: 0 0 25px hsl(280 50% 55% / 0.2);
+    /* Shadows */
+    --shadow-sm: 0 2px 8px hsl(200 25% 3% / 0.5);
+    --shadow-md: 0 4px 16px hsl(200 25% 3% / 0.6);
+    --shadow-lg: 0 8px 32px hsl(200 25% 3% / 0.7);
+    --shadow-glow: 0 0 25px hsl(175 40% 40% / 0.15);
+    --shadow-accent: 0 0 20px hsl(175 40% 40% / 0.1);
+    --shadow-purple: 0 0 20px hsl(280 40% 50% / 0.15);
 
-    /* Sidebar - Deep teal-navy */
-    --sidebar-background: 195 25% 8%;
-    --sidebar-foreground: 185 12% 75%;
-    --sidebar-primary: 173 58% 45%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 195 20% 16%;
-    --sidebar-accent-foreground: 185 12% 85%;
-    --sidebar-border: 195 15% 20%;
-    --sidebar-ring: 173 58% 45%;
+    /* Sidebar */
+    --sidebar-background: 200 20% 6%;
+    --sidebar-foreground: 200 8% 60%;
+    --sidebar-primary: 175 40% 40%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 200 15% 13%;
+    --sidebar-accent-foreground: 200 8% 70%;
+    --sidebar-border: 200 10% 16%;
+    --sidebar-ring: 175 40% 40%;
   }
 }
 
