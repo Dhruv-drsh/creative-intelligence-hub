@@ -5,7 +5,7 @@ import {
   Plus, FolderOpen, Clock, TrendingUp, 
   Sparkles, LayoutGrid, Image, FileText,
   ArrowRight, LogOut, Zap, Users, BarChart3,
-  Palette, Wand2, Shield, Brain
+  Palette, Wand2, Shield, Brain, User, Settings
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ComplianceScore } from "@/components/ui/ComplianceScore";
@@ -111,6 +111,18 @@ const Dashboard = () => {
             <span className="text-sm text-gray-500 hidden md:block">
               {user?.email}
             </span>
+            <Link to="/profile">
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  title="Profile Settings"
+                  className="text-gray-500 hover:text-gray-900"
+                >
+                  <User className="w-4 h-4" />
+                </Button>
+              </motion.div>
+            </Link>
             <Link to="/builder">
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Button 

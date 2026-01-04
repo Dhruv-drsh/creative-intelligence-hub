@@ -162,41 +162,59 @@ const LandingPage = () => {
       <motion.nav
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
         className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-xl border-b border-gray-100/50"
       >
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <motion.div 
             className="flex items-center gap-3"
             whileHover={{ scale: 1.02 }}
+            transition={{ type: "spring", stiffness: 400, damping: 10 }}
           >
-            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-teal-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-teal-500/25">
+            <motion.div 
+              className="w-11 h-11 rounded-xl bg-gradient-to-br from-teal-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-teal-500/25"
+              whileHover={{ rotate: 10 }}
+              transition={{ type: "spring", stiffness: 300 }}
+            >
               <Sparkles className="w-6 h-6 text-white" />
-            </div>
+            </motion.div>
             <span className="font-bold text-xl text-gray-900 tracking-tight">Creato-Sphere</span>
           </motion.div>
           
           <div className="hidden md:flex items-center gap-8">
-            {["Features", "How it Works", "AI Engines", "Testimonials"].map((item) => (
+            {["Features", "How it Works", "AI Engines", "Testimonials"].map((item, index) => (
               <motion.a 
                 key={item}
                 href={`#${item.toLowerCase().replace(/\s+/g, '-')}`} 
-                className="text-sm text-gray-600 hover:text-teal-600 transition-colors font-medium"
+                className="text-sm text-gray-600 hover:text-teal-600 transition-colors font-medium relative"
                 whileHover={{ y: -2 }}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 + index * 0.05 }}
               >
                 {item}
+                <motion.span 
+                  className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-teal-500 to-cyan-500"
+                  whileHover={{ width: "100%" }}
+                  transition={{ duration: 0.2 }}
+                />
               </motion.a>
             ))}
           </div>
           
           <div className="flex items-center gap-3">
             <Link to="/auth">
-              <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-900 font-medium">
-                Sign In
-              </Button>
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-900 font-medium">
+                  Sign In
+                </Button>
+              </motion.div>
             </Link>
             <Link to="/auth">
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <motion.div 
+                whileHover={{ scale: 1.05, boxShadow: "0 10px 40px -10px rgba(20, 184, 166, 0.5)" }} 
+                whileTap={{ scale: 0.95 }}
+              >
                 <Button 
                   size="sm" 
                   className="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white rounded-full px-6 shadow-lg shadow-teal-500/25"
@@ -308,25 +326,44 @@ const LandingPage = () => {
                 className="flex flex-wrap gap-4 mb-8"
               >
                 <Link to="/auth">
-                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <motion.div 
+                    whileHover={{ scale: 1.05, y: -3, boxShadow: "0 20px 50px -15px rgba(20, 184, 166, 0.5)" }} 
+                    whileTap={{ scale: 0.98 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                  >
                     <Button 
                       size="lg" 
-                      className="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white rounded-full px-8 py-6 text-lg shadow-2xl shadow-teal-500/30 group"
+                      className="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white rounded-full px-8 py-6 text-lg shadow-2xl shadow-teal-500/30 group relative overflow-hidden"
                     >
+                      <motion.span 
+                        className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0"
+                        initial={{ x: "-100%" }}
+                        whileHover={{ x: "100%" }}
+                        transition={{ duration: 0.6 }}
+                      />
                       <Rocket className="w-5 h-5 mr-2 group-hover:animate-bounce" />
                       LET'S CREATE
                       <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                     </Button>
                   </motion.div>
                 </Link>
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <motion.div 
+                  whileHover={{ scale: 1.05, y: -2 }} 
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                >
                   <Button 
                     size="lg" 
                     variant="outline"
                     onClick={() => setShowVideoModal(true)}
-                    className="rounded-full px-8 py-6 text-lg border-2 border-gray-200 hover:border-teal-300 hover:bg-teal-50/50"
+                    className="rounded-full px-8 py-6 text-lg border-2 border-gray-200 hover:border-teal-300 hover:bg-teal-50/50 group"
                   >
-                    <Play className="w-5 h-5 mr-2" />
+                    <motion.div
+                      animate={{ scale: [1, 1.2, 1] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    >
+                      <Play className="w-5 h-5 mr-2 text-teal-500" />
+                    </motion.div>
                     Watch Demo
                   </Button>
                 </motion.div>
