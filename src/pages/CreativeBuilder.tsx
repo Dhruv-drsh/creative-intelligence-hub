@@ -861,7 +861,7 @@ const CreativeBuilder = () => {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-background overflow-hidden">
+    <div className="h-screen flex flex-col bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-background dark:via-background dark:to-secondary/10 overflow-hidden transition-colors duration-300">
       {/* Modals */}
       <ImageUploader
         isOpen={showImageUploader}
@@ -1144,17 +1144,17 @@ const CreativeBuilder = () => {
         currentFormat={currentFormat}
       />
 
-      {/* Top Bar - Responsive */}
-      <header className="h-14 sm:h-16 border-b border-border/30 glass flex items-center justify-between px-3 sm:px-5 shrink-0 backdrop-blur-xl">
+      {/* Top Bar - Zeroqode Style */}
+      <header className="h-14 sm:h-16 border-b border-gray-100 dark:border-border/30 bg-white/90 dark:bg-card/80 backdrop-blur-xl flex items-center justify-between px-3 sm:px-5 shrink-0 shadow-sm dark:shadow-none transition-colors duration-300">
         <div className="flex items-center gap-2 sm:gap-4">
           <Link to="/dashboard">
-            <Button variant="ghost" size="icon-sm" className="hover:bg-muted/50">
+            <Button variant="ghost" size="icon-sm" className="hover:bg-gray-100 dark:hover:bg-muted/50 text-gray-600 dark:text-foreground">
               <ChevronLeft className="w-4 h-4" />
             </Button>
           </Link>
           <div className="flex items-center gap-2 sm:gap-3">
-            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-gradient-to-br from-accent via-highlight to-accent flex items-center justify-center shadow-glow-accent">
-              <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary-foreground" />
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-gradient-to-br from-teal-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-teal-500/25">
+              <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
             </div>
             {isEditingName ? (
               <Input
@@ -1162,12 +1162,12 @@ const CreativeBuilder = () => {
                 onChange={(e) => setProjectName(e.target.value)}
                 onBlur={() => setIsEditingName(false)}
                 onKeyDown={(e) => e.key === 'Enter' && setIsEditingName(false)}
-                className="h-7 sm:h-8 w-32 sm:w-48 text-xs sm:text-sm font-medium bg-muted/30 border-accent/30"
+                className="h-7 sm:h-8 w-32 sm:w-48 text-xs sm:text-sm font-medium bg-gray-50 dark:bg-muted/30 border-gray-200 dark:border-accent/30"
                 autoFocus
               />
             ) : (
               <span 
-                className="font-semibold text-foreground cursor-pointer hover:text-accent transition-colors text-sm sm:text-base truncate max-w-[100px] sm:max-w-[200px]"
+                className="font-semibold text-gray-900 dark:text-foreground cursor-pointer hover:text-teal-600 dark:hover:text-accent transition-colors text-sm sm:text-base truncate max-w-[100px] sm:max-w-[200px]"
                 onClick={() => setIsEditingName(true)}
               >
                 {projectName}
@@ -1178,7 +1178,7 @@ const CreativeBuilder = () => {
 
         {/* Format Selector - Hidden on mobile, shown on tablet+ */}
         <div className="hidden md:flex items-center gap-3">
-          <div className="flex gap-1 bg-secondary/30 rounded-xl p-1.5 backdrop-blur-sm border border-border/30">
+          <div className="flex gap-1 bg-gray-100 dark:bg-secondary/30 rounded-xl p-1.5 border border-gray-200/50 dark:border-border/30">
             {availableFormats.slice(0, 4).map((format) => (
               <button
                 key={format.id}
@@ -1186,17 +1186,17 @@ const CreativeBuilder = () => {
                 className={cn(
                   "px-3 lg:px-4 py-1.5 lg:py-2 rounded-lg text-xs font-semibold transition-all duration-300",
                   currentFormat.id === format.id
-                    ? "bg-gradient-to-r from-accent to-highlight text-accent-foreground shadow-md"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
+                    ? "bg-gradient-to-r from-teal-500 to-cyan-500 text-white shadow-md"
+                    : "text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground hover:bg-white dark:hover:bg-muted/30"
                 )}
               >
                 {format.name}
               </button>
             ))}
           </div>
-          <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-secondary/30 border border-border/30">
+          <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white dark:bg-secondary/30 border border-gray-200 dark:border-border/30 shadow-sm">
             <ComplianceScore score={calculatedScore} size="sm" showLabel={false} />
-            <span className="text-xs font-medium text-muted-foreground">Score</span>
+            <span className="text-xs font-medium text-gray-500 dark:text-muted-foreground">Score</span>
           </div>
           <AIIndicator status={aiStatus} />
         </div>
@@ -1204,14 +1204,14 @@ const CreativeBuilder = () => {
 
         {/* Actions - Responsive */}
         <div className="flex items-center gap-1 sm:gap-2">
-          <div className="hidden sm:flex items-center gap-1 p-1 rounded-lg bg-secondary/30 border border-border/30">
+          <div className="hidden sm:flex items-center gap-1 p-1 rounded-lg bg-gray-100 dark:bg-secondary/30 border border-gray-200/50 dark:border-border/30">
             <Button 
               variant="ghost" 
               size="icon-sm"
               onClick={undo}
               disabled={!canUndo}
               title="Undo (Ctrl+Z)"
-              className="hover:bg-muted/50"
+              className="hover:bg-white dark:hover:bg-muted/50 text-gray-600 dark:text-foreground"
             >
               <Undo2 className="w-4 h-4" />
             </Button>
@@ -1221,7 +1221,7 @@ const CreativeBuilder = () => {
               onClick={redo}
               disabled={!canRedo}
               title="Redo (Ctrl+Shift+Z)"
-              className="hover:bg-muted/50"
+              className="hover:bg-white dark:hover:bg-muted/50 text-gray-600 dark:text-foreground"
             >
               <Redo2 className="w-4 h-4" />
             </Button>
@@ -1231,7 +1231,7 @@ const CreativeBuilder = () => {
             size="sm" 
             onClick={saveProject}
             disabled={isSaving}
-            className="hidden sm:flex border-border/50 hover:border-accent/50 hover:bg-accent/5"
+            className="hidden sm:flex border-gray-200 dark:border-border/50 hover:border-teal-300 dark:hover:border-accent/50 hover:bg-teal-50 dark:hover:bg-accent/5 text-gray-700 dark:text-foreground"
           >
             {isSaving ? (
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -1243,22 +1243,21 @@ const CreativeBuilder = () => {
           <Button 
             variant="outline" 
             size="sm" 
-            className="hidden lg:flex border-border/50 hover:border-highlight/50 hover:bg-highlight/5"
+            className="hidden lg:flex border-gray-200 dark:border-border/50 hover:border-cyan-300 dark:hover:border-highlight/50 hover:bg-cyan-50 dark:hover:bg-highlight/5 text-gray-700 dark:text-foreground"
             onClick={() => setShowShareDialog(true)}
           >
             <Share2 className="w-4 h-4 mr-2" />
             Share
           </Button>
           <Button 
-            variant="ai-outline" 
             size="sm" 
             onClick={() => setShowQuickExport(true)}
-            className="hidden md:flex"
+            className="hidden md:flex bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white shadow-lg shadow-purple-500/25"
           >
             <Zap className="w-4 h-4 sm:mr-2" />
             <span className="hidden sm:inline">Quick</span>
           </Button>
-          <Button variant="ai" size="sm" onClick={() => setShowExportDialog(true)} className="shadow-lg">
+          <Button size="sm" onClick={() => setShowExportDialog(true)} className="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white shadow-lg shadow-teal-500/25">
             <Download className="w-4 h-4 sm:mr-2" />
             <span className="hidden sm:inline">Export</span>
           </Button>
@@ -1275,10 +1274,10 @@ const CreativeBuilder = () => {
               animate={{ width: 280, opacity: 1 }}
               exit={{ width: 0, opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="hidden md:flex border-r border-border/30 bg-gradient-to-b from-card/80 to-card/40 flex-col shrink-0 overflow-hidden backdrop-blur-sm"
+              className="hidden md:flex border-r border-gray-100 dark:border-border/30 bg-white dark:bg-gradient-to-b dark:from-card/80 dark:to-card/40 flex-col shrink-0 overflow-hidden shadow-sm dark:shadow-none transition-colors duration-300"
             >
               {/* Tabs - Enhanced */}
-              <div className="flex border-b border-border/30 shrink-0 bg-secondary/20">
+              <div className="flex border-b border-gray-100 dark:border-border/30 shrink-0 bg-gray-50/50 dark:bg-secondary/20">
                 {(["assets", "layers", "templates"] as const).map((tab) => (
                   <button
                     key={tab}
@@ -1286,15 +1285,15 @@ const CreativeBuilder = () => {
                     className={cn(
                       "flex-1 py-3.5 text-xs font-semibold transition-all duration-300 capitalize relative",
                       leftPanelTab === tab
-                        ? "text-accent"
-                        : "text-muted-foreground hover:text-foreground"
+                        ? "text-teal-600 dark:text-accent"
+                        : "text-gray-500 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground"
                     )}
                   >
                     {tab}
                     {leftPanelTab === tab && (
                       <motion.div 
                         layoutId="activeTab"
-                        className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-accent to-highlight"
+                        className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-teal-500 to-cyan-500"
                       />
                     )}
                   </button>
@@ -1589,28 +1588,28 @@ const CreativeBuilder = () => {
         {/* Canvas Area */}
         <div className="flex-1 flex flex-col overflow-hidden">
           {/* Tools Bar - Responsive */}
-          <div className="h-12 md:h-14 border-b border-border/30 hidden md:flex items-center justify-between px-3 md:px-5 bg-gradient-to-r from-card/50 to-card/30 shrink-0 backdrop-blur-sm">
+          <div className="h-12 md:h-14 border-b border-gray-100 dark:border-border/30 hidden md:flex items-center justify-between px-3 md:px-5 bg-white/80 dark:bg-gradient-to-r dark:from-card/50 dark:to-card/30 shrink-0 backdrop-blur-sm shadow-sm dark:shadow-none transition-colors duration-300">
             <div className="flex items-center gap-2">
               <Button
                 variant="ghost"
                 size="icon-sm"
                 onClick={() => setLeftPanelOpen(!leftPanelOpen)}
-                className="hover:bg-muted/50"
+                className="hover:bg-gray-100 dark:hover:bg-muted/50 text-gray-600 dark:text-foreground"
               >
                 {leftPanelOpen ? <PanelLeftClose className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
               </Button>
-              <div className="w-px h-6 bg-border/50 mx-1 md:mx-2" />
+              <div className="w-px h-6 bg-gray-200 dark:bg-border/50 mx-1 md:mx-2" />
               
               {/* Tool Buttons - Enhanced */}
-              <div className="flex items-center gap-1 p-1 rounded-xl bg-secondary/30 border border-border/30">
+              <div className="flex items-center gap-1 p-1 rounded-xl bg-gray-100 dark:bg-secondary/30 border border-gray-200/50 dark:border-border/30">
                 {[
-                  { tool: "select" as const, icon: MousePointer2, color: "text-foreground", label: "Select" },
-                  { tool: "rectangle" as const, icon: Square, color: "text-indigo-400", label: "Rectangle" },
-                  { tool: "circle" as const, icon: CircleIcon, color: "text-pink-400", label: "Circle" },
-                  { tool: "triangle" as const, icon: Triangle, color: "text-amber-400", label: "Triangle" },
-                  { tool: "star" as const, icon: Star, color: "text-purple-400", label: "Star" },
-                  { tool: "arrow" as const, icon: ArrowRight, color: "text-green-400", label: "Arrow" },
-                  { tool: "text" as const, icon: Type, color: "text-emerald-400", label: "Text" },
+                  { tool: "select" as const, icon: MousePointer2, color: "text-gray-700 dark:text-foreground", label: "Select" },
+                  { tool: "rectangle" as const, icon: Square, color: "text-indigo-500", label: "Rectangle" },
+                  { tool: "circle" as const, icon: CircleIcon, color: "text-pink-500", label: "Circle" },
+                  { tool: "triangle" as const, icon: Triangle, color: "text-amber-500", label: "Triangle" },
+                  { tool: "star" as const, icon: Star, color: "text-purple-500", label: "Star" },
+                  { tool: "arrow" as const, icon: ArrowRight, color: "text-green-500", label: "Arrow" },
+                  { tool: "text" as const, icon: Type, color: "text-teal-500", label: "Text" },
                 ].map(({ tool, icon: Icon, color, label }) => (
                   <button
                     key={tool}
@@ -1619,8 +1618,8 @@ const CreativeBuilder = () => {
                     className={cn(
                       "w-9 h-9 rounded-lg flex items-center justify-center transition-all duration-200",
                       activeTool === tool
-                        ? `bg-gradient-to-br from-accent/20 to-highlight/20 ${color} shadow-md border border-accent/30`
-                        : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
+                        ? `bg-gradient-to-br from-teal-500/20 to-cyan-500/20 ${color} shadow-md border border-teal-500/30`
+                        : "text-gray-500 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground hover:bg-white dark:hover:bg-muted/30"
                     )}
                   >
                     <Icon className="w-4 h-4" />
@@ -1628,14 +1627,14 @@ const CreativeBuilder = () => {
                 ))}
               </div>
               
-              <div className="w-px h-6 bg-border/50 mx-2" />
+              <div className="w-px h-6 bg-gray-200 dark:bg-border/50 mx-2" />
               
               {/* Action Buttons */}
               <div className="flex items-center gap-1">
                 <Button 
                   variant="ghost" 
                   size="icon-sm"
-                  className="hover:bg-destructive/10 hover:text-destructive"
+                  className="hover:bg-red-50 dark:hover:bg-destructive/10 hover:text-red-500 dark:hover:text-destructive text-gray-500"
                   onClick={() => {
                     const activeObj = fabricCanvas?.getActiveObject();
                     if (activeObj) {
@@ -1650,7 +1649,7 @@ const CreativeBuilder = () => {
                 <Button 
                   variant="ghost" 
                   size="icon-sm"
-                  className="hover:bg-accent/10 hover:text-accent"
+                  className="hover:bg-teal-50 dark:hover:bg-accent/10 hover:text-teal-500 dark:hover:text-accent text-gray-500"
                   onClick={() => {
                     const activeObj = fabricCanvas?.getActiveObject();
                     if (activeObj) {
@@ -1673,41 +1672,51 @@ const CreativeBuilder = () => {
             {/* View Controls */}
             <div className="flex items-center gap-2">
               <Button
-                variant={showSafeZones ? "ai-outline" : "ghost"}
+                variant={showSafeZones ? "default" : "ghost"}
                 size="sm"
                 onClick={() => setShowSafeZones(!showSafeZones)}
-                className="text-xs h-8"
+                className={cn(
+                  "text-xs h-8",
+                  showSafeZones 
+                    ? "bg-gradient-to-r from-teal-500 to-cyan-500 text-white" 
+                    : "text-gray-600 dark:text-muted-foreground hover:bg-gray-100 dark:hover:bg-muted/30"
+                )}
               >
                 <EyeIcon className="w-3.5 h-3.5 mr-1.5" />
                 Safe Zones
               </Button>
               <Button
-                variant={showHeatmap ? "ai-outline" : "ghost"}
+                variant={showHeatmap ? "default" : "ghost"}
                 size="sm"
                 onClick={() => setShowHeatmap(!showHeatmap)}
-                className="text-xs h-8"
+                className={cn(
+                  "text-xs h-8",
+                  showHeatmap 
+                    ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white" 
+                    : "text-gray-600 dark:text-muted-foreground hover:bg-gray-100 dark:hover:bg-muted/30"
+                )}
               >
                 <Zap className="w-3.5 h-3.5 mr-1.5" />
                 Heatmap
               </Button>
               
-              <div className="w-px h-6 bg-border/50 mx-2" />
+              <div className="w-px h-6 bg-gray-200 dark:bg-border/50 mx-2" />
               
               {/* Zoom Controls */}
-              <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-secondary/30 border border-border/30">
+              <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-gray-100 dark:bg-secondary/30 border border-gray-200/50 dark:border-border/30">
                 <Button 
                   variant="ghost" 
                   size="icon-sm"
-                  className="w-7 h-7 hover:bg-muted/50"
+                  className="w-7 h-7 hover:bg-white dark:hover:bg-muted/50 text-gray-600 dark:text-foreground"
                   onClick={() => setZoom(Math.max(50, zoom - 10))}
                 >
                   <ZoomOut className="w-3.5 h-3.5" />
                 </Button>
-                <span className="text-xs font-mono text-muted-foreground w-10 text-center">{zoom}%</span>
+                <span className="text-xs font-mono text-gray-500 dark:text-muted-foreground w-10 text-center">{zoom}%</span>
                 <Button 
                   variant="ghost" 
                   size="icon-sm"
-                  className="w-7 h-7 hover:bg-muted/50"
+                  className="w-7 h-7 hover:bg-white dark:hover:bg-muted/50 text-gray-600 dark:text-foreground"
                   onClick={() => setZoom(Math.min(200, zoom + 10))}
                 >
                   <ZoomIn className="w-3.5 h-3.5" />
@@ -1720,7 +1729,7 @@ const CreativeBuilder = () => {
                 variant="ghost"
                 size="icon-sm"
                 onClick={() => setRightPanelOpen(!rightPanelOpen)}
-                className="hover:bg-muted/50"
+                className="hover:bg-gray-100 dark:hover:bg-muted/50 text-gray-600 dark:text-foreground"
               >
                 <Settings className="w-4 h-4" />
               </Button>
@@ -1730,10 +1739,10 @@ const CreativeBuilder = () => {
           {/* Canvas */}
           <div 
             ref={containerRef}
-            className="flex-1 flex items-center justify-center bg-gradient-to-br from-background via-background to-secondary/10 p-4 sm:p-6 md:p-10 overflow-auto pb-20 md:pb-10"
+            className="flex-1 flex items-center justify-center bg-gradient-to-br from-gray-100 via-gray-50 to-white dark:from-background dark:via-background dark:to-secondary/10 p-4 sm:p-6 md:p-10 overflow-auto pb-20 md:pb-10 transition-colors duration-300"
           >
             <div 
-              className="canvas-container shadow-premium relative ring-1 ring-border/20 touch-none"
+              className="canvas-container shadow-xl relative ring-1 ring-gray-200/50 dark:ring-border/20 touch-none rounded-2xl overflow-hidden"
               style={{ transform: `scale(${zoom / 100})`, transformOrigin: 'center' }}
             >
               <canvas ref={canvasRef} />
@@ -1771,7 +1780,7 @@ const CreativeBuilder = () => {
               animate={{ width: 320, opacity: 1 }}
               exit={{ width: 0, opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="hidden lg:flex border-l border-border/30 bg-gradient-to-b from-card/80 to-card/40 flex-col shrink-0 backdrop-blur-sm"
+              className="hidden lg:flex border-l border-gray-100 dark:border-border/30 bg-white dark:bg-gradient-to-b dark:from-card/80 dark:to-card/40 flex-col shrink-0 shadow-sm dark:shadow-none transition-colors duration-300"
             >
               <ScrollArea className="flex-1">
                 {/* Object Formatting Section */}
