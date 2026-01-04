@@ -9,6 +9,7 @@ import {
   Check, AlertTriangle, X, Menu, Eye as EyeIcon, Palette, Wand2, Save, Loader2, Heart, TrendingUp, Users,
   PenTool, Zap, FileText, Triangle, Star, ArrowRight, Grid3X3, Dna, Bold, Italic, HelpCircle, PanelLeftClose, PanelRightClose
 } from "lucide-react";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -1204,6 +1205,7 @@ const CreativeBuilder = () => {
 
         {/* Actions - Responsive */}
         <div className="flex items-center gap-1 sm:gap-2">
+          <ThemeToggle className="hidden md:flex" />
           <div className="hidden sm:flex items-center gap-1 p-1 rounded-lg bg-gray-100 dark:bg-secondary/30 border border-gray-200/50 dark:border-border/30">
             <Button 
               variant="ghost" 
