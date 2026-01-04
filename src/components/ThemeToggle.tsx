@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { Moon, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
 
-export const ThemeToggle = () => {
+export const ThemeToggle = ({ className = "" }: { className?: string }) => {
   const [isDark, setIsDark] = useState(() => {
     if (typeof window !== 'undefined') {
       return document.documentElement.classList.contains('dark') || 
@@ -14,6 +14,10 @@ export const ThemeToggle = () => {
 
   useEffect(() => {
     const root = document.documentElement;
+    
+    // Add transition class for smooth color changes
+    root.style.setProperty('--transition-duration', '300ms');
+    
     if (isDark) {
       root.classList.add('dark');
       localStorage.setItem('theme', 'dark');
@@ -26,8 +30,9 @@ export const ThemeToggle = () => {
   return (
     <motion.button
       onClick={() => setIsDark(!isDark)}
-      className="relative w-14 h-7 rounded-full bg-gray-200 dark:bg-gray-700 p-1 transition-colors duration-300"
+      className={`relative w-14 h-7 rounded-full bg-gray-200 dark:bg-gray-700 p-1 transition-colors duration-300 ${className}`}
       whileTap={{ scale: 0.95 }}
+      title={isDark ? "Switch to light mode" : "Switch to dark mode"}
     >
       <motion.div
         className="absolute top-1 w-5 h-5 rounded-full bg-white shadow-md flex items-center justify-center"

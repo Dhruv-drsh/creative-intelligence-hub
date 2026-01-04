@@ -10,6 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { ComplianceScore } from "@/components/ui/ComplianceScore";
 import { FormatBadge } from "@/components/ui/FormatBadge";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -92,9 +93,9 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-background dark:via-background dark:to-secondary/10 transition-colors duration-300">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-xl border-b border-gray-100">
+      <header className="sticky top-0 z-50 bg-white/90 dark:bg-card/80 backdrop-blur-xl border-b border-gray-100 dark:border-border/30 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link to="/" className="flex items-center gap-2">
@@ -104,11 +105,12 @@ const Dashboard = () => {
               >
                 <Sparkles className="w-5 h-5 text-white" />
               </motion.div>
-              <span className="font-bold text-xl text-gray-900 tracking-tight">Creato-Sphere</span>
+              <span className="font-bold text-xl text-gray-900 dark:text-foreground tracking-tight">Creato-Sphere</span>
             </Link>
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-sm text-gray-500 hidden md:block">
+            <ThemeToggle className="hidden sm:flex" />
+            <span className="text-sm text-gray-500 dark:text-muted-foreground hidden md:block">
               {user?.email}
             </span>
             <Link to="/profile">
@@ -117,7 +119,7 @@ const Dashboard = () => {
                   variant="ghost" 
                   size="icon" 
                   title="Profile Settings"
-                  className="text-gray-500 hover:text-gray-900"
+                  className="text-gray-500 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground"
                 >
                   <User className="w-4 h-4" />
                 </Button>
@@ -140,7 +142,7 @@ const Dashboard = () => {
                 size="icon" 
                 onClick={handleSignOut} 
                 title="Sign out"
-                className="text-gray-500 hover:text-gray-900"
+                className="text-gray-500 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground"
               >
                 <LogOut className="w-4 h-4" />
               </Button>
