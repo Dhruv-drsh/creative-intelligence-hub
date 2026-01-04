@@ -11,6 +11,7 @@ import { Link } from "react-router-dom";
 import { VideoModal } from "@/components/VideoModal";
 import { ScrollReveal, StaggerReveal } from "@/components/ScrollReveal";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { PageTransition } from "@/components/PageTransition";
 
 // Hero carousel slides
 const heroSlides = [
@@ -155,6 +156,7 @@ const LandingPage = () => {
   };
 
   return (
+    <PageTransition>
     <div className="min-h-screen bg-background overflow-hidden transition-colors duration-300">
       {/* Video Modal */}
       <VideoModal isOpen={showVideoModal} onClose={() => setShowVideoModal(false)} />
@@ -808,6 +810,7 @@ const LandingPage = () => {
         </div>
       </footer>
     </div>
+    </PageTransition>
   );
 };
 

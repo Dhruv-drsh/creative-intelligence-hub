@@ -10,6 +10,7 @@ import {
   PenTool, Zap, FileText, Triangle, Star, ArrowRight, Grid3X3, Dna, Bold, Italic, HelpCircle, PanelLeftClose, PanelRightClose
 } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { PageTransition } from "@/components/PageTransition";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -862,7 +863,8 @@ const CreativeBuilder = () => {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-background dark:via-background dark:to-secondary/10 overflow-hidden transition-colors duration-300">
+    <PageTransition className="h-screen">
+    <div className="h-full flex flex-col bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-background dark:via-background dark:to-secondary/10 overflow-hidden transition-colors duration-300">
       {/* Modals */}
       <ImageUploader
         isOpen={showImageUploader}
@@ -2316,6 +2318,7 @@ const CreativeBuilder = () => {
         </SheetContent>
       </Sheet>
     </div>
+    </PageTransition>
   );
 };
 

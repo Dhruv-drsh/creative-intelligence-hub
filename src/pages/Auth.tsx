@@ -7,6 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { z } from "zod";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { PageTransition } from "@/components/PageTransition";
 
 const emailSchema = z.string().email("Please enter a valid email address");
 const passwordSchema = z.string().min(6, "Password must be at least 6 characters");
@@ -72,6 +73,7 @@ const Auth = () => {
   };
 
   return (
+    <PageTransition>
     <div className="min-h-screen bg-background flex transition-colors duration-300">
       {/* Left Side - Form */}
       <div className="flex-1 flex items-center justify-center p-4 sm:p-8 relative">
@@ -295,6 +297,7 @@ const Auth = () => {
         </motion.div>
       </div>
     </div>
+    </PageTransition>
   );
 };
 

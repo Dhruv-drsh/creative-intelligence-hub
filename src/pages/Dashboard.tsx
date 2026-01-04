@@ -11,6 +11,8 @@ import { Button } from "@/components/ui/button";
 import { ComplianceScore } from "@/components/ui/ComplianceScore";
 import { FormatBadge } from "@/components/ui/FormatBadge";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { PageTransition } from "@/components/PageTransition";
+import { ContentSkeleton } from "@/components/ContentSkeleton";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -93,6 +95,7 @@ const Dashboard = () => {
   };
 
   return (
+    <PageTransition>
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-background dark:via-background dark:to-secondary/10 transition-colors duration-300">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white/90 dark:bg-card/80 backdrop-blur-xl border-b border-gray-100 dark:border-border/30 transition-colors duration-300">
@@ -274,11 +277,7 @@ const Dashboard = () => {
           </div>
 
           {isLoading ? (
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
-              {[...Array(4)].map((_, i) => (
-                <div key={i} className="aspect-square bg-gray-100 dark:bg-secondary/30 rounded-2xl animate-pulse" />
-              ))}
-            </div>
+            <ContentSkeleton variant="card" count={4} className="grid-cols-2 lg:grid-cols-4" />
           ) : projects.length > 0 ? (
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
               {projects.map((project, index) => (
@@ -382,6 +381,7 @@ const Dashboard = () => {
         </motion.div>
       </main>
     </div>
+    </PageTransition>
   );
 };
 

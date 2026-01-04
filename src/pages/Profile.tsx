@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { PageTransition } from "@/components/PageTransition";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -99,6 +100,7 @@ const Profile = () => {
   };
 
   return (
+    <PageTransition>
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-background dark:via-background dark:to-secondary/10 transition-colors duration-300">
       {/* Header */}
       <motion.header
@@ -461,6 +463,7 @@ const Profile = () => {
         </div>
       </main>
     </div>
+    </PageTransition>
   );
 };
 
