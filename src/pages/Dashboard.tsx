@@ -4,10 +4,10 @@ import { Link, useNavigate } from "react-router-dom";
 import { 
   Plus, FolderOpen, Clock, TrendingUp, 
   Sparkles, LayoutGrid, Image, FileText,
-  ArrowRight, MoreHorizontal, LogOut
+  ArrowRight, LogOut, Zap, Users, BarChart3,
+  Palette, Wand2, Shield, Brain
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { GlassPanel } from "@/components/ui/GlassPanel";
 import { ComplianceScore } from "@/components/ui/ComplianceScore";
 import { FormatBadge } from "@/components/ui/FormatBadge";
 import { useAuth } from "@/contexts/AuthContext";
@@ -24,10 +24,17 @@ interface Project {
 }
 
 const quickActions = [
-  { icon: Image, label: "Upload Product", description: "Start with a packshot" },
-  { icon: Sparkles, label: "AI Generate", description: "Let AI create for you" },
-  { icon: LayoutGrid, label: "Templates", description: "Browse templates" },
-  { icon: FileText, label: "Brand Kit", description: "Manage brand assets" },
+  { icon: Image, label: "Upload Product", description: "Start with a packshot", color: "from-teal-500 to-emerald-500" },
+  { icon: Sparkles, label: "AI Generate", description: "Let AI create for you", color: "from-purple-500 to-pink-500" },
+  { icon: LayoutGrid, label: "Templates", description: "Browse templates", color: "from-blue-500 to-cyan-500" },
+  { icon: FileText, label: "Brand Kit", description: "Manage brand assets", color: "from-orange-500 to-amber-500" },
+];
+
+const aiTools = [
+  { icon: Brain, name: "Brand DNA", desc: "Extract identity" },
+  { icon: Palette, name: "Color Harmony", desc: "AI colors" },
+  { icon: Shield, name: "Compliance", desc: "Auto-validate" },
+  { icon: Wand2, name: "Multiverse", desc: "Variations" },
 ];
 
 const formatLabels: Record<string, string> = {
@@ -85,46 +92,63 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="border-b border-border/50 glass sticky top-0 z-50">
+      <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-xl border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link to="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent to-highlight flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-primary-foreground" />
-              </div>
-              <span className="font-display text-xl text-foreground">Creato-Sphere</span>
+              <motion.div 
+                className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-teal-500/25"
+                whileHover={{ scale: 1.05, rotate: 5 }}
+              >
+                <Sparkles className="w-5 h-5 text-white" />
+              </motion.div>
+              <span className="font-bold text-xl text-gray-900 tracking-tight">Creato-Sphere</span>
             </Link>
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-sm text-muted-foreground hidden md:block">
+            <span className="text-sm text-gray-500 hidden md:block">
               {user?.email}
             </span>
             <Link to="/builder">
-              <Button variant="ai" size="sm" className="group">
-                <Plus className="w-4 h-4" />
-                New Creative
-              </Button>
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Button 
+                  size="sm" 
+                  className="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white rounded-full px-5 shadow-lg shadow-teal-500/25"
+                >
+                  <Plus className="w-4 h-4 mr-1" />
+                  New Creative
+                </Button>
+              </motion.div>
             </Link>
-            <Button variant="ghost" size="icon-sm" onClick={handleSignOut} title="Sign out">
-              <LogOut className="w-4 h-4" />
-            </Button>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={handleSignOut} 
+                title="Sign out"
+                className="text-gray-500 hover:text-gray-900"
+              >
+                <LogOut className="w-4 h-4" />
+              </Button>
+            </motion.div>
           </div>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-6 py-8">
+      <main className="max-w-7xl mx-auto px-6 py-10">
         {/* Welcome Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-10"
+          transition={{ duration: 0.6 }}
+          className="mb-12"
         >
-          <h1 className="font-display text-3xl md:text-4xl mb-2">
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">
             Welcome back{(user && 'user_metadata' in user && user.user_metadata?.full_name) ? `, ${user.user_metadata.full_name}` : ""}
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-lg text-gray-500">
             Pick up where you left off, or start something new.
           </p>
         </motion.div>
@@ -133,27 +157,23 @@ const Dashboard = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="mb-10"
+          transition={{ delay: 0.1, duration: 0.6 }}
+          className="mb-12"
         >
-          <h2 className="text-sm font-medium text-muted-foreground mb-4">Quick Actions</h2>
+          <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Quick Actions</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {quickActions.map((action, index) => (
               <Link to="/builder" key={index}>
-                <GlassPanel 
-                  padding="md" 
-                  className="group cursor-pointer hover-lift hover:border-accent/30 transition-all"
+                <motion.div 
+                  className="group p-5 bg-white rounded-2xl border border-gray-100 hover:border-teal-200 shadow-sm hover:shadow-xl transition-all cursor-pointer"
+                  whileHover={{ y: -5 }}
                 >
-                  <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center group-hover:bg-accent/20 transition-colors">
-                      <action.icon className="w-5 h-5 text-accent" />
-                    </div>
-                    <div>
-                      <h3 className="font-medium text-foreground text-sm">{action.label}</h3>
-                      <p className="text-xs text-muted-foreground">{action.description}</p>
-                    </div>
+                  <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${action.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
+                    <action.icon className="w-6 h-6 text-white" />
                   </div>
-                </GlassPanel>
+                  <h3 className="font-semibold text-gray-900 mb-1">{action.label}</h3>
+                  <p className="text-sm text-gray-500">{action.description}</p>
+                </motion.div>
               </Link>
             ))}
           </div>
@@ -163,71 +183,104 @@ const Dashboard = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10"
+          transition={{ delay: 0.2, duration: 0.6 }}
+          className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12"
         >
           {[
-            { icon: FolderOpen, label: "Total Projects", value: String(projects.length) },
+            { icon: FolderOpen, label: "Total Projects", value: String(projects.length), color: "from-teal-500 to-emerald-500" },
             { icon: TrendingUp, label: "This Week", value: String(projects.filter(p => {
               const weekAgo = new Date();
               weekAgo.setDate(weekAgo.getDate() - 7);
               return new Date(p.updated_at) > weekAgo;
-            }).length) },
+            }).length), color: "from-blue-500 to-cyan-500" },
             { icon: Clock, label: "Avg. Compliance", value: projects.length > 0 
               ? `${Math.round(projects.reduce((sum, p) => sum + p.compliance_score, 0) / projects.length)}%`
-              : "N/A" },
-            { icon: Sparkles, label: "AI Ready", value: "Yes" },
+              : "N/A", color: "from-purple-500 to-pink-500" },
+            { icon: Zap, label: "AI Ready", value: "Yes", color: "from-orange-500 to-amber-500" },
           ].map((stat, index) => (
-            <GlassPanel key={index} padding="md" variant="subtle">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-muted/50 flex items-center justify-center">
-                  <stat.icon className="w-5 h-5 text-muted-foreground" />
+            <motion.div 
+              key={index} 
+              className="p-5 bg-white rounded-2xl border border-gray-100 shadow-sm"
+              whileHover={{ y: -3 }}
+            >
+              <div className="flex items-center gap-4">
+                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.color} bg-opacity-10 flex items-center justify-center`}>
+                  <stat.icon className="w-6 h-6 text-gray-700" />
                 </div>
                 <div>
-                  <div className="font-display text-2xl text-foreground">{stat.value}</div>
-                  <div className="text-xs text-muted-foreground">{stat.label}</div>
+                  <div className="text-2xl font-bold text-gray-900">{stat.value}</div>
+                  <div className="text-sm text-gray-500">{stat.label}</div>
                 </div>
               </div>
-            </GlassPanel>
+            </motion.div>
           ))}
+        </motion.div>
+
+        {/* AI Tools Quick Access */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25, duration: 0.6 }}
+          className="mb-12"
+        >
+          <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">AI Tools</h2>
+          <div className="flex flex-wrap gap-3">
+            {aiTools.map((tool, index) => (
+              <Link to="/builder" key={index}>
+                <motion.div
+                  className="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl border border-gray-100 hover:border-teal-200 hover:shadow-md transition-all"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-teal-500/10 to-cyan-500/10 flex items-center justify-center">
+                    <tool.icon className="w-4 h-4 text-teal-600" />
+                  </div>
+                  <div>
+                    <div className="text-sm font-medium text-gray-900">{tool.name}</div>
+                    <div className="text-xs text-gray-500">{tool.desc}</div>
+                  </div>
+                </motion.div>
+              </Link>
+            ))}
+          </div>
         </motion.div>
 
         {/* Recent Projects */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
+          transition={{ delay: 0.3, duration: 0.6 }}
         >
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-medium text-muted-foreground">Recent Projects</h2>
-            <Button variant="ghost" size="sm" className="text-xs">
+            <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">Recent Projects</h2>
+            <Button variant="ghost" size="sm" className="text-teal-600 hover:text-teal-700">
               View All
-              <ArrowRight className="w-3 h-3 ml-1" />
+              <ArrowRight className="w-4 h-4 ml-1" />
             </Button>
           </div>
 
           {isLoading ? (
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
               {[...Array(4)].map((_, i) => (
-                <div key={i} className="aspect-square bg-muted/30 rounded-xl animate-pulse" />
+                <div key={i} className="aspect-square bg-gray-100 rounded-2xl animate-pulse" />
               ))}
             </div>
           ) : projects.length > 0 ? (
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
               {projects.map((project, index) => (
                 <motion.div
                   key={project.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 + index * 0.1 }}
+                  transition={{ delay: 0.4 + index * 0.1, duration: 0.5 }}
                 >
                   <Link to={`/builder?project=${project.id}`}>
-                    <GlassPanel 
-                      padding="none" 
-                      className="overflow-hidden group cursor-pointer hover-lift"
+                    <motion.div 
+                      className="group bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-xl transition-all"
+                      whileHover={{ y: -5 }}
                     >
                       {/* Thumbnail */}
-                      <div className="aspect-square relative overflow-hidden bg-muted/30">
+                      <div className="aspect-square relative overflow-hidden bg-gradient-to-br from-gray-100 to-gray-50">
                         {project.thumbnail_url ? (
                           <img
                             src={project.thumbnail_url}
@@ -236,10 +289,10 @@ const Dashboard = () => {
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">
-                            <Image className="w-12 h-12 text-muted-foreground/50" />
+                            <Image className="w-12 h-12 text-gray-300" />
                           </div>
                         )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                         
                         {/* Compliance Badge */}
                         <div className="absolute top-3 right-3">
@@ -249,17 +302,17 @@ const Dashboard = () => {
 
                       {/* Info */}
                       <div className="p-4">
-                        <h3 className="font-medium text-foreground text-sm mb-1 truncate">
+                        <h3 className="font-semibold text-gray-900 mb-2 truncate">
                           {project.name}
                         </h3>
                         <div className="flex items-center justify-between">
                           <FormatBadge format={formatLabels[project.format_id] || project.format_id} />
-                          <span className="text-xs text-muted-foreground">
+                          <span className="text-xs text-gray-400">
                             {formatTimeAgo(project.updated_at)}
                           </span>
                         </div>
                       </div>
-                    </GlassPanel>
+                    </motion.div>
                   </Link>
                 </motion.div>
               ))}
@@ -267,31 +320,51 @@ const Dashboard = () => {
           ) : null}
         </motion.div>
 
-        {/* Empty State / New Project CTA */}
+        {/* Create CTA */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-          className="mt-12"
+          transition={{ delay: 0.6, duration: 0.6 }}
+          className="mt-16"
         >
-          <GlassPanel padding="lg" className="text-center">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-accent/20 to-highlight/20 flex items-center justify-center mx-auto mb-4">
-              <Plus className="w-8 h-8 text-accent" />
+          <div className="relative p-10 bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 rounded-3xl overflow-hidden">
+            {/* Background Effects */}
+            <div className="absolute inset-0 overflow-hidden">
+              <motion.div 
+                className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-br from-teal-500/20 to-cyan-500/20 rounded-full blur-3xl"
+                animate={{ scale: [1, 1.2, 1] }}
+                transition={{ duration: 8, repeat: Infinity }}
+              />
             </div>
-            <h3 className="font-semibold text-lg text-foreground mb-2">
-              Create Your Next Campaign
-            </h3>
-            <p className="text-sm text-muted-foreground mb-6 max-w-md mx-auto">
-              Upload a product image and let our AI engines generate compliant, 
-              campaign-ready creatives in minutes.
-            </p>
-            <Link to="/builder">
-              <Button variant="ai" size="lg" className="group">
-                Start New Creative
-                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-              </Button>
-            </Link>
-          </GlassPanel>
+            
+            <div className="relative z-10 text-center max-w-xl mx-auto">
+              <motion.div
+                animate={{ y: [0, -10, 0] }}
+                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                className="w-16 h-16 rounded-2xl bg-gradient-to-br from-teal-500 to-cyan-500 flex items-center justify-center mx-auto mb-6 shadow-xl shadow-teal-500/30"
+              >
+                <Plus className="w-8 h-8 text-white" />
+              </motion.div>
+              <h3 className="text-2xl font-bold text-white mb-3">
+                Create Your Next Campaign
+              </h3>
+              <p className="text-gray-400 mb-8">
+                Upload a product image and let our AI engines generate compliant, 
+                campaign-ready creatives in minutes.
+              </p>
+              <Link to="/builder">
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Button 
+                    size="lg" 
+                    className="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white rounded-full px-8 shadow-xl shadow-teal-500/30"
+                  >
+                    Start New Creative
+                    <ArrowRight className="w-5 h-5 ml-2" />
+                  </Button>
+                </motion.div>
+              </Link>
+            </div>
+          </div>
         </motion.div>
       </main>
     </div>

@@ -1,43 +1,15 @@
-import { motion, AnimatePresence, type Variants } from "framer-motion";
-import { useState, useEffect } from "react";
+import { motion, AnimatePresence, type Variants, useInView } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
 import { 
   ArrowRight, Sparkles, Zap, Shield, Layers, Target, Clock, 
   CheckCircle2, Play, Star, ChevronLeft, ChevronRight, 
   Palette, Type, Brain, Wand2, Image, MousePointer,
-  Rocket, Globe, Award, TrendingUp, Eye
+  Rocket, Globe, Award, TrendingUp, Eye, Users, BarChart3
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-
-// Animation variants
-const fadeInUp: Variants = {
-  hidden: { opacity: 0, y: 40 },
-  visible: { 
-    opacity: 1, 
-    y: 0,
-    transition: { duration: 0.6 }
-  },
-};
-
-const fadeInRight: Variants = {
-  hidden: { opacity: 0, x: 60 },
-  visible: { 
-    opacity: 1, 
-    x: 0,
-    transition: { duration: 0.7 }
-  },
-};
-
-const staggerContainer: Variants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.12,
-      delayChildren: 0.1,
-    },
-  },
-};
+import { VideoModal } from "@/components/VideoModal";
+import { ScrollReveal, StaggerReveal } from "@/components/ScrollReveal";
 
 // Hero carousel slides
 const heroSlides = [
@@ -134,9 +106,34 @@ const testimonials = [
   },
 ];
 
+const howItWorks = [
+  {
+    step: "01",
+    title: "Upload Your Assets",
+    description: "Drop in your product images, logos, and brand guidelines. Our AI instantly understands your brand.",
+    icon: Image,
+    color: "from-teal-500 to-emerald-500",
+  },
+  {
+    step: "02",
+    title: "AI Generates Options",
+    description: "18 specialized AI engines work together to create dozens of compliant variations.",
+    icon: Brain,
+    color: "from-purple-500 to-pink-500",
+  },
+  {
+    step: "03",
+    title: "Fine-tune & Export",
+    description: "Make quick edits, then export to all platforms with one click. Production-ready in minutes.",
+    icon: Rocket,
+    color: "from-orange-500 to-amber-500",
+  },
+];
+
 const LandingPage = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [showVideoModal, setShowVideoModal] = useState(false);
 
   useEffect(() => {
     if (!isAutoPlaying) return;
@@ -158,6 +155,9 @@ const LandingPage = () => {
 
   return (
     <div className="min-h-screen bg-white overflow-hidden">
+      {/* Video Modal */}
+      <VideoModal isOpen={showVideoModal} onClose={() => setShowVideoModal(false)} />
+
       {/* Navigation */}
       <motion.nav
         initial={{ opacity: 0, y: -20 }}
@@ -209,7 +209,7 @@ const LandingPage = () => {
         </div>
       </motion.nav>
 
-      {/* Hero Section with Carousel */}
+      {/* Hero Section */}
       <section className="relative pt-32 pb-24 px-6 overflow-hidden">
         {/* Background Gradient Orbs */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -235,14 +235,16 @@ const LandingPage = () => {
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             {/* Left Content */}
             <motion.div
-              variants={staggerContainer}
-              initial="hidden"
-              animate="visible"
+              initial={{ opacity: 0, x: -60 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
               className="text-left relative z-10"
             >
               {/* Floating Badge */}
               <motion.div 
-                variants={fadeInUp}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
                 className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-teal-50 to-cyan-50 rounded-full border border-teal-200/50 mb-6"
               >
                 <motion.div 
@@ -254,7 +256,9 @@ const LandingPage = () => {
               </motion.div>
 
               <motion.h1
-                variants={fadeInUp}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3, duration: 0.6 }}
                 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.1] mb-6 tracking-tight"
               >
                 <span className="text-gray-900">We use AI to build</span>{" "}
@@ -264,7 +268,9 @@ const LandingPage = () => {
               </motion.h1>
 
               <motion.p
-                variants={fadeInUp}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
                 className="text-lg md:text-xl text-gray-600 max-w-xl mb-8 leading-relaxed"
               >
                 Generate retailer-compliant, multi-format ad creatives in minutes with a proven track record of over{" "}
@@ -272,7 +278,12 @@ const LandingPage = () => {
               </motion.p>
 
               {/* Trust Badges */}
-              <motion.div variants={fadeInUp} className="flex flex-wrap items-center gap-3 mb-8">
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+                className="flex flex-wrap items-center gap-3 mb-8"
+              >
                 {[
                   { icon: Award, text: "Gold Agency", color: "bg-amber-50 border-amber-200 text-amber-700" },
                   { icon: Star, text: "110+ Reviews", color: "bg-teal-50 border-teal-200 text-teal-700" },
@@ -290,7 +301,12 @@ const LandingPage = () => {
               </motion.div>
 
               {/* CTA Buttons */}
-              <motion.div variants={fadeInUp} className="flex flex-wrap gap-4 mb-8">
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+                className="flex flex-wrap gap-4 mb-8"
+              >
                 <Link to="/auth">
                   <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                     <Button 
@@ -307,6 +323,7 @@ const LandingPage = () => {
                   <Button 
                     size="lg" 
                     variant="outline"
+                    onClick={() => setShowVideoModal(true)}
                     className="rounded-full px-8 py-6 text-lg border-2 border-gray-200 hover:border-teal-300 hover:bg-teal-50/50"
                   >
                     <Play className="w-5 h-5 mr-2" />
@@ -317,7 +334,9 @@ const LandingPage = () => {
 
               {/* Speed Badge */}
               <motion.div 
-                variants={fadeInUp} 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.7 }}
                 className="flex items-center gap-3 p-4 bg-gradient-to-r from-orange-50 to-amber-50 rounded-2xl border border-orange-200/50 w-fit"
               >
                 <span className="text-3xl">🔥</span>
@@ -330,12 +349,21 @@ const LandingPage = () => {
 
             {/* Right - Hero Carousel */}
             <motion.div
-              variants={fadeInRight}
-              initial="hidden"
-              animate="visible"
+              initial={{ opacity: 0, x: 60 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
               className="relative"
             >
               <div className="relative">
+                {/* Floating Elements */}
+                <motion.div 
+                  className="absolute -top-4 -right-4 z-20 w-16 h-16 rounded-2xl bg-gradient-to-br from-teal-500 to-cyan-500 flex items-center justify-center shadow-xl shadow-teal-500/30"
+                  animate={{ y: [0, -10, 0] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  <Sparkles className="w-8 h-8 text-white" />
+                </motion.div>
+
                 {/* Main Browser Window */}
                 <motion.div 
                   className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6 shadow-2xl shadow-gray-900/50"
@@ -417,101 +445,32 @@ const LandingPage = () => {
                             setIsAutoPlaying(false);
                             setCurrentSlide(index);
                           }}
-                          className={`h-2 rounded-full transition-all duration-300 ${
+                          className={`transition-all duration-300 rounded-full ${
                             index === currentSlide 
-                              ? 'w-8 bg-white' 
-                              : 'w-2 bg-white/40 hover:bg-white/60'
+                              ? "w-8 h-2 bg-white" 
+                              : "w-2 h-2 bg-white/40 hover:bg-white/60"
                           }`}
                         />
                       ))}
                     </div>
                   </div>
 
-                  {/* Floating Tool Icons */}
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 flex flex-col gap-3">
-                    {[MousePointer, Palette, Type, Image].map((Icon, index) => (
-                      <motion.div
-                        key={index}
-                        className="w-10 h-10 rounded-xl bg-gray-700/80 backdrop-blur-sm flex items-center justify-center text-gray-300"
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.5 + index * 0.1 }}
-                        whileHover={{ scale: 1.1, backgroundColor: "rgba(20, 184, 166, 0.3)" }}
-                      >
-                        <Icon className="w-5 h-5" />
-                      </motion.div>
-                    ))}
-                  </div>
-                </motion.div>
-
-                {/* Floating Elements */}
-                <motion.div 
-                  className="absolute -right-4 top-1/4 z-20"
-                  initial={{ opacity: 0, scale: 0 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.8, type: "spring" }}
-                >
-                  <motion.div 
-                    className="w-16 h-16 bg-white rounded-2xl shadow-xl flex items-center justify-center"
-                    whileHover={{ scale: 1.1, rotate: 5 }}
-                    animate={{ y: [0, -10, 0] }}
-                    transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                  >
-                    <Target className="w-8 h-8 text-teal-500" />
-                  </motion.div>
-                </motion.div>
-
-                <motion.div 
-                  className="absolute -left-6 bottom-1/4 z-20"
-                  initial={{ opacity: 0, scale: 0 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 1, type: "spring" }}
-                >
-                  <motion.div 
-                    className="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl shadow-xl flex items-center justify-center"
-                    whileHover={{ scale: 1.1, rotate: -5 }}
-                    animate={{ y: [0, 10, 0] }}
-                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                  >
-                    <Sparkles className="w-7 h-7 text-white" />
-                  </motion.div>
-                </motion.div>
-
-                {/* Watch Video Button */}
-                <motion.div 
-                  className="absolute -bottom-4 right-8 z-20"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 1.2 }}
-                >
-                  <motion.button 
-                    className="flex items-center gap-3 bg-white rounded-full pl-2 pr-6 py-2 shadow-xl border border-gray-100"
-                    whileHover={{ scale: 1.05, boxShadow: "0 20px 40px rgba(0,0,0,0.15)" }}
+                  {/* Watch Video Button */}
+                  <motion.button
+                    onClick={() => setShowVideoModal(true)}
+                    className="absolute bottom-6 right-6 z-30 flex items-center gap-3 px-5 py-3 bg-white rounded-full shadow-xl hover:shadow-2xl transition-all group"
+                    whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
                     <motion.div 
-                      className="w-12 h-12 rounded-full bg-gradient-to-r from-teal-500 to-cyan-500 flex items-center justify-center"
+                      className="w-10 h-10 rounded-full bg-gradient-to-r from-teal-500 to-cyan-500 flex items-center justify-center"
                       animate={{ scale: [1, 1.1, 1] }}
                       transition={{ duration: 2, repeat: Infinity }}
                     >
-                      <Play className="w-5 h-5 text-white fill-white ml-0.5" />
+                      <Play className="w-4 h-4 text-white ml-0.5" />
                     </motion.div>
-                    <span className="text-gray-900 font-semibold">Watch video</span>
+                    <span className="text-gray-900 font-medium pr-2">Watch video</span>
                   </motion.button>
-                </motion.div>
-
-                {/* 3D Cursor */}
-                <motion.div 
-                  className="absolute bottom-20 left-1/3"
-                  animate={{ 
-                    y: [0, -15, 0],
-                    rotate: [0, 5, 0],
-                  }}
-                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                >
-                  <svg width="50" height="60" viewBox="0 0 50 60" fill="none" className="drop-shadow-xl">
-                    <path d="M5 5L45 25L25 30L20 55L5 5Z" fill="white" stroke="#E5E7EB" strokeWidth="2"/>
-                  </svg>
                 </motion.div>
               </div>
             </motion.div>
@@ -520,407 +479,290 @@ const LandingPage = () => {
       </section>
 
       {/* Stats Section */}
-      <section className="py-20 px-6 bg-gradient-to-b from-gray-50 to-white">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {stats.map((stat, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1, duration: 0.5 }}
-                className="text-center group"
-              >
-                <motion.div 
-                  className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-teal-50 to-cyan-50 flex items-center justify-center group-hover:scale-110 transition-transform duration-300"
-                  whileHover={{ rotate: 5 }}
+      <section className="py-16 px-6 bg-gradient-to-b from-gray-50 to-white">
+        <div className="max-w-6xl mx-auto">
+          <ScrollReveal>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              {stats.map((stat, index) => (
+                <motion.div
+                  key={index}
+                  className="relative group"
+                  whileHover={{ y: -5 }}
                 >
-                  <stat.icon className="w-7 h-7 text-teal-500" />
+                  <div className="p-6 bg-white rounded-2xl border border-gray-100 shadow-sm group-hover:shadow-xl group-hover:border-teal-200 transition-all">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-teal-500/10 to-cyan-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                      <stat.icon className="w-6 h-6 text-teal-600" />
+                    </div>
+                    <div className="text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent mb-1">
+                      {stat.value}
+                    </div>
+                    <div className="text-sm text-gray-500">{stat.label}</div>
+                  </div>
                 </motion.div>
-                <motion.div 
-                  className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-teal-500 to-cyan-500 bg-clip-text text-transparent mb-2"
-                  initial={{ scale: 0 }}
-                  whileInView={{ scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 + 0.3, type: "spring" }}
-                >
-                  {stat.value}
-                </motion.div>
-                <div className="text-gray-600 font-medium">{stat.label}</div>
-              </motion.div>
-            ))}
-          </div>
+              ))}
+            </div>
+          </ScrollReveal>
         </div>
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-24 px-6">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <motion.span 
-              className="inline-block px-4 py-2 bg-teal-50 text-teal-600 rounded-full text-sm font-medium mb-4"
-              initial={{ opacity: 0, scale: 0.8 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-            >
-              ✨ Features
-            </motion.span>
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">
-              <span className="bg-gradient-to-r from-teal-500 to-cyan-500 bg-clip-text text-transparent">Intelligent</span>{" "}
-              <span className="text-gray-900">Creative Automation</span>
-            </h2>
-            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-              From brand analysis to compliant export, every step is AI-powered
-            </p>
-          </motion.div>
+      <section id="features" className="py-24 px-6 bg-white">
+        <div className="max-w-6xl mx-auto">
+          <ScrollReveal>
+            <div className="text-center mb-16">
+              <motion.span 
+                className="inline-flex items-center gap-2 px-4 py-2 bg-teal-50 rounded-full text-teal-600 text-sm font-medium mb-4"
+                whileHover={{ scale: 1.05 }}
+              >
+                <Zap className="w-4 h-4" />
+                Features
+              </motion.span>
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+                Everything you need to
+                <span className="bg-gradient-to-r from-teal-500 to-cyan-500 bg-clip-text text-transparent"> create faster</span>
+              </h2>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                Our AI-powered platform combines 18 specialized engines to automate your creative workflow.
+              </p>
+            </div>
+          </ScrollReveal>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {features.map((feature, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                whileHover={{ y: -8, scale: 1.02 }}
-                className="bg-white rounded-3xl p-8 border border-gray-100 hover:border-teal-200 hover:shadow-2xl hover:shadow-teal-500/10 transition-all duration-300 group"
-              >
-                <motion.div 
-                  className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${feature.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg`}
-                  whileHover={{ rotate: 5 }}
+              <ScrollReveal key={index} delay={index * 0.1}>
+                <motion.div
+                  className="group p-6 bg-white rounded-2xl border border-gray-100 hover:border-teal-200 shadow-sm hover:shadow-xl transition-all h-full"
+                  whileHover={{ y: -8 }}
                 >
-                  <feature.icon className="w-8 h-8 text-white" />
+                  <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${feature.color} flex items-center justify-center mb-5 group-hover:scale-110 transition-transform`}>
+                    <feature.icon className="w-7 h-7 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">{feature.title}</h3>
+                  <p className="text-gray-600 leading-relaxed">{feature.description}</p>
                 </motion.div>
-                <h3 className="font-bold text-gray-900 text-xl mb-3">{feature.title}</h3>
-                <p className="text-gray-600 leading-relaxed">{feature.description}</p>
-              </motion.div>
+              </ScrollReveal>
             ))}
           </div>
         </div>
       </section>
 
-      {/* How it Works */}
-      <section id="how-it-works" className="py-24 px-6 bg-gradient-to-b from-white via-teal-50/30 to-white relative overflow-hidden">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 pointer-events-none opacity-30">
-          <div className="absolute top-20 left-20 w-72 h-72 border-2 border-dashed border-teal-200 rounded-full" />
-          <div className="absolute bottom-20 right-20 w-96 h-96 border-2 border-dashed border-cyan-200 rounded-full" />
-        </div>
-
-        <div className="max-w-7xl mx-auto relative">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <motion.span 
-              className="inline-block px-4 py-2 bg-purple-50 text-purple-600 rounded-full text-sm font-medium mb-4"
-              initial={{ opacity: 0, scale: 0.8 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-            >
-              🚀 How it Works
-            </motion.span>
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">
-              <span className="text-gray-900">From Upload to</span>{" "}
-              <span className="bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">Campaign-Ready</span>
-            </h2>
-            <p className="text-gray-600 text-lg">Complete workflow in under 5 minutes</p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-3 gap-8 relative">
-            {/* Connection Lines */}
-            <div className="hidden md:block absolute top-1/2 left-1/3 right-1/3 h-0.5 bg-gradient-to-r from-teal-300 via-purple-300 to-pink-300" />
-
-            {[
-              {
-                step: "01",
-                title: "Upload & Configure",
-                description: "Upload your product image, select campaign type, and let AI extract your brand DNA.",
-                time: "30 sec",
-                icon: Image,
-                color: "from-teal-500 to-emerald-500",
-              },
-              {
-                step: "02",
-                title: "AI Generates Options",
-                description: "18 AI engines create 20+ style variations with optimal layouts and copy.",
-                time: "90 sec",
-                icon: Sparkles,
-                color: "from-purple-500 to-pink-500",
-              },
-              {
-                step: "03",
-                title: "Validate & Export",
-                description: "Real-time compliance checking, multi-format export, all under 500KB.",
-                time: "45 sec",
-                icon: CheckCircle2,
-                color: "from-orange-500 to-red-500",
-              },
-            ].map((item, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.15 }}
-                whileHover={{ y: -8 }}
-                className="bg-white rounded-3xl p-8 border border-gray-100 relative overflow-hidden hover:shadow-2xl transition-all duration-300 group"
+      {/* How it Works Section */}
+      <section id="how-it-works" className="py-24 px-6 bg-gradient-to-b from-gray-50 to-white">
+        <div className="max-w-6xl mx-auto">
+          <ScrollReveal>
+            <div className="text-center mb-16">
+              <motion.span 
+                className="inline-flex items-center gap-2 px-4 py-2 bg-purple-50 rounded-full text-purple-600 text-sm font-medium mb-4"
+                whileHover={{ scale: 1.05 }}
               >
-                {/* Large Step Number Background */}
-                <div className="absolute top-0 right-0 font-bold text-[120px] text-gray-50 leading-none select-none pointer-events-none group-hover:text-gray-100 transition-colors">
-                  {item.step}
-                </div>
-                
-                <div className="relative z-10">
-                  <motion.div 
-                    className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${item.color} flex items-center justify-center mb-6 shadow-lg`}
-                    whileHover={{ scale: 1.1, rotate: 5 }}
-                  >
-                    <item.icon className="w-7 h-7 text-white" />
-                  </motion.div>
+                <Target className="w-4 h-4" />
+                How it Works
+              </motion.span>
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+                Three steps to
+                <span className="bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent"> amazing creatives</span>
+              </h2>
+            </div>
+          </ScrollReveal>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {howItWorks.map((step, index) => (
+              <ScrollReveal key={index} delay={index * 0.15}>
+                <motion.div
+                  className="relative"
+                  whileHover={{ y: -5 }}
+                >
+                  {/* Connector Line */}
+                  {index < howItWorks.length - 1 && (
+                    <div className="hidden md:block absolute top-16 left-full w-full h-0.5 bg-gradient-to-r from-gray-200 to-transparent z-0" />
+                  )}
                   
-                  <div className="flex items-center gap-2 mb-4">
-                    <Clock className="w-4 h-4 text-teal-500" />
-                    <span className="text-sm font-mono font-bold text-teal-600">{item.time}</span>
+                  <div className="relative p-8 bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl transition-all">
+                    <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${step.color} flex items-center justify-center mb-6 shadow-lg`}>
+                      <step.icon className="w-8 h-8 text-white" />
+                    </div>
+                    <div className="text-5xl font-bold text-gray-100 absolute top-6 right-6">{step.step}</div>
+                    <h3 className="text-xl font-bold text-gray-900 mb-3">{step.title}</h3>
+                    <p className="text-gray-600 leading-relaxed">{step.description}</p>
                   </div>
-                  
-                  <h3 className="font-bold text-xl text-gray-900 mb-3">{item.title}</h3>
-                  <p className="text-gray-600 leading-relaxed">{item.description}</p>
-                </div>
-              </motion.div>
+                </motion.div>
+              </ScrollReveal>
             ))}
           </div>
         </div>
       </section>
 
       {/* AI Engines Section */}
-      <section id="ai-engines" className="py-24 px-6">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <motion.span 
-              className="inline-block px-4 py-2 bg-amber-50 text-amber-600 rounded-full text-sm font-medium mb-4"
-              initial={{ opacity: 0, scale: 0.8 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-            >
-              🤖 AI Technology
-            </motion.span>
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">
-              <span className="bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent">18 AI Engines</span>{" "}
-              <span className="text-gray-900">Working Together</span>
-            </h2>
-            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-              Each engine is a specialist—together they form your autonomous creative department
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {aiEngines.map((engine, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, scale: 0.8 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.05 }}
-                whileHover={{ y: -5, scale: 1.05 }}
-                className="group cursor-default"
+      <section id="ai-engines" className="py-24 px-6 bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 text-white">
+        <div className="max-w-6xl mx-auto">
+          <ScrollReveal>
+            <div className="text-center mb-16">
+              <motion.span 
+                className="inline-flex items-center gap-2 px-4 py-2 bg-teal-500/20 rounded-full text-teal-400 text-sm font-medium mb-4 border border-teal-500/30"
+                whileHover={{ scale: 1.05 }}
               >
-                <div className="bg-white border border-gray-100 rounded-2xl p-5 text-center hover:border-teal-300 hover:shadow-xl hover:shadow-teal-500/10 transition-all duration-300">
-                  <motion.div 
-                    className="w-12 h-12 rounded-xl bg-gradient-to-br from-teal-50 to-cyan-50 flex items-center justify-center mx-auto mb-3 group-hover:scale-110 group-hover:bg-gradient-to-br group-hover:from-teal-100 group-hover:to-cyan-100 transition-all"
-                    whileHover={{ rotate: 5 }}
-                  >
-                    <engine.icon className="w-6 h-6 text-teal-500" />
-                  </motion.div>
-                  <span className="text-sm font-semibold text-gray-800 block mb-1">{engine.name}</span>
-                  <span className="text-xs text-gray-500">{engine.desc}</span>
-                </div>
-              </motion.div>
+                <Brain className="w-4 h-4" />
+                AI Engines
+              </motion.span>
+              <h2 className="text-4xl md:text-5xl font-bold mb-4">
+                18 Specialized
+                <span className="bg-gradient-to-r from-teal-400 to-cyan-400 bg-clip-text text-transparent"> AI Engines</span>
+              </h2>
+              <p className="text-lg text-gray-400 max-w-2xl mx-auto">
+                Each engine is a specialist, working together like a full creative agency.
+              </p>
+            </div>
+          </ScrollReveal>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {aiEngines.map((engine, index) => (
+              <ScrollReveal key={index} delay={index * 0.05}>
+                <motion.div
+                  className="group p-5 bg-gray-800/50 rounded-2xl border border-gray-700/50 hover:border-teal-500/50 hover:bg-gray-800 transition-all"
+                  whileHover={{ y: -5, scale: 1.02 }}
+                >
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-teal-500/20 to-cyan-500/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                    <engine.icon className="w-6 h-6 text-teal-400" />
+                  </div>
+                  <h3 className="font-semibold text-white mb-1">{engine.name}</h3>
+                  <p className="text-sm text-gray-500">{engine.desc}</p>
+                </motion.div>
+              </ScrollReveal>
             ))}
           </div>
         </div>
       </section>
 
       {/* Testimonials Section */}
-      <section id="testimonials" className="py-24 px-6 bg-gradient-to-b from-gray-50 to-white">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <motion.span 
-              className="inline-block px-4 py-2 bg-pink-50 text-pink-600 rounded-full text-sm font-medium mb-4"
-              initial={{ opacity: 0, scale: 0.8 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-            >
-              💬 Testimonials
-            </motion.span>
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">
-              <span className="text-gray-900">Loved by</span>{" "}
-              <span className="bg-gradient-to-r from-pink-500 to-rose-500 bg-clip-text text-transparent">Creative Teams</span>
-            </h2>
-          </motion.div>
+      <section id="testimonials" className="py-24 px-6 bg-white">
+        <div className="max-w-6xl mx-auto">
+          <ScrollReveal>
+            <div className="text-center mb-16">
+              <motion.span 
+                className="inline-flex items-center gap-2 px-4 py-2 bg-amber-50 rounded-full text-amber-600 text-sm font-medium mb-4"
+                whileHover={{ scale: 1.05 }}
+              >
+                <Star className="w-4 h-4" />
+                Testimonials
+              </motion.span>
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+                Loved by
+                <span className="bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent"> creative teams</span>
+              </h2>
+            </div>
+          </ScrollReveal>
 
           <div className="grid md:grid-cols-3 gap-8">
             {testimonials.map((testimonial, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.15 }}
-                whileHover={{ y: -8 }}
-                className="bg-white rounded-3xl p-8 border border-gray-100 hover:shadow-2xl hover:shadow-pink-500/10 transition-all duration-300"
-              >
-                <div className="flex items-center gap-1 mb-4">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 text-amber-400 fill-amber-400" />
-                  ))}
-                </div>
-                <p className="text-gray-700 leading-relaxed mb-6 text-lg">"{testimonial.quote}"</p>
-                <div className="flex items-center gap-4">
-                  <img 
-                    src={testimonial.avatar} 
-                    alt={testimonial.name}
-                    className="w-12 h-12 rounded-full object-cover"
-                  />
-                  <div>
-                    <div className="font-semibold text-gray-900">{testimonial.name}</div>
-                    <div className="text-sm text-gray-500">{testimonial.role}, {testimonial.company}</div>
+              <ScrollReveal key={index} delay={index * 0.1}>
+                <motion.div
+                  className="p-8 bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl transition-all h-full"
+                  whileHover={{ y: -5 }}
+                >
+                  <div className="flex items-center gap-1 mb-6">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className="w-5 h-5 text-amber-400 fill-amber-400" />
+                    ))}
                   </div>
-                </div>
-              </motion.div>
+                  <p className="text-gray-700 text-lg mb-8 leading-relaxed">"{testimonial.quote}"</p>
+                  <div className="flex items-center gap-4">
+                    <img 
+                      src={testimonial.avatar} 
+                      alt={testimonial.name}
+                      className="w-14 h-14 rounded-full object-cover ring-4 ring-gray-100"
+                    />
+                    <div>
+                      <div className="font-semibold text-gray-900">{testimonial.name}</div>
+                      <div className="text-sm text-gray-500">{testimonial.role}, {testimonial.company}</div>
+                    </div>
+                  </div>
+                </motion.div>
+              </ScrollReveal>
             ))}
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 px-6">
-        <div className="max-w-5xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            whileHover={{ scale: 1.02 }}
-            className="bg-gradient-to-br from-teal-500 via-cyan-500 to-blue-500 rounded-[2.5rem] p-12 md:p-16 text-center relative overflow-hidden shadow-2xl shadow-teal-500/30"
-          >
-            {/* Background Pattern */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-20">
-              <motion.div 
-                className="absolute -top-20 -right-20 w-80 h-80 border-4 border-white rounded-full"
-                animate={{ rotate: 360 }}
-                transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-              />
-              <motion.div 
-                className="absolute -bottom-20 -left-20 w-60 h-60 border-4 border-white rounded-full"
-                animate={{ rotate: -360 }}
-                transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-              />
-              <motion.div 
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] border-2 border-white/30 rounded-full"
-                animate={{ scale: [1, 1.1, 1] }}
-                transition={{ duration: 8, repeat: Infinity }}
-              />
-            </div>
-
-            <div className="relative z-10">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-              >
-                <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 tracking-tight">
-                  Ready to Transform Your Creative Workflow?
-                </h2>
-                <p className="text-xl text-white/90 mb-10 max-w-2xl mx-auto">
-                  Join 500+ brands creating stunning, compliant ad campaigns in minutes
-                </p>
-                
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                  <Link to="/auth">
-                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                      <Button 
-                        size="lg" 
-                        className="bg-white text-teal-600 hover:bg-gray-100 rounded-full px-10 py-7 text-lg font-semibold shadow-xl"
-                      >
-                        Start Creating Now
-                        <ArrowRight className="w-5 h-5 ml-2" />
-                      </Button>
-                    </motion.div>
-                  </Link>
-                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                    <Button 
-                      size="lg" 
-                      variant="outline"
-                      className="bg-transparent border-2 border-white/50 text-white hover:bg-white/10 hover:border-white rounded-full px-10 py-7 text-lg font-semibold"
-                    >
-                      Book a Demo
-                    </Button>
-                  </motion.div>
-                </div>
+      <section className="py-24 px-6 bg-gradient-to-br from-teal-500 via-teal-600 to-cyan-600 relative overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute inset-0" style={{
+            backgroundImage: `radial-gradient(circle at 2px 2px, white 1px, transparent 0)`,
+            backgroundSize: '40px 40px'
+          }} />
+        </div>
+        
+        <div className="max-w-4xl mx-auto text-center relative z-10">
+          <ScrollReveal>
+            <motion.div
+              animate={{ y: [0, -10, 0] }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+              className="w-20 h-20 rounded-3xl bg-white/20 backdrop-blur-md flex items-center justify-center mx-auto mb-8 shadow-2xl"
+            >
+              <Rocket className="w-10 h-10 text-white" />
+            </motion.div>
+            
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+              Ready to transform your creative workflow?
+            </h2>
+            <p className="text-xl text-white/80 mb-10 max-w-2xl mx-auto">
+              Join 500+ brands already using Creato-Sphere to create stunning, compliant ads in minutes.
+            </p>
+            
+            <div className="flex flex-wrap items-center justify-center gap-4">
+              <Link to="/auth">
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Button 
+                    size="lg" 
+                    className="bg-white text-teal-600 hover:bg-gray-100 rounded-full px-10 py-6 text-lg shadow-2xl group"
+                  >
+                    Start Creating Free
+                    <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </motion.div>
+              </Link>
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Button 
+                  size="lg" 
+                  variant="outline"
+                  onClick={() => setShowVideoModal(true)}
+                  className="border-2 border-white/50 text-white hover:bg-white/10 rounded-full px-10 py-6 text-lg"
+                >
+                  <Play className="w-5 h-5 mr-2" />
+                  Watch Demo
+                </Button>
               </motion.div>
             </div>
-          </motion.div>
+          </ScrollReveal>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="py-16 px-6 bg-gray-900">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-4 gap-12 mb-12">
-            <div>
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-teal-500 to-cyan-500 flex items-center justify-center">
-                  <Sparkles className="w-6 h-6 text-white" />
-                </div>
-                <span className="font-bold text-xl text-white">Creato-Sphere</span>
+      <footer className="py-16 px-6 bg-gray-900 text-white">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-teal-500 to-cyan-500 flex items-center justify-center">
+                <Sparkles className="w-6 h-6 text-white" />
               </div>
-              <p className="text-gray-400 leading-relaxed">
-                AI-powered creative platform for building stunning ad campaigns in minutes.
-              </p>
+              <span className="font-bold text-xl">Creato-Sphere</span>
             </div>
             
-            {[
-              { title: "Product", links: ["Features", "AI Engines", "Pricing", "Integrations"] },
-              { title: "Company", links: ["About", "Blog", "Careers", "Press"] },
-              { title: "Support", links: ["Help Center", "Contact", "Status", "API Docs"] },
-            ].map((section, index) => (
-              <div key={index}>
-                <h4 className="font-semibold text-white mb-4">{section.title}</h4>
-                <ul className="space-y-3">
-                  {section.links.map((link, linkIndex) => (
-                    <li key={linkIndex}>
-                      <a href="#" className="text-gray-400 hover:text-white transition-colors">{link}</a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-          
-          <div className="pt-8 border-t border-gray-800 flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-gray-500 text-sm">© 2024 Creato-Sphere. All rights reserved.</p>
-            <div className="flex items-center gap-6">
-              <a href="#" className="text-gray-500 hover:text-white text-sm transition-colors">Privacy</a>
-              <a href="#" className="text-gray-500 hover:text-white text-sm transition-colors">Terms</a>
-              <a href="#" className="text-gray-500 hover:text-white text-sm transition-colors">Cookies</a>
+            <div className="flex items-center gap-8">
+              {["Features", "How it Works", "AI Engines", "Testimonials"].map((item) => (
+                <a 
+                  key={item}
+                  href={`#${item.toLowerCase().replace(/\s+/g, '-')}`}
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
+                >
+                  {item}
+                </a>
+              ))}
+            </div>
+            
+            <div className="text-sm text-gray-500">
+              © 2024 Creato-Sphere. All rights reserved.
             </div>
           </div>
         </div>
