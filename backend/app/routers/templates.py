@@ -1,10 +1,7 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, or_
-from uuid import UUID
-from typing import List
+from fastapi import APIRouter, HTTPException, status, Depends
+from typing import List, Optional
+from datetime import datetime
 
-from ..database import get_db
 from ..schemas.template import TemplateCreate, TemplateUpdate, TemplateResponse, TemplateFavoriteResponse
 from ..middleware.auth import get_current_user, get_current_user_optional
 from ..models.user import User
@@ -15,59 +12,74 @@ router = APIRouter()
 
 
 @router.get("", response_model=List[TemplateResponse])
-async def list_templates(
-    current_user: User = Depends(get_current_user_optional),
-    db: AsyncSession = Depends(get_db),
-):
+async def list_templates(current_user: Optional[User] = Depends(get_current_user_optional)):
     """List all accessible templates (public + user's own)."""
     if current_user:
-        result = await db.execute(
-            select(Template)
-            .where(
-                or_(
-                    Template.is_public == True,
-                    Template.user_id == current_user.id,
-                )
-            )
-            .order_by(Template.updated_at.desc())
-        )
+        templates = await Template.find(
+            {"$or": [
+                {"is_public": True},
+                {"user_id": current_user.id},
+            ]}
+        ).sort(-Template.updated_at).to_list()
     else:
-        result = await db.execute(
-            select(Template)
-            .where(Template.is_public == True)
-            .order_by(Template.updated_at.desc())
-        )
+        templates = await Template.find(
+            Template.is_public == True
+        ).sort(-Template.updated_at).to_list()
     
-    templates = result.scalars().all()
-    return [TemplateResponse.model_validate(t) for t in templates]
+    return [
+        TemplateResponse(
+            id=t.id,
+            user_id=t.user_id,
+            name=t.name,
+            description=t.description,
+            category=t.category,
+            format_width=t.format_width,
+            format_height=t.format_height,
+            canvas_data=t.canvas_data,
+            thumbnail_url=t.thumbnail_url,
+            is_public=t.is_public,
+            created_at=t.created_at,
+            updated_at=t.updated_at,
+        )
+        for t in templates
+    ]
 
 
 @router.post("", response_model=TemplateResponse, status_code=status.HTTP_201_CREATED)
 async def create_template(
     template_data: TemplateCreate,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
 ):
     """Create a new template."""
     template = Template(
         user_id=current_user.id,
         **template_data.model_dump(),
     )
-    db.add(template)
-    await db.commit()
-    await db.refresh(template)
-    return TemplateResponse.model_validate(template)
+    await template.insert()
+    
+    return TemplateResponse(
+        id=template.id,
+        user_id=template.user_id,
+        name=template.name,
+        description=template.description,
+        category=template.category,
+        format_width=template.format_width,
+        format_height=template.format_height,
+        canvas_data=template.canvas_data,
+        thumbnail_url=template.thumbnail_url,
+        is_public=template.is_public,
+        created_at=template.created_at,
+        updated_at=template.updated_at,
+    )
 
 
 @router.get("/{template_id}", response_model=TemplateResponse)
 async def get_template(
-    template_id: UUID,
-    current_user: User = Depends(get_current_user_optional),
-    db: AsyncSession = Depends(get_db),
+    template_id: str,
+    current_user: Optional[User] = Depends(get_current_user_optional),
 ):
     """Get a specific template."""
-    result = await db.execute(select(Template).where(Template.id == template_id))
-    template = result.scalar_one_or_none()
+    template = await Template.find_one(Template.id == template_id)
     
     if not template:
         raise HTTPException(
@@ -83,24 +95,33 @@ async def get_template(
                 detail="Not authorized to access this template",
             )
     
-    return TemplateResponse.model_validate(template)
+    return TemplateResponse(
+        id=template.id,
+        user_id=template.user_id,
+        name=template.name,
+        description=template.description,
+        category=template.category,
+        format_width=template.format_width,
+        format_height=template.format_height,
+        canvas_data=template.canvas_data,
+        thumbnail_url=template.thumbnail_url,
+        is_public=template.is_public,
+        created_at=template.created_at,
+        updated_at=template.updated_at,
+    )
 
 
 @router.put("/{template_id}", response_model=TemplateResponse)
 async def update_template(
-    template_id: UUID,
+    template_id: str,
     template_data: TemplateUpdate,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
 ):
     """Update a template."""
-    result = await db.execute(
-        select(Template).where(
-            Template.id == template_id,
-            Template.user_id == current_user.id,
-        )
+    template = await Template.find_one(
+        Template.id == template_id,
+        Template.user_id == current_user.id,
     )
-    template = result.scalar_one_or_none()
     
     if not template:
         raise HTTPException(
@@ -109,29 +130,38 @@ async def update_template(
         )
     
     update_data = template_data.model_dump(exclude_unset=True)
-    for field, value in update_data.items():
-        setattr(template, field, value)
+    update_data["updated_at"] = datetime.utcnow()
     
-    await db.commit()
-    await db.refresh(template)
+    await template.update({"$set": update_data})
     
-    return TemplateResponse.model_validate(template)
+    updated_template = await Template.find_one(Template.id == template_id)
+    
+    return TemplateResponse(
+        id=updated_template.id,
+        user_id=updated_template.user_id,
+        name=updated_template.name,
+        description=updated_template.description,
+        category=updated_template.category,
+        format_width=updated_template.format_width,
+        format_height=updated_template.format_height,
+        canvas_data=updated_template.canvas_data,
+        thumbnail_url=updated_template.thumbnail_url,
+        is_public=updated_template.is_public,
+        created_at=updated_template.created_at,
+        updated_at=updated_template.updated_at,
+    )
 
 
 @router.delete("/{template_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_template(
-    template_id: UUID,
+    template_id: str,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
 ):
     """Delete a template."""
-    result = await db.execute(
-        select(Template).where(
-            Template.id == template_id,
-            Template.user_id == current_user.id,
-        )
+    template = await Template.find_one(
+        Template.id == template_id,
+        Template.user_id == current_user.id,
     )
-    template = result.scalar_one_or_none()
     
     if not template:
         raise HTTPException(
@@ -139,36 +169,36 @@ async def delete_template(
             detail="Template not found",
         )
     
-    await db.delete(template)
-    await db.commit()
+    await template.delete()
 
 
 # Favorites
 @router.get("/favorites/list", response_model=List[TemplateFavoriteResponse])
-async def list_favorites(
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
-):
+async def list_favorites(current_user: User = Depends(get_current_user)):
     """List user's favorite templates."""
-    result = await db.execute(
-        select(TemplateFavorite)
-        .where(TemplateFavorite.user_id == current_user.id)
-        .order_by(TemplateFavorite.created_at.desc())
-    )
-    favorites = result.scalars().all()
-    return [TemplateFavoriteResponse.model_validate(f) for f in favorites]
+    favorites = await TemplateFavorite.find(
+        TemplateFavorite.user_id == current_user.id
+    ).sort(-TemplateFavorite.created_at).to_list()
+    
+    return [
+        TemplateFavoriteResponse(
+            id=f.id,
+            user_id=f.user_id,
+            template_id=f.template_id,
+            created_at=f.created_at,
+        )
+        for f in favorites
+    ]
 
 
 @router.post("/favorites/{template_id}", response_model=TemplateFavoriteResponse, status_code=status.HTTP_201_CREATED)
 async def add_favorite(
-    template_id: UUID,
+    template_id: str,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
 ):
     """Add a template to favorites."""
     # Check if template exists
-    result = await db.execute(select(Template).where(Template.id == template_id))
-    template = result.scalar_one_or_none()
+    template = await Template.find_one(Template.id == template_id)
     
     if not template:
         raise HTTPException(
@@ -177,13 +207,10 @@ async def add_favorite(
         )
     
     # Check if already favorited
-    result = await db.execute(
-        select(TemplateFavorite).where(
-            TemplateFavorite.user_id == current_user.id,
-            TemplateFavorite.template_id == template_id,
-        )
+    existing = await TemplateFavorite.find_one(
+        TemplateFavorite.user_id == current_user.id,
+        TemplateFavorite.template_id == template_id,
     )
-    existing = result.scalar_one_or_none()
     
     if existing:
         raise HTTPException(
@@ -192,27 +219,26 @@ async def add_favorite(
         )
     
     favorite = TemplateFavorite(user_id=current_user.id, template_id=template_id)
-    db.add(favorite)
-    await db.commit()
-    await db.refresh(favorite)
+    await favorite.insert()
     
-    return TemplateFavoriteResponse.model_validate(favorite)
+    return TemplateFavoriteResponse(
+        id=favorite.id,
+        user_id=favorite.user_id,
+        template_id=favorite.template_id,
+        created_at=favorite.created_at,
+    )
 
 
 @router.delete("/favorites/{template_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def remove_favorite(
-    template_id: UUID,
+    template_id: str,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
 ):
     """Remove a template from favorites."""
-    result = await db.execute(
-        select(TemplateFavorite).where(
-            TemplateFavorite.user_id == current_user.id,
-            TemplateFavorite.template_id == template_id,
-        )
+    favorite = await TemplateFavorite.find_one(
+        TemplateFavorite.user_id == current_user.id,
+        TemplateFavorite.template_id == template_id,
     )
-    favorite = result.scalar_one_or_none()
     
     if not favorite:
         raise HTTPException(
@@ -220,5 +246,4 @@ async def remove_favorite(
             detail="Favorite not found",
         )
     
-    await db.delete(favorite)
-    await db.commit()
+    await favorite.delete()

@@ -1,36 +1,47 @@
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
-from sqlalchemy.orm import declarative_base
+from motor.motor_asyncio import AsyncIOMotorClient
+from beanie import init_beanie
 from .config import get_settings
+from .models.user import User
+from .models.profile import Profile
+from .models.project import Project
+from .models.brand_kit import BrandKit
+from .models.template import Template
+from .models.template_favorite import TemplateFavorite
 
 settings = get_settings()
 
-engine = create_async_engine(
-    settings.database_url,
-    echo=settings.debug,
-    pool_pre_ping=True,
-    pool_size=10,
-    max_overflow=20,
-)
-
-AsyncSessionLocal = async_sessionmaker(
-    engine,
-    class_=AsyncSession,
-    expire_on_commit=False,
-    autocommit=False,
-    autoflush=False,
-)
-
-Base = declarative_base()
+# MongoDB client instance
+client: AsyncIOMotorClient = None
 
 
-async def get_db():
-    async with AsyncSessionLocal() as session:
-        try:
-            yield session
-        finally:
-            await session.close()
+async def connect_db():
+    """Initialize MongoDB connection and Beanie ODM."""
+    global client
+    client = AsyncIOMotorClient(settings.mongodb_url)
+    
+    # Initialize beanie with document models
+    await init_beanie(
+        database=client[settings.mongodb_db_name],
+        document_models=[
+            User,
+            Profile,
+            Project,
+            BrandKit,
+            Template,
+            TemplateFavorite,
+        ]
+    )
+    print(f"Connected to MongoDB: {settings.mongodb_db_name}")
 
 
-async def init_db():
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+async def disconnect_db():
+    """Close MongoDB connection."""
+    global client
+    if client:
+        client.close()
+        print("Disconnected from MongoDB")
+
+
+def get_database():
+    """Get the database instance."""
+    return client[settings.mongodb_db_name]

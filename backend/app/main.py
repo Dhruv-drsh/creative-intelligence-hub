@@ -5,7 +5,7 @@ from contextlib import asynccontextmanager
 import os
 
 from .config import get_settings
-from .database import init_db
+from .database import connect_db, disconnect_db
 from .routers import auth, profiles, projects, brand_kits, templates, storage
 from .routers.ai import (
     attention_heatmap,
@@ -28,26 +28,27 @@ settings = get_settings()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup
-    await init_db()
+    """Application lifespan handler for startup/shutdown events."""
+    # Startup: Connect to MongoDB
+    await connect_db()
     
     # Create storage directory
     os.makedirs(os.path.join(settings.storage_root, "assets"), exist_ok=True)
     
     yield
     
-    # Shutdown
-    pass
+    # Shutdown: Disconnect from MongoDB
+    await disconnect_db()
 
 
 app = FastAPI(
-    title="Creative Hub API",
-    description="FastAPI backend for Creative Hub application",
+    title="Creato-Sphere API",
+    description="AI-powered creative platform backend with MongoDB Atlas",
     version="1.0.0",
     lifespan=lifespan,
 )
 
-# CORS
+# CORS Configuration
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins,
@@ -83,9 +84,19 @@ app.include_router(visual_auditor.router, prefix="/api/ai", tags=["AI"])
 app.include_router(generate_background.router, prefix="/api/ai", tags=["AI"])
 
 
+@app.get("/")
+async def root():
+    return {
+        "message": "Creato-Sphere API",
+        "version": "1.0.0",
+        "status": "running",
+        "database": "MongoDB Atlas",
+    }
+
+
 @app.get("/health")
 async def health_check():
-    return {"status": "healthy", "version": "1.0.0"}
+    return {"status": "healthy", "version": "1.0.0", "database": "MongoDB Atlas"}
 
 
 if __name__ == "__main__":

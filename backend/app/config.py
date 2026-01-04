@@ -3,8 +3,9 @@ from functools import lru_cache
 
 
 class Settings(BaseSettings):
-    # Database
-    database_url: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/creative_hub"
+    # MongoDB Configuration
+    mongodb_url: str = "mongodb+srv://dhruvarcade27_db_user:JUtINeHgADsQbxe7@drsh.tvyzxgr.mongodb.net/?appName=drsh"
+    mongodb_db_name: str = "creative_hub"
     
     # JWT
     jwt_secret: str = "your-super-secret-jwt-key-change-in-production"

@@ -1,24 +1,29 @@
-from sqlalchemy import Column, String, DateTime
-from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import relationship
+from beanie import Document
+from pydantic import EmailStr, Field
 from datetime import datetime
-import uuid
+from uuid import uuid4
+from typing import Optional
 
-from ..database import Base
 
+class User(Document):
+    """User document for MongoDB."""
+    id: str = Field(default_factory=lambda: str(uuid4()))
+    email: EmailStr
+    password_hash: str
+    is_active: bool = True
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
 
-class User(Base):
-    __tablename__ = "users"
+    class Settings:
+        name = "users"
+        indexes = [
+            "email",
+        ]
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    email = Column(String(255), unique=True, nullable=False, index=True)
-    password_hash = Column(String(255), nullable=False)
-    created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
-    updated_at = Column(DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow)
-
-    # Relationships
-    profile = relationship("Profile", back_populates="user", uselist=False, cascade="all, delete-orphan")
-    projects = relationship("Project", back_populates="user", cascade="all, delete-orphan")
-    brand_kits = relationship("BrandKit", back_populates="user", cascade="all, delete-orphan")
-    templates = relationship("Template", back_populates="user", cascade="all, delete-orphan")
-    favorites = relationship("TemplateFavorite", back_populates="user", cascade="all, delete-orphan")
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "email": "user@example.com",
+                "password_hash": "hashed_password",
+            }
+        }

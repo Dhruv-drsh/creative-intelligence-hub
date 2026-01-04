@@ -1,20 +1,29 @@
-from sqlalchemy import Column, String, DateTime, ForeignKey
-from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import relationship
+from beanie import Document
+from pydantic import Field
 from datetime import datetime
+from typing import Optional
 
-from ..database import Base
 
+class Profile(Document):
+    """Profile document for MongoDB."""
+    id: str  # Same as user_id for 1:1 relationship
+    email: Optional[str] = None
+    full_name: Optional[str] = None
+    avatar_url: Optional[str] = None
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
 
-class Profile(Base):
-    __tablename__ = "profiles"
+    class Settings:
+        name = "profiles"
+        indexes = [
+            "id",
+        ]
 
-    id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
-    email = Column(String(255))
-    full_name = Column(String(255))
-    avatar_url = Column(String(500))
-    created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
-    updated_at = Column(DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow)
-
-    # Relationships
-    user = relationship("User", back_populates="profile")
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "id": "user-uuid",
+                "email": "user@example.com",
+                "full_name": "John Doe",
+            }
+        }
