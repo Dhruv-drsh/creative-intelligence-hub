@@ -1,53 +1,35 @@
 version: '3.8'
 
 services:
-  postgres:
-    image: postgres:15-alpine
-    environment:
-      POSTGRES_DB: creative_hub
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./migrations/001_initial_schema.sql:/docker-entrypoint-initdb.d/001_initial_schema.sql
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
-  redis:
-    image: redis:7-alpine
-    ports:
-      - "6379:6379"
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
   backend:
     build: .
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@postgres:5432/creative_hub
-      - REDIS_URL=redis://redis:6379/0
+      - MONGODB_URL=mongodb+srv://dhruvarcade27_db_user:JUtINeHgADsQbxe7@drsh.tvyzxgr.mongodb.net/?appName=drsh
+      - MONGODB_DB_NAME=creative_hub
       - JWT_SECRET=${JWT_SECRET:-your-super-secret-jwt-key}
       - LOVABLE_API_KEY=${LOVABLE_API_KEY:-}
       - STORAGE_ROOT=/app/storage
       - PUBLIC_URL_BASE=http://localhost:8000/storage/v1/object/public/assets
       - FRONTEND_URL=http://localhost:5173
+      - CORS_ORIGINS=["http://localhost:5173","http://localhost:3000"]
       - DEBUG=true
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
     volumes:
       - ./storage:/app/storage
+    restart: unless-stopped
 
-volumes:
-  postgres_data:
+  # Optional: Local MongoDB (if not using Atlas)
+  # mongodb:
+  #   image: mongo:7
+  #   ports:
+  #     - "27017:27017"
+  #   environment:
+  #     - MONGO_INITDB_ROOT_USERNAME=admin
+  #     - MONGO_INITDB_ROOT_PASSWORD=password
+  #     - MONGO_INITDB_DATABASE=creative_hub
+  #   volumes:
+  #     - mongodb_data:/data/db
+
+# volumes:
+#   mongodb_data:

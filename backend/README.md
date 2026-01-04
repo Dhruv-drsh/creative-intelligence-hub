@@ -1,13 +1,21 @@
-# Creative Hub Backend
+# Creato-Sphere FastAPI Backend
 
-FastAPI backend for Creative Hub application.
+FastAPI backend for Creato-Sphere AI Creative Platform with MongoDB Atlas.
+
+## Tech Stack
+
+- **FastAPI** - Modern Python web framework
+- **MongoDB Atlas** - Cloud database
+- **Beanie ODM** - MongoDB object-document mapper
+- **JWT** - Authentication
+- **Lovable AI Gateway** - AI capabilities
 
 ## Quick Start
 
 ### Using Docker (Recommended)
 
 ```bash
-# Start all services
+# Start backend
 docker-compose up -d
 
 # View logs
@@ -19,30 +27,24 @@ docker-compose down
 
 ### Manual Setup
 
-1. **Create PostgreSQL database:**
-```bash
-createdb creative_hub
-psql -d creative_hub -f migrations/001_initial_schema.sql
-```
-
-2. **Create virtual environment:**
+1. **Create virtual environment:**
 ```bash
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 ```
 
-3. **Install dependencies:**
+2. **Install dependencies:**
 ```bash
 pip install -r requirements.txt
 ```
 
-4. **Configure environment:**
+3. **Configure environment:**
 ```bash
 cp .env.example .env
-# Edit .env with your settings
+# Edit .env with your MongoDB Atlas connection string
 ```
 
-5. **Run the server:**
+4. **Run the server:**
 ```bash
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
@@ -57,7 +59,8 @@ Once running, visit:
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `DATABASE_URL` | PostgreSQL connection string | `postgresql+asyncpg://postgres:postgres@localhost:5432/creative_hub` |
+| `MONGODB_URL` | MongoDB Atlas connection string | Required |
+| `MONGODB_DB_NAME` | Database name | `creative_hub` |
 | `JWT_SECRET` | Secret key for JWT tokens | Required |
 | `LOVABLE_API_KEY` | API key for Lovable AI Gateway | Required for AI features |
 | `STORAGE_ROOT` | Local file storage path | `./storage` |
@@ -70,6 +73,11 @@ Once running, visit:
 - `POST /api/auth/login` - Login and get tokens
 - `POST /api/auth/refresh` - Refresh access token
 - `GET /api/auth/me` - Get current user
+- `POST /api/auth/logout` - Logout
+
+### Profiles
+- `GET /api/profiles/me` - Get profile
+- `PUT /api/profiles/me` - Update profile
 
 ### Resources
 - `GET/POST /api/projects` - List/create projects
@@ -78,8 +86,9 @@ Once running, visit:
 - `GET/PUT/DELETE /api/brand-kits/{id}` - Brand kit operations
 - `GET/POST /api/templates` - List/create templates
 - `GET/PUT/DELETE /api/templates/{id}` - Template operations
+- `GET/POST/DELETE /api/templates/favorites/{id}` - Template favorites
 
-### AI Endpoints
+### AI Endpoints (13 total)
 - `POST /api/ai/attention-heatmap` - Generate attention predictions
 - `POST /api/ai/brand-dna` - Extract brand DNA from image
 - `POST /api/ai/campaign-set` - Generate campaign variations
@@ -97,3 +106,21 @@ Once running, visit:
 ### Storage
 - `POST /api/storage/upload` - Upload file
 - `DELETE /api/storage/{path}` - Delete file
+
+## MongoDB Collections
+
+- `users` - User accounts
+- `profiles` - User profiles
+- `projects` - Creative projects
+- `brand_kits` - Brand kits
+- `templates` - Templates
+- `template_favorites` - Template favorites
+
+## Frontend Configuration
+
+To use the FastAPI backend instead of Lovable Cloud, update frontend `.env`:
+
+```env
+VITE_BACKEND_TYPE=local
+VITE_API_URL=http://localhost:8000/api
+```

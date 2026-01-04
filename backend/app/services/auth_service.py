@@ -1,11 +1,8 @@
 from datetime import datetime, timedelta
 from typing import Optional
-from uuid import UUID
 
 from jose import JWTError, jwt
 from passlib.context import CryptContext
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
 
 from ..config import get_settings
 from ..models.user import User
@@ -25,14 +22,14 @@ class AuthService:
         return pwd_context.verify(plain_password, hashed_password)
 
     @staticmethod
-    def create_access_token(user_id: UUID, expires_delta: Optional[timedelta] = None) -> str:
+    def create_access_token(user_id: str, expires_delta: Optional[timedelta] = None) -> str:
         to_encode = {"sub": str(user_id), "type": "access"}
         expire = datetime.utcnow() + (expires_delta or timedelta(minutes=settings.access_token_expire_minutes))
         to_encode.update({"exp": expire})
         return jwt.encode(to_encode, settings.jwt_secret, algorithm=settings.jwt_algorithm)
 
     @staticmethod
-    def create_refresh_token(user_id: UUID) -> str:
+    def create_refresh_token(user_id: str) -> str:
         to_encode = {"sub": str(user_id), "type": "refresh"}
         expire = datetime.utcnow() + timedelta(days=settings.refresh_token_expire_days)
         to_encode.update({"exp": expire})
@@ -47,33 +44,28 @@ class AuthService:
             return None
 
     @staticmethod
-    async def get_user_by_email(db: AsyncSession, email: str) -> Optional[User]:
-        result = await db.execute(select(User).where(User.email == email))
-        return result.scalar_one_or_none()
+    async def get_user_by_email(email: str) -> Optional[User]:
+        return await User.find_one(User.email == email)
 
     @staticmethod
-    async def get_user_by_id(db: AsyncSession, user_id: UUID) -> Optional[User]:
-        result = await db.execute(select(User).where(User.id == user_id))
-        return result.scalar_one_or_none()
+    async def get_user_by_id(user_id: str) -> Optional[User]:
+        return await User.find_one(User.id == user_id)
 
     @staticmethod
-    async def create_user(db: AsyncSession, email: str, password: str, full_name: Optional[str] = None) -> User:
+    async def create_user(email: str, password: str, full_name: Optional[str] = None) -> User:
         hashed_password = AuthService.hash_password(password)
         user = User(email=email, password_hash=hashed_password)
-        db.add(user)
-        await db.flush()
+        await user.insert()
         
         # Create profile
         profile = Profile(id=user.id, email=email, full_name=full_name)
-        db.add(profile)
+        await profile.insert()
         
-        await db.commit()
-        await db.refresh(user)
         return user
 
     @staticmethod
-    async def authenticate_user(db: AsyncSession, email: str, password: str) -> Optional[User]:
-        user = await AuthService.get_user_by_email(db, email)
+    async def authenticate_user(email: str, password: str) -> Optional[User]:
+        user = await AuthService.get_user_by_email(email)
         if not user or not AuthService.verify_password(password, user.password_hash):
             return None
         return user

@@ -1,28 +1,37 @@
-from sqlalchemy import Column, String, Integer, DateTime, ForeignKey
-from sqlalchemy.dialects.postgresql import UUID, JSONB
-from sqlalchemy.orm import relationship
+from beanie import Document
+from pydantic import Field
 from datetime import datetime
-import uuid
+from uuid import uuid4
+from typing import Optional, Any
 
-from ..database import Base
 
+class Project(Document):
+    """Project document for MongoDB."""
+    id: str = Field(default_factory=lambda: str(uuid4()))
+    user_id: str
+    brand_kit_id: Optional[str] = None
+    name: str = "Untitled Creative"
+    format_id: str = "instagram-feed"
+    format_width: int = 1080
+    format_height: int = 1080
+    canvas_data: dict[str, Any] = Field(default_factory=dict)
+    thumbnail_url: Optional[str] = None
+    compliance_score: int = 0
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
 
-class Project(Base):
-    __tablename__ = "projects"
+    class Settings:
+        name = "projects"
+        indexes = [
+            "user_id",
+            "brand_kit_id",
+        ]
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
-    brand_kit_id = Column(UUID(as_uuid=True), ForeignKey("brand_kits.id", ondelete="SET NULL"), nullable=True)
-    name = Column(String(255), default="Untitled Creative")
-    format_id = Column(String(100), default="instagram-feed")
-    format_width = Column(Integer, default=1080)
-    format_height = Column(Integer, default=1080)
-    canvas_data = Column(JSONB, default=dict)
-    thumbnail_url = Column(String(500))
-    compliance_score = Column(Integer, default=0)
-    created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
-    updated_at = Column(DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow)
-
-    # Relationships
-    user = relationship("User", back_populates="projects")
-    brand_kit = relationship("BrandKit", back_populates="projects")
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "user_id": "user-uuid",
+                "name": "My Creative",
+                "format_id": "instagram-feed",
+            }
+        }

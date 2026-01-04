@@ -1,7 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import APIRouter, HTTPException, status, Depends
 
-from ..database import get_db
 from ..schemas.user import UserCreate, UserLogin, UserResponse, TokenResponse
 from ..services.auth_service import AuthService
 from ..middleware.auth import get_current_user
@@ -11,10 +9,10 @@ router = APIRouter()
 
 
 @router.post("/register", response_model=TokenResponse)
-async def register(user_data: UserCreate, db: AsyncSession = Depends(get_db)):
+async def register(user_data: UserCreate):
     """Register a new user."""
     # Check if user already exists
-    existing_user = await AuthService.get_user_by_email(db, user_data.email)
+    existing_user = await AuthService.get_user_by_email(user_data.email)
     if existing_user:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -23,7 +21,6 @@ async def register(user_data: UserCreate, db: AsyncSession = Depends(get_db)):
     
     # Create user
     user = await AuthService.create_user(
-        db,
         email=user_data.email,
         password=user_data.password,
         full_name=user_data.full_name,
@@ -36,14 +33,18 @@ async def register(user_data: UserCreate, db: AsyncSession = Depends(get_db)):
     return TokenResponse(
         access_token=access_token,
         refresh_token=refresh_token,
-        user=UserResponse.model_validate(user),
+        user=UserResponse(
+            id=user.id,
+            email=user.email,
+            created_at=user.created_at,
+        ),
     )
 
 
 @router.post("/login", response_model=TokenResponse)
-async def login(credentials: UserLogin, db: AsyncSession = Depends(get_db)):
+async def login(credentials: UserLogin):
     """Login and get access token."""
-    user = await AuthService.authenticate_user(db, credentials.email, credentials.password)
+    user = await AuthService.authenticate_user(credentials.email, credentials.password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -56,15 +57,16 @@ async def login(credentials: UserLogin, db: AsyncSession = Depends(get_db)):
     return TokenResponse(
         access_token=access_token,
         refresh_token=refresh_token,
-        user=UserResponse.model_validate(user),
+        user=UserResponse(
+            id=user.id,
+            email=user.email,
+            created_at=user.created_at,
+        ),
     )
 
 
 @router.post("/refresh", response_model=TokenResponse)
-async def refresh_token(
-    refresh_token: str,
-    db: AsyncSession = Depends(get_db),
-):
+async def refresh_token(refresh_token: str):
     """Refresh access token using refresh token."""
     payload = AuthService.decode_token(refresh_token)
     if not payload or payload.get("type") != "refresh":
@@ -73,9 +75,8 @@ async def refresh_token(
             detail="Invalid refresh token",
         )
     
-    from uuid import UUID
-    user_id = UUID(payload.get("sub"))
-    user = await AuthService.get_user_by_id(db, user_id)
+    user_id = payload.get("sub")
+    user = await AuthService.get_user_by_id(user_id)
     
     if not user:
         raise HTTPException(
@@ -89,14 +90,22 @@ async def refresh_token(
     return TokenResponse(
         access_token=access_token,
         refresh_token=new_refresh_token,
-        user=UserResponse.model_validate(user),
+        user=UserResponse(
+            id=user.id,
+            email=user.email,
+            created_at=user.created_at,
+        ),
     )
 
 
 @router.get("/me", response_model=UserResponse)
 async def get_current_user_info(current_user: User = Depends(get_current_user)):
     """Get current user information."""
-    return UserResponse.model_validate(current_user)
+    return UserResponse(
+        id=current_user.id,
+        email=current_user.email,
+        created_at=current_user.created_at,
+    )
 
 
 @router.post("/logout")

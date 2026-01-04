@@ -1,28 +1,38 @@
-from sqlalchemy import Column, String, Integer, Boolean, Text, DateTime, ForeignKey
-from sqlalchemy.dialects.postgresql import UUID, JSONB
-from sqlalchemy.orm import relationship
+from beanie import Document
+from pydantic import Field
 from datetime import datetime
-import uuid
+from uuid import uuid4
+from typing import Optional, Any
 
-from ..database import Base
 
+class Template(Document):
+    """Template document for MongoDB."""
+    id: str = Field(default_factory=lambda: str(uuid4()))
+    user_id: Optional[str] = None
+    name: str
+    description: Optional[str] = None
+    category: str = "general"
+    format_width: int = 1080
+    format_height: int = 1080
+    canvas_data: dict[str, Any] = Field(default_factory=dict)
+    thumbnail_url: Optional[str] = None
+    is_public: bool = False
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
 
-class Template(Base):
-    __tablename__ = "templates"
+    class Settings:
+        name = "templates"
+        indexes = [
+            "user_id",
+            "is_public",
+            "category",
+        ]
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=True, index=True)
-    name = Column(String(255), nullable=False)
-    description = Column(Text)
-    category = Column(String(100), default="general")
-    format_width = Column(Integer, default=1080)
-    format_height = Column(Integer, default=1080)
-    canvas_data = Column(JSONB, default=dict)
-    thumbnail_url = Column(String(500))
-    is_public = Column(Boolean, default=False, index=True)
-    created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
-    updated_at = Column(DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow)
-
-    # Relationships
-    user = relationship("User", back_populates="templates")
-    favorites = relationship("TemplateFavorite", back_populates="template", cascade="all, delete-orphan")
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "name": "Modern Template",
+                "category": "social",
+                "is_public": True,
+            }
+        }

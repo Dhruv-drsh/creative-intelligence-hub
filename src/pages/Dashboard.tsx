@@ -122,7 +122,7 @@ const Dashboard = () => {
           className="mb-10"
         >
           <h1 className="font-display text-3xl md:text-4xl mb-2">
-            Welcome back{user?.user_metadata?.full_name ? `, ${user.user_metadata.full_name}` : ""}
+            Welcome back{(user && 'user_metadata' in user && user.user_metadata?.full_name) ? `, ${user.user_metadata.full_name}` : ""}
           </h1>
           <p className="text-muted-foreground">
             Pick up where you left off, or start something new.

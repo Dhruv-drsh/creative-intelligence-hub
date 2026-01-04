@@ -1,10 +1,7 @@
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Optional
-from uuid import UUID
 
-from ..database import get_db
 from ..services.auth_service import AuthService
 from ..models.user import User
 
@@ -13,7 +10,6 @@ security = HTTPBearer(auto_error=False)
 
 async def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security),
-    db: AsyncSession = Depends(get_db),
 ) -> User:
     """Get the current authenticated user. Raises 401 if not authenticated."""
     if not credentials:
@@ -38,8 +34,8 @@ async def get_current_user(
             headers={"WWW-Authenticate": "Bearer"},
         )
     
-    user_id = UUID(payload.get("sub"))
-    user = await AuthService.get_user_by_id(db, user_id)
+    user_id = payload.get("sub")
+    user = await AuthService.get_user_by_id(user_id)
     
     if not user:
         raise HTTPException(
@@ -53,13 +49,12 @@ async def get_current_user(
 
 async def get_current_user_optional(
     credentials: HTTPAuthorizationCredentials = Depends(security),
-    db: AsyncSession = Depends(get_db),
 ) -> Optional[User]:
     """Get the current user if authenticated, otherwise return None."""
     if not credentials:
         return None
     
     try:
-        return await get_current_user(credentials, db)
+        return await get_current_user(credentials)
     except HTTPException:
         return None
