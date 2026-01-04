@@ -15,9 +15,6 @@ export const ThemeToggle = ({ className = "" }: { className?: string }) => {
   useEffect(() => {
     const root = document.documentElement;
     
-    // Add transition class for smooth color changes
-    root.style.setProperty('--transition-duration', '300ms');
-    
     if (isDark) {
       root.classList.add('dark');
       localStorage.setItem('theme', 'dark');
@@ -30,29 +27,34 @@ export const ThemeToggle = ({ className = "" }: { className?: string }) => {
   return (
     <motion.button
       onClick={() => setIsDark(!isDark)}
-      className={`relative w-14 h-7 rounded-full bg-gray-200 dark:bg-gray-700 p-1 transition-colors duration-300 ${className}`}
+      className={`relative w-12 h-6 sm:w-14 sm:h-7 rounded-full bg-secondary dark:bg-muted p-0.5 sm:p-1 border border-border/50 transition-colors duration-300 ${className}`}
       whileTap={{ scale: 0.95 }}
       title={isDark ? "Switch to light mode" : "Switch to dark mode"}
+      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
     >
       <motion.div
-        className="absolute top-1 w-5 h-5 rounded-full bg-white shadow-md flex items-center justify-center"
+        className="absolute top-0.5 sm:top-1 w-5 h-5 rounded-full bg-background shadow-md flex items-center justify-center border border-border/30"
         animate={{ 
-          x: isDark ? 28 : 0,
-          rotate: isDark ? 360 : 0 
+          x: isDark ? 22 : 2,
         }}
         transition={{ type: "spring", stiffness: 500, damping: 30 }}
       >
-        {isDark ? (
-          <Moon className="w-3 h-3 text-purple-600" />
-        ) : (
-          <Sun className="w-3 h-3 text-amber-500" />
-        )}
+        <motion.div
+          animate={{ rotate: isDark ? 360 : 0 }}
+          transition={{ type: "spring", stiffness: 300, damping: 20 }}
+        >
+          {isDark ? (
+            <Moon className="w-3 h-3 text-accent" />
+          ) : (
+            <Sun className="w-3 h-3 text-amber-500" />
+          )}
+        </motion.div>
       </motion.div>
       
       {/* Background Icons */}
       <div className="absolute inset-0 flex items-center justify-between px-1.5 pointer-events-none">
-        <Sun className={`w-3.5 h-3.5 transition-opacity duration-300 ${isDark ? 'opacity-30 text-gray-400' : 'opacity-0'}`} />
-        <Moon className={`w-3.5 h-3.5 transition-opacity duration-300 ${isDark ? 'opacity-0' : 'opacity-30 text-gray-500'}`} />
+        <Sun className={`w-3 h-3 sm:w-3.5 sm:h-3.5 transition-opacity duration-300 ${isDark ? 'opacity-40 text-muted-foreground' : 'opacity-0'}`} />
+        <Moon className={`w-3 h-3 sm:w-3.5 sm:h-3.5 transition-opacity duration-300 ${isDark ? 'opacity-0' : 'opacity-40 text-muted-foreground'}`} />
       </div>
     </motion.button>
   );
