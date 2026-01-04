@@ -864,7 +864,7 @@ const CreativeBuilder = () => {
 
   return (
     <PageTransition className="h-screen">
-    <div className="h-full flex flex-col bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-background dark:via-background dark:to-secondary/10 overflow-hidden transition-colors duration-300">
+    <div className="h-full flex flex-col bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:bg-background overflow-hidden transition-colors duration-300">
       {/* Modals */}
       <ImageUploader
         isOpen={showImageUploader}
@@ -1148,7 +1148,7 @@ const CreativeBuilder = () => {
       />
 
       {/* Top Bar - Zeroqode Style */}
-      <header className="h-14 sm:h-16 border-b border-gray-100 dark:border-border/30 bg-white/90 dark:bg-card/80 backdrop-blur-xl flex items-center justify-between px-3 sm:px-5 shrink-0 shadow-sm dark:shadow-none transition-colors duration-300">
+      <header className="h-14 sm:h-16 border-b border-gray-100 dark:border-border/40 bg-white/90 dark:bg-card backdrop-blur-xl flex items-center justify-between px-3 sm:px-5 shrink-0 shadow-sm dark:shadow-none transition-colors duration-300">
         <div className="flex items-center gap-2 sm:gap-4">
           <Link to="/dashboard">
             <Button variant="ghost" size="icon-sm" className="hover:bg-gray-100 dark:hover:bg-muted/50 text-gray-600 dark:text-foreground">
@@ -1278,10 +1278,10 @@ const CreativeBuilder = () => {
               animate={{ width: 280, opacity: 1 }}
               exit={{ width: 0, opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="hidden md:flex border-r border-gray-100 dark:border-border/30 bg-white dark:bg-gradient-to-b dark:from-card/80 dark:to-card/40 flex-col shrink-0 overflow-hidden shadow-sm dark:shadow-none transition-colors duration-300"
+              className="hidden md:flex border-r border-gray-100 dark:border-border/40 bg-white dark:bg-card flex-col shrink-0 overflow-hidden shadow-sm dark:shadow-none transition-colors duration-300"
             >
               {/* Tabs - Enhanced */}
-              <div className="flex border-b border-gray-100 dark:border-border/30 shrink-0 bg-gray-50/50 dark:bg-secondary/20">
+              <div className="flex border-b border-gray-100 dark:border-border/40 shrink-0 bg-gray-50/50 dark:bg-muted/30">
                 {(["assets", "layers", "templates"] as const).map((tab) => (
                   <button
                     key={tab}
@@ -1592,7 +1592,7 @@ const CreativeBuilder = () => {
         {/* Canvas Area */}
         <div className="flex-1 flex flex-col overflow-hidden">
           {/* Tools Bar - Responsive */}
-          <div className="h-12 md:h-14 border-b border-gray-100 dark:border-border/30 hidden md:flex items-center justify-between px-3 md:px-5 bg-white/80 dark:bg-gradient-to-r dark:from-card/50 dark:to-card/30 shrink-0 backdrop-blur-sm shadow-sm dark:shadow-none transition-colors duration-300">
+          <div className="h-12 md:h-14 border-b border-gray-100 dark:border-border/40 hidden md:flex items-center justify-between px-3 md:px-5 bg-white/80 dark:bg-card shrink-0 backdrop-blur-sm shadow-sm dark:shadow-none transition-colors duration-300">
             <div className="flex items-center gap-2">
               <Button
                 variant="ghost"
@@ -1743,7 +1743,7 @@ const CreativeBuilder = () => {
           {/* Canvas */}
           <div 
             ref={containerRef}
-            className="flex-1 flex items-center justify-center bg-gradient-to-br from-gray-100 via-gray-50 to-white dark:from-background dark:via-background dark:to-secondary/10 p-4 sm:p-6 md:p-10 overflow-auto pb-20 md:pb-10 transition-colors duration-300"
+            className="flex-1 flex items-center justify-center bg-gradient-to-br from-gray-100 via-gray-50 to-white dark:bg-background p-4 sm:p-6 md:p-10 overflow-auto pb-20 md:pb-10 transition-colors duration-300"
           >
             <div 
               className="canvas-container shadow-xl relative ring-1 ring-gray-200/50 dark:ring-border/20 touch-none rounded-2xl overflow-hidden"
@@ -1784,7 +1784,7 @@ const CreativeBuilder = () => {
               animate={{ width: 320, opacity: 1 }}
               exit={{ width: 0, opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="hidden lg:flex border-l border-gray-100 dark:border-border/30 bg-white dark:bg-gradient-to-b dark:from-card/80 dark:to-card/40 flex-col shrink-0 shadow-sm dark:shadow-none transition-colors duration-300"
+              className="hidden lg:flex border-l border-gray-100 dark:border-border/40 bg-white dark:bg-card flex-col shrink-0 shadow-sm dark:shadow-none transition-colors duration-300"
             >
               <ScrollArea className="flex-1">
                 {/* Object Formatting Section */}
