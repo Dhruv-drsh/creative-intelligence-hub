@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 import { VideoModal } from "@/components/VideoModal";
 import { ScrollReveal, StaggerReveal } from "@/components/ScrollReveal";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -72,18 +73,24 @@ const stats = [
 ];
 
 const aiEngines = [
-  { name: "Brand DNA", icon: Palette, desc: "Extract brand identity" },
-  { name: "AutoLayout", icon: Layers, desc: "Smart positioning" },
-  { name: "Compliance", icon: Shield, desc: "Retailer validation" },
-  { name: "Copywriting", icon: Type, desc: "AI-generated copy" },
-  { name: "Background Gen", icon: Image, desc: "AI backgrounds" },
-  { name: "Format Transform", icon: Globe, desc: "Multi-format export" },
-  { name: "Attention Sim", icon: Eye, desc: "Heatmap analysis" },
-  { name: "Performance", icon: TrendingUp, desc: "Predict metrics" },
-  { name: "Typography", icon: Type, desc: "Font harmony" },
-  { name: "Color Harmony", icon: Palette, desc: "Color psychology" },
-  { name: "Scene Builder", icon: Wand2, desc: "Scene generation" },
-  { name: "Multiverse Gen", icon: Sparkles, desc: "Infinite variations" },
+  { name: "Brand DNA", icon: Palette, desc: "Extract brand identity", color: "from-pink-500 to-rose-500" },
+  { name: "AutoLayout", icon: Layers, desc: "Smart positioning", color: "from-violet-500 to-purple-500" },
+  { name: "Compliance", icon: Shield, desc: "Retailer validation", color: "from-emerald-500 to-teal-500" },
+  { name: "Copywriting", icon: Type, desc: "AI-generated copy", color: "from-amber-500 to-orange-500" },
+  { name: "Background Gen", icon: Image, desc: "AI backgrounds", color: "from-cyan-500 to-blue-500" },
+  { name: "Format Transform", icon: Globe, desc: "Multi-format export", color: "from-indigo-500 to-violet-500" },
+  { name: "Attention Sim", icon: Eye, desc: "Heatmap analysis", color: "from-red-500 to-pink-500" },
+  { name: "Performance", icon: TrendingUp, desc: "Predict metrics", color: "from-green-500 to-emerald-500" },
+  { name: "Typography", icon: Type, desc: "Font harmony", color: "from-blue-500 to-indigo-500" },
+  { name: "Color Harmony", icon: Palette, desc: "Color psychology", color: "from-fuchsia-500 to-pink-500" },
+  { name: "Scene Builder", icon: Wand2, desc: "Scene generation", color: "from-teal-500 to-cyan-500" },
+  { name: "Multiverse Gen", icon: Sparkles, desc: "Infinite variations", color: "from-purple-500 to-indigo-500" },
+  { name: "Trend Forecast", icon: TrendingUp, desc: "Creative trends", color: "from-orange-500 to-red-500" },
+  { name: "Emotion Design", icon: Brain, desc: "Mood to visuals", color: "from-rose-500 to-pink-500" },
+  { name: "Campaign Set", icon: Layers, desc: "Full campaigns", color: "from-sky-500 to-blue-500" },
+  { name: "Visual Auditor", icon: Eye, desc: "Design critique", color: "from-lime-500 to-green-500" },
+  { name: "AI Chat Control", icon: Wand2, desc: "Natural language", color: "from-violet-500 to-fuchsia-500" },
+  { name: "Smart Resize", icon: Globe, desc: "Auto adaptation", color: "from-teal-500 to-emerald-500" },
 ];
 
 const testimonials = [
@@ -134,8 +141,8 @@ const howItWorks = [
   },
 ];
 
-// AI Engines Gallery Slider Component
-const AIEnginesSlider = ({ aiEngines }: { aiEngines: typeof import("lucide-react") extends { [key: string]: any } ? { name: string; icon: any; desc: string }[] : never }) => {
+// AI Engines Gallery Slider Component - Redesigned with visual effects
+const AIEnginesSlider = ({ aiEngines }: { aiEngines: { name: string; icon: any; desc: string; color: string }[] }) => {
   const [emblaRef, emblaApi] = useEmblaCarousel(
     { 
       loop: true, 
@@ -169,69 +176,169 @@ const AIEnginesSlider = ({ aiEngines }: { aiEngines: typeof import("lucide-react
   }, [emblaApi, onSelect]);
 
   return (
-    <section id="ai-engines" className="py-16 sm:py-24 px-4 sm:px-6 bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 text-white overflow-hidden">
-      <div className="max-w-6xl mx-auto">
+    <section id="ai-engines" className="py-20 sm:py-32 px-4 sm:px-6 relative overflow-hidden">
+      {/* Animated Background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950">
+        {/* Floating Gradient Orbs */}
+        <motion.div
+          className="absolute top-20 left-10 w-72 h-72 bg-gradient-to-br from-teal-500/20 to-cyan-500/20 rounded-full blur-3xl"
+          animate={{ 
+            x: [0, 50, 0],
+            y: [0, 30, 0],
+            scale: [1, 1.1, 1],
+          }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-br from-purple-500/15 to-pink-500/15 rounded-full blur-3xl"
+          animate={{ 
+            x: [0, -30, 0],
+            y: [0, -50, 0],
+            scale: [1.1, 1, 1.1],
+          }}
+          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-indigo-500/10 to-violet-500/10 rounded-full blur-3xl"
+          animate={{ 
+            rotate: [0, 360],
+            scale: [1, 1.2, 1],
+          }}
+          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+        />
+        
+        {/* Grid Pattern Overlay */}
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:60px_60px]" />
+      </div>
+
+      <div className="max-w-7xl mx-auto relative z-10">
         <ScrollReveal>
-          <div className="text-center mb-10 sm:mb-12">
-            <motion.span 
-              className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-teal-500/20 rounded-full text-teal-400 text-xs sm:text-sm font-medium mb-4 border border-teal-500/30"
-              whileHover={{ scale: 1.05 }}
+          <div className="text-center mb-12 sm:mb-16">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.5 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5 }}
+              viewport={{ once: true }}
+              className="inline-flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 bg-gradient-to-r from-teal-500/20 to-cyan-500/20 rounded-full text-teal-400 text-xs sm:text-sm font-semibold mb-6 border border-teal-500/30 backdrop-blur-sm"
             >
-              <Brain className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-              AI Engines
-            </motion.span>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
-              18 Specialized
-              <span className="bg-gradient-to-r from-teal-400 to-cyan-400 bg-clip-text text-transparent"> AI Engines</span>
-            </h2>
-            <p className="text-base sm:text-lg text-gray-400 max-w-2xl mx-auto">
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+              >
+                <Brain className="w-4 h-4 sm:w-5 sm:h-5" />
+              </motion.div>
+              Powered by Advanced AI
+            </motion.div>
+            
+            <motion.h2 
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 text-white"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              viewport={{ once: true }}
+            >
+              <span className="block">18 Specialized</span>
+              <span className="bg-gradient-to-r from-teal-400 via-cyan-400 to-blue-400 bg-clip-text text-transparent">
+                AI Engines
+              </span>
+            </motion.h2>
+            
+            <motion.p 
+              className="text-lg sm:text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              viewport={{ once: true }}
+            >
               Each engine is a specialist, working together like a full creative agency.
-            </p>
+              <span className="text-teal-400 font-medium"> One platform. Infinite possibilities.</span>
+            </motion.p>
           </div>
         </ScrollReveal>
 
         {/* Carousel Container */}
         <div className="relative">
-          {/* Navigation Buttons */}
+          {/* Navigation Buttons - Redesigned */}
           <motion.button
             onClick={scrollPrev}
-            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 sm:-translate-x-4 z-10 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gray-800/90 border border-gray-700/50 flex items-center justify-center text-white hover:bg-teal-500/20 hover:border-teal-500/50 transition-all shadow-lg backdrop-blur-sm"
-            whileHover={{ scale: 1.1 }}
+            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 sm:-translate-x-6 z-10 w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-gray-800/90 to-gray-900/90 border border-gray-700/50 flex items-center justify-center text-white hover:from-teal-500/30 hover:to-cyan-500/30 hover:border-teal-500/50 transition-all shadow-xl backdrop-blur-sm group"
+            whileHover={{ scale: 1.1, x: -2 }}
             whileTap={{ scale: 0.95 }}
           >
-            <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
+            <ChevronLeft className="w-6 h-6 group-hover:text-teal-400 transition-colors" />
           </motion.button>
           
           <motion.button
             onClick={scrollNext}
-            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 sm:translate-x-4 z-10 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gray-800/90 border border-gray-700/50 flex items-center justify-center text-white hover:bg-teal-500/20 hover:border-teal-500/50 transition-all shadow-lg backdrop-blur-sm"
-            whileHover={{ scale: 1.1 }}
+            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 sm:translate-x-6 z-10 w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-gray-800/90 to-gray-900/90 border border-gray-700/50 flex items-center justify-center text-white hover:from-teal-500/30 hover:to-cyan-500/30 hover:border-teal-500/50 transition-all shadow-xl backdrop-blur-sm group"
+            whileHover={{ scale: 1.1, x: 2 }}
             whileTap={{ scale: 0.95 }}
           >
-            <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
+            <ChevronRight className="w-6 h-6 group-hover:text-teal-400 transition-colors" />
           </motion.button>
 
           {/* Carousel */}
-          <div className="overflow-hidden mx-6 sm:mx-10" ref={emblaRef}>
-            <div className="flex gap-3 sm:gap-4">
+          <div className="overflow-hidden mx-8 sm:mx-14" ref={emblaRef}>
+            <div className="flex gap-4 sm:gap-5">
               {aiEngines.map((engine, index) => (
                 <motion.div
                   key={index}
-                  className="flex-shrink-0 w-[calc(50%-6px)] sm:w-[calc(33.333%-11px)] lg:w-[calc(25%-12px)]"
-                  initial={{ opacity: 0, y: 20 }}
+                  className="flex-shrink-0 w-[calc(50%-10px)] sm:w-[calc(33.333%-14px)] lg:w-[calc(25%-15px)]"
+                  initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
+                  transition={{ delay: index * 0.03, duration: 0.5 }}
                   viewport={{ once: true }}
                 >
                   <motion.div
-                    className="group p-4 sm:p-5 bg-gray-800/50 rounded-2xl border border-gray-700/50 hover:border-teal-500/50 hover:bg-gray-800 transition-all h-full"
-                    whileHover={{ y: -5, scale: 1.02 }}
+                    className="group relative p-5 sm:p-6 rounded-3xl border border-gray-700/30 h-full overflow-hidden cursor-pointer"
+                    style={{
+                      background: 'linear-gradient(135deg, rgba(30,30,40,0.8) 0%, rgba(20,20,30,0.9) 100%)',
+                    }}
+                    whileHover={{ 
+                      y: -8, 
+                      scale: 1.02,
+                      transition: { duration: 0.3 }
+                    }}
                   >
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-teal-500/20 to-cyan-500/20 flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition-transform">
-                      <engine.icon className="w-5 h-5 sm:w-6 sm:h-6 text-teal-400" />
+                    {/* Hover Glow Effect */}
+                    <motion.div
+                      className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br ${engine.color} blur-xl`}
+                      style={{ transform: 'scale(0.8)' }}
+                    />
+                    
+                    {/* Card Border Glow */}
+                    <div className={`absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-br ${engine.color} p-[1px]`}>
+                      <div className="w-full h-full bg-gray-900 rounded-3xl" />
                     </div>
-                    <h3 className="font-semibold text-white mb-1 text-sm sm:text-base">{engine.name}</h3>
-                    <p className="text-xs sm:text-sm text-gray-500">{engine.desc}</p>
+                    
+                    {/* Content */}
+                    <div className="relative z-10">
+                      {/* Icon with Gradient Background */}
+                      <motion.div 
+                        className={`w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br ${engine.color} flex items-center justify-center mb-4 shadow-lg`}
+                        whileHover={{ rotate: [0, -10, 10, 0], scale: 1.1 }}
+                        transition={{ duration: 0.4 }}
+                      >
+                        <engine.icon className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
+                      </motion.div>
+                      
+                      {/* Text Content */}
+                      <h3 className="font-bold text-white mb-1.5 text-base sm:text-lg group-hover:text-teal-300 transition-colors">
+                        {engine.name}
+                      </h3>
+                      <p className="text-sm text-gray-500 group-hover:text-gray-400 transition-colors">
+                        {engine.desc}
+                      </p>
+                      
+                      {/* Hover Arrow */}
+                      <motion.div
+                        className="absolute top-5 right-5 opacity-0 group-hover:opacity-100 transition-opacity"
+                        initial={{ x: -10 }}
+                        whileHover={{ x: 0 }}
+                      >
+                        <ArrowRight className="w-5 h-5 text-teal-400" />
+                      </motion.div>
+                    </div>
                   </motion.div>
                 </motion.div>
               ))}
@@ -239,23 +346,58 @@ const AIEnginesSlider = ({ aiEngines }: { aiEngines: typeof import("lucide-react
           </div>
         </div>
 
-        {/* Progress Dots */}
-        <div className="flex justify-center gap-2 mt-8">
+        {/* Progress Indicator - Redesigned */}
+        <div className="flex justify-center items-center gap-3 mt-10">
           {Array.from({ length: Math.ceil(aiEngines.length / 4) }).map((_, idx) => (
             <motion.button
               key={idx}
               onClick={() => emblaApi?.scrollTo(idx * 4)}
-              className="w-2 h-2 rounded-full bg-gray-600 hover:bg-teal-400 transition-colors"
-              whileHover={{ scale: 1.3 }}
-            />
+              className="relative w-3 h-3 rounded-full overflow-hidden"
+              whileHover={{ scale: 1.4 }}
+            >
+              <div className="absolute inset-0 bg-gray-700" />
+              <motion.div 
+                className="absolute inset-0 bg-gradient-to-r from-teal-400 to-cyan-400"
+                initial={{ scale: 0 }}
+                whileHover={{ scale: 1 }}
+                transition={{ duration: 0.2 }}
+              />
+            </motion.button>
           ))}
         </div>
+
+        {/* Stats Row */}
+        <motion.div 
+          className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          viewport={{ once: true }}
+        >
+          {[
+            { value: "18", label: "AI Engines", icon: Brain },
+            { value: "100x", label: "Faster", icon: Zap },
+            { value: "99%", label: "Compliance", icon: Shield },
+            { value: "∞", label: "Variations", icon: Sparkles },
+          ].map((stat, idx) => (
+            <motion.div
+              key={idx}
+              className="text-center p-5 sm:p-6 rounded-2xl bg-gradient-to-br from-gray-800/50 to-gray-900/50 border border-gray-700/30 backdrop-blur-sm"
+              whileHover={{ y: -5, borderColor: 'rgba(20,184,166,0.3)' }}
+            >
+              <stat.icon className="w-6 h-6 text-teal-400 mx-auto mb-3" />
+              <div className="text-3xl sm:text-4xl font-bold text-white mb-1">{stat.value}</div>
+              <div className="text-sm text-gray-500">{stat.label}</div>
+            </motion.div>
+          ))}
+        </motion.div>
       </div>
     </section>
   );
 };
 
 const LandingPage = () => {
+  const { user } = useAuth();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const [showVideoModal, setShowVideoModal] = useState(false);
@@ -330,27 +472,55 @@ const LandingPage = () => {
           
           <div className="flex items-center gap-2 sm:gap-3">
             <ThemeToggle className="hidden sm:flex" />
-            <Link to="/auth">
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground font-medium hidden sm:flex">
-                  Sign In
-                </Button>
-              </motion.div>
-            </Link>
-            <Link to="/auth">
-              <motion.div 
-                whileHover={{ scale: 1.05, boxShadow: "0 10px 40px -10px rgba(20, 184, 166, 0.5)" }} 
-                whileTap={{ scale: 0.95 }}
-              >
-                <Button 
-                  size="sm" 
-                  className="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white rounded-full px-4 sm:px-6 shadow-lg shadow-teal-500/25"
-                >
-                  <span className="hidden sm:inline">Get Started</span>
-                  <span className="sm:hidden">Start</span>
-                </Button>
-              </motion.div>
-            </Link>
+            {user ? (
+              <>
+                <Link to="/dashboard">
+                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                    <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground font-medium hidden sm:flex">
+                      Dashboard
+                    </Button>
+                  </motion.div>
+                </Link>
+                <Link to="/builder">
+                  <motion.div 
+                    whileHover={{ scale: 1.05, boxShadow: "0 10px 40px -10px rgba(20, 184, 166, 0.5)" }} 
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Button 
+                      size="sm" 
+                      className="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white rounded-full px-4 sm:px-6 shadow-lg shadow-teal-500/25"
+                    >
+                      <span className="hidden sm:inline">Open Builder</span>
+                      <span className="sm:hidden">Builder</span>
+                    </Button>
+                  </motion.div>
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link to="/auth">
+                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                    <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground font-medium hidden sm:flex">
+                      Sign In
+                    </Button>
+                  </motion.div>
+                </Link>
+                <Link to="/auth">
+                  <motion.div 
+                    whileHover={{ scale: 1.05, boxShadow: "0 10px 40px -10px rgba(20, 184, 166, 0.5)" }} 
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Button 
+                      size="sm" 
+                      className="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white rounded-full px-4 sm:px-6 shadow-lg shadow-teal-500/25"
+                    >
+                      <span className="hidden sm:inline">Get Started</span>
+                      <span className="sm:hidden">Start</span>
+                    </Button>
+                  </motion.div>
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </motion.nav>
