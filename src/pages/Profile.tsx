@@ -101,12 +101,12 @@ const Profile = () => {
 
   return (
     <PageTransition>
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:bg-background transition-colors duration-300">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-background dark:via-background dark:to-secondary/5 transition-colors duration-300">
       {/* Header */}
       <motion.header
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="sticky top-0 z-50 bg-white/80 dark:bg-card backdrop-blur-xl border-b border-gray-100 dark:border-border/40 transition-colors duration-300"
+        className="sticky top-0 z-50 bg-white/80 dark:bg-card/90 backdrop-blur-xl border-b border-gray-100 dark:border-border/30 transition-colors duration-300"
       >
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2 sm:gap-4">
@@ -147,14 +147,14 @@ const Profile = () => {
             transition={{ delay: 0.1 }}
             className="lg:sticky lg:top-24"
           >
-            <div className="bg-white dark:bg-card rounded-3xl border border-gray-100 dark:border-border/40 p-6 shadow-sm">
+            <div className="bg-white dark:bg-card/80 rounded-3xl border border-gray-100 dark:border-border/30 p-6 shadow-sm dark:shadow-lg dark:shadow-black/10">
               {/* Avatar */}
               <div className="relative w-24 h-24 mx-auto mb-4">
                 {avatarUrl ? (
                   <img 
                     src={avatarUrl} 
                     alt="AI Generated Avatar" 
-                    className="w-full h-full rounded-2xl object-cover shadow-lg"
+                    className="w-full h-full rounded-2xl object-cover shadow-lg ring-2 ring-teal-500/20"
                   />
                 ) : (
                   <div className="w-full h-full rounded-2xl bg-gradient-to-br from-teal-500 to-cyan-500 flex items-center justify-center text-white text-3xl font-bold shadow-lg">
@@ -164,37 +164,37 @@ const Profile = () => {
                 <button 
                   onClick={generateAIAvatar}
                   disabled={isGeneratingAvatar}
-                  className="absolute -bottom-2 -right-2 w-8 h-8 rounded-full bg-white dark:bg-card border border-gray-200 dark:border-border flex items-center justify-center shadow-sm hover:shadow-md transition-all disabled:opacity-50"
+                  className="absolute -bottom-2 -right-2 w-8 h-8 rounded-full bg-white dark:bg-secondary border border-gray-200 dark:border-border/50 flex items-center justify-center shadow-sm hover:shadow-md transition-all disabled:opacity-50"
                 >
                   {isGeneratingAvatar ? (
-                    <Loader2 className="w-4 h-4 text-teal-600 animate-spin" />
+                    <Loader2 className="w-4 h-4 text-teal-600 dark:text-teal-400 animate-spin" />
                   ) : (
-                    <Wand2 className="w-4 h-4 text-teal-600" />
+                    <Wand2 className="w-4 h-4 text-teal-600 dark:text-teal-400" />
                   )}
                 </button>
               </div>
               
               <h2 className="text-xl font-bold text-foreground text-center mb-1">{fullName}</h2>
-              <p className="text-sm text-muted-foreground text-center mb-4">{user?.email || "user@example.com"}</p>
+              <p className="text-sm text-muted-foreground/80 text-center mb-4">{user?.email || "user@example.com"}</p>
               
-              <div className="flex items-center justify-center gap-2 px-3 py-1.5 bg-gradient-to-r from-teal-50 to-cyan-50 dark:from-teal-950/30 dark:to-cyan-950/30 rounded-full border border-teal-200/50 dark:border-teal-800/50 mb-6">
+              <div className="flex items-center justify-center gap-2 px-3 py-1.5 bg-gradient-to-r from-teal-50 to-cyan-50 dark:from-teal-500/10 dark:to-cyan-500/10 rounded-full border border-teal-200/50 dark:border-teal-500/20 mb-6">
                 <Crown className="w-4 h-4 text-teal-600 dark:text-teal-400" />
                 <span className="text-sm font-medium text-teal-700 dark:text-teal-300">Free Plan</span>
               </div>
 
-              <div className="space-y-2 text-sm text-muted-foreground">
-                <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-secondary/50">
-                  <Mail className="w-4 h-4" />
+              <div className="space-y-2 text-sm">
+                <div className="flex items-center gap-3 p-2.5 rounded-xl bg-gray-50 dark:bg-secondary/30 text-muted-foreground">
+                  <Mail className="w-4 h-4 text-teal-600 dark:text-teal-400" />
                   <span className="truncate">{user?.email || "user@example.com"}</span>
                 </div>
-                <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-secondary/50">
-                  <Calendar className="w-4 h-4" />
+                <div className="flex items-center gap-3 p-2.5 rounded-xl bg-gray-50 dark:bg-secondary/30 text-muted-foreground">
+                  <Calendar className="w-4 h-4 text-teal-600 dark:text-teal-400" />
                   <span>Joined January 2024</span>
                 </div>
               </div>
               
               {/* Mobile Theme Toggle */}
-              <div className="mt-6 pt-4 border-t border-gray-100 dark:border-border/30 sm:hidden">
+              <div className="mt-6 pt-4 border-t border-gray-100 dark:border-border/20 sm:hidden">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-muted-foreground">Theme</span>
                   <ThemeToggle />
@@ -210,7 +210,7 @@ const Profile = () => {
             transition={{ delay: 0.2 }}
           >
             <Tabs defaultValue="account" className="w-full">
-              <TabsList className="bg-white dark:bg-card border border-gray-100 dark:border-border/40 rounded-2xl p-1.5 mb-6 sm:mb-8 shadow-sm flex-wrap h-auto">
+              <TabsList className="bg-white dark:bg-card/80 border border-gray-100 dark:border-border/30 rounded-2xl p-1.5 mb-6 sm:mb-8 shadow-sm dark:shadow-lg dark:shadow-black/5 flex-wrap h-auto">
                 <TabsTrigger 
                   value="account" 
                   className="rounded-xl px-3 sm:px-6 py-2 sm:py-2.5 text-xs sm:text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-teal-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white"
@@ -243,7 +243,7 @@ const Profile = () => {
 
               {/* Account Tab */}
               <TabsContent value="account">
-                <div className="bg-white dark:bg-card rounded-3xl border border-gray-100 dark:border-border/40 p-6 sm:p-8 shadow-sm">
+                <div className="bg-white dark:bg-card/80 rounded-3xl border border-gray-100 dark:border-border/30 p-6 sm:p-8 shadow-sm dark:shadow-lg dark:shadow-black/10">
                   <h3 className="text-xl font-bold text-foreground mb-6">Account Information</h3>
                   
                   <div className="space-y-6">
@@ -284,7 +284,7 @@ const Profile = () => {
               {/* Subscription Tab */}
               <TabsContent value="subscription">
                 <div className="space-y-6">
-                  <div className="bg-white dark:bg-card rounded-3xl border border-gray-100 dark:border-border/40 p-6 sm:p-8 shadow-sm">
+                  <div className="bg-white dark:bg-card/80 rounded-3xl border border-gray-100 dark:border-border/30 p-6 sm:p-8 shadow-sm dark:shadow-lg dark:shadow-black/10">
                     <h3 className="text-xl font-bold text-foreground mb-2">Current Plan</h3>
                     <p className="text-muted-foreground mb-6">Choose the plan that works best for you</p>
                     
@@ -347,7 +347,7 @@ const Profile = () => {
 
               {/* Usage Tab */}
               <TabsContent value="usage">
-                <div className="bg-white dark:bg-card rounded-3xl border border-gray-100 dark:border-border/40 p-6 sm:p-8 shadow-sm">
+                <div className="bg-white dark:bg-card/80 rounded-3xl border border-gray-100 dark:border-border/30 p-6 sm:p-8 shadow-sm dark:shadow-lg dark:shadow-black/10">
                   <h3 className="text-xl font-bold text-foreground mb-2">Usage Analytics</h3>
                   <p className="text-muted-foreground mb-6">Track your creative production this month</p>
                   
@@ -358,7 +358,7 @@ const Profile = () => {
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: index * 0.1 }}
-                        className="p-5 sm:p-6 bg-gradient-to-br from-gray-50 to-white dark:from-muted/50 dark:to-card rounded-2xl border border-gray-100 dark:border-border/40"
+                        className="p-5 sm:p-6 bg-gradient-to-br from-gray-50 to-white dark:from-secondary/20 dark:to-card/80 rounded-2xl border border-gray-100 dark:border-border/30"
                       >
                         <div className="flex items-center justify-between mb-4">
                           <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center`}>
@@ -387,7 +387,7 @@ const Profile = () => {
               <TabsContent value="preferences">
                 <div className="space-y-6">
                   {/* Theme Settings */}
-                  <div className="bg-white dark:bg-card rounded-3xl border border-gray-100 dark:border-border/40 p-6 sm:p-8 shadow-sm">
+                  <div className="bg-white dark:bg-card/80 rounded-3xl border border-gray-100 dark:border-border/30 p-6 sm:p-8 shadow-sm dark:shadow-lg dark:shadow-black/10">
                     <h3 className="text-xl font-bold text-foreground mb-2">Appearance</h3>
                     <p className="text-muted-foreground mb-6">Customize how the app looks</p>
                     
@@ -418,7 +418,7 @@ const Profile = () => {
                   </div>
 
                   {/* Notification Settings */}
-                  <div className="bg-white dark:bg-card rounded-3xl border border-gray-100 dark:border-border/40 p-6 sm:p-8 shadow-sm">
+                  <div className="bg-white dark:bg-card/80 rounded-3xl border border-gray-100 dark:border-border/30 p-6 sm:p-8 shadow-sm dark:shadow-lg dark:shadow-black/10">
                     <h3 className="text-xl font-bold text-foreground mb-2">Notifications</h3>
                     <p className="text-muted-foreground mb-6">Manage your notification preferences</p>
                     
