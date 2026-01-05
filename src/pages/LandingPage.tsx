@@ -1,5 +1,5 @@
 import { motion, AnimatePresence, type Variants, useInView } from "framer-motion";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { 
   ArrowRight, Sparkles, Zap, Shield, Layers, Target, Clock, 
   CheckCircle2, Play, Star, ChevronLeft, ChevronRight, 
@@ -12,6 +12,8 @@ import { VideoModal } from "@/components/VideoModal";
 import { ScrollReveal, StaggerReveal } from "@/components/ScrollReveal";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { PageTransition } from "@/components/PageTransition";
+import useEmblaCarousel from "embla-carousel-react";
+import Autoplay from "embla-carousel-autoplay";
 
 // Hero carousel slides
 const heroSlides = [
@@ -131,6 +133,127 @@ const howItWorks = [
     color: "from-orange-500 to-amber-500",
   },
 ];
+
+// AI Engines Gallery Slider Component
+const AIEnginesSlider = ({ aiEngines }: { aiEngines: typeof import("lucide-react") extends { [key: string]: any } ? { name: string; icon: any; desc: string }[] : never }) => {
+  const [emblaRef, emblaApi] = useEmblaCarousel(
+    { 
+      loop: true, 
+      align: "start",
+      slidesToScroll: 1,
+      breakpoints: {
+        '(min-width: 768px)': { slidesToScroll: 2 },
+        '(min-width: 1024px)': { slidesToScroll: 3 },
+      }
+    },
+    [Autoplay({ delay: 3000, stopOnInteraction: false })]
+  );
+  
+  const [canScrollPrev, setCanScrollPrev] = useState(false);
+  const [canScrollNext, setCanScrollNext] = useState(true);
+  
+  const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
+  const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
+  
+  const onSelect = useCallback(() => {
+    if (!emblaApi) return;
+    setCanScrollPrev(emblaApi.canScrollPrev());
+    setCanScrollNext(emblaApi.canScrollNext());
+  }, [emblaApi]);
+  
+  useEffect(() => {
+    if (!emblaApi) return;
+    onSelect();
+    emblaApi.on("select", onSelect);
+    emblaApi.on("reInit", onSelect);
+  }, [emblaApi, onSelect]);
+
+  return (
+    <section id="ai-engines" className="py-16 sm:py-24 px-4 sm:px-6 bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 text-white overflow-hidden">
+      <div className="max-w-6xl mx-auto">
+        <ScrollReveal>
+          <div className="text-center mb-10 sm:mb-12">
+            <motion.span 
+              className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-teal-500/20 rounded-full text-teal-400 text-xs sm:text-sm font-medium mb-4 border border-teal-500/30"
+              whileHover={{ scale: 1.05 }}
+            >
+              <Brain className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              AI Engines
+            </motion.span>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
+              18 Specialized
+              <span className="bg-gradient-to-r from-teal-400 to-cyan-400 bg-clip-text text-transparent"> AI Engines</span>
+            </h2>
+            <p className="text-base sm:text-lg text-gray-400 max-w-2xl mx-auto">
+              Each engine is a specialist, working together like a full creative agency.
+            </p>
+          </div>
+        </ScrollReveal>
+
+        {/* Carousel Container */}
+        <div className="relative">
+          {/* Navigation Buttons */}
+          <motion.button
+            onClick={scrollPrev}
+            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 sm:-translate-x-4 z-10 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gray-800/90 border border-gray-700/50 flex items-center justify-center text-white hover:bg-teal-500/20 hover:border-teal-500/50 transition-all shadow-lg backdrop-blur-sm"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
+          </motion.button>
+          
+          <motion.button
+            onClick={scrollNext}
+            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 sm:translate-x-4 z-10 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gray-800/90 border border-gray-700/50 flex items-center justify-center text-white hover:bg-teal-500/20 hover:border-teal-500/50 transition-all shadow-lg backdrop-blur-sm"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
+          </motion.button>
+
+          {/* Carousel */}
+          <div className="overflow-hidden mx-6 sm:mx-10" ref={emblaRef}>
+            <div className="flex gap-3 sm:gap-4">
+              {aiEngines.map((engine, index) => (
+                <motion.div
+                  key={index}
+                  className="flex-shrink-0 w-[calc(50%-6px)] sm:w-[calc(33.333%-11px)] lg:w-[calc(25%-12px)]"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                  viewport={{ once: true }}
+                >
+                  <motion.div
+                    className="group p-4 sm:p-5 bg-gray-800/50 rounded-2xl border border-gray-700/50 hover:border-teal-500/50 hover:bg-gray-800 transition-all h-full"
+                    whileHover={{ y: -5, scale: 1.02 }}
+                  >
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-teal-500/20 to-cyan-500/20 flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition-transform">
+                      <engine.icon className="w-5 h-5 sm:w-6 sm:h-6 text-teal-400" />
+                    </div>
+                    <h3 className="font-semibold text-white mb-1 text-sm sm:text-base">{engine.name}</h3>
+                    <p className="text-xs sm:text-sm text-gray-500">{engine.desc}</p>
+                  </motion.div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Progress Dots */}
+        <div className="flex justify-center gap-2 mt-8">
+          {Array.from({ length: Math.ceil(aiEngines.length / 4) }).map((_, idx) => (
+            <motion.button
+              key={idx}
+              onClick={() => emblaApi?.scrollTo(idx * 4)}
+              className="w-2 h-2 rounded-full bg-gray-600 hover:bg-teal-400 transition-colors"
+              whileHover={{ scale: 1.3 }}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
 
 const LandingPage = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -634,46 +757,8 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* AI Engines Section */}
-      <section id="ai-engines" className="py-16 sm:py-24 px-4 sm:px-6 bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 text-white">
-        <div className="max-w-6xl mx-auto">
-          <ScrollReveal>
-            <div className="text-center mb-10 sm:mb-16">
-              <motion.span 
-                className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-teal-500/20 rounded-full text-teal-400 text-xs sm:text-sm font-medium mb-4 border border-teal-500/30"
-                whileHover={{ scale: 1.05 }}
-              >
-                <Brain className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                AI Engines
-              </motion.span>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
-                18 Specialized
-                <span className="bg-gradient-to-r from-teal-400 to-cyan-400 bg-clip-text text-transparent"> AI Engines</span>
-              </h2>
-              <p className="text-base sm:text-lg text-gray-400 max-w-2xl mx-auto">
-                Each engine is a specialist, working together like a full creative agency.
-              </p>
-            </div>
-          </ScrollReveal>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-            {aiEngines.map((engine, index) => (
-              <ScrollReveal key={index} delay={index * 0.05}>
-                <motion.div
-                  className="group p-4 sm:p-5 bg-gray-800/50 rounded-2xl border border-gray-700/50 hover:border-teal-500/50 hover:bg-gray-800 transition-all"
-                  whileHover={{ y: -5, scale: 1.02 }}
-                >
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-teal-500/20 to-cyan-500/20 flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition-transform">
-                    <engine.icon className="w-5 h-5 sm:w-6 sm:h-6 text-teal-400" />
-                  </div>
-                  <h3 className="font-semibold text-white mb-1 text-sm sm:text-base">{engine.name}</h3>
-                  <p className="text-xs sm:text-sm text-gray-500">{engine.desc}</p>
-                </motion.div>
-              </ScrollReveal>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* AI Engines Section - Gallery Slider */}
+      <AIEnginesSlider aiEngines={aiEngines} />
 
       {/* Testimonials Section */}
       <section id="testimonials" className="py-16 sm:py-24 px-4 sm:px-6 bg-background transition-colors duration-300">
