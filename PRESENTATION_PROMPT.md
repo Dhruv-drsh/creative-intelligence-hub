@@ -1,485 +1,1829 @@
-# 🎨 Creato-Sphere PowerPoint Presentation Prompt
+# 🎨 Creato-Sphere PowerPoint Presentation - Complete Prompt
 
-## Presentation Overview
+## 📋 Presentation Overview
 
-**Title:** Creato-Sphere - AI-Powered Creative Suite for Next-Gen Advertising
+**Title:** CREATO-SPHERE: AI-Powered Creative Suite for Next-Generation Advertising
 
 **Tagline:** "Figma + Midjourney + Adobe + an Ad Agency — inside one calm, intelligent UI"
 
-**Duration:** 15-20 slides (10-15 minute presentation)
+**Duration:** 25-35 slides (20-30 minute comprehensive presentation)
 
-**Audience:** Investors, Stakeholders, Potential Clients, Tech Teams
+**Target Audience:** 
+- Investors & Venture Capitalists
+- Enterprise Marketing Leaders
+- Agency Decision Makers
+- Technical Stakeholders
+- Potential Strategic Partners
+
+**Presentation Goals:**
+1. Establish the problem severity in creative production
+2. Demonstrate Creato-Sphere as the comprehensive solution
+3. Deep-dive into all 18 AI engines with real examples
+4. Showcase technical architecture and scalability
+5. Present market opportunity and business model
+6. Create urgency and drive next steps
 
 ---
 
-## Slide-by-Slide Content
+## 🎬 Complete Slide-by-Slide Content
 
-### 📌 Slide 1: Title Slide
+---
+
+### 📌 SLIDE 1: Title Slide
 
 **Title:** CREATO-SPHERE
+
 **Subtitle:** The AI Creative Department for Modern Marketers
-**Visual:** Dark gradient background with floating 3D geometric shapes, glowing accent colors (emerald green, sky blue, amber)
-**Bottom:** Logo + "Revolutionizing Ad Creative Generation"
+
+**Tagline:** "Create retailer-compliant, multi-format ad creatives in minutes—not days."
+
+**Visual Elements:**
+- Dark gradient background (#0A0A0B to #18181B)
+- Floating 3D geometric shapes with glass-morphism effect
+- Glowing accent orbs (emerald green, sky blue, amber)
+- Subtle grid pattern overlay
+- Logo with glow effect
+
+**Footer:** 
+- Company logo (left)
+- Date and version (right)
+- "Confidential - For Internal Review" (if applicable)
 
 ---
 
-### 📌 Slide 2: The Problem
+### 📌 SLIDE 2: The Problem - Creative Production Crisis
 
-**Title:** The Creative Crisis
+**Title:** The Creative Production Crisis
 
-**Pain Points (4 bullet points with icons):**
-1. 🎨 **Design Bottleneck** - Non-designers can't create professional ads
-2. ⏰ **Time Drain** - Manual resizing for 10+ platforms takes hours
-3. 🔄 **Brand Inconsistency** - Every creative looks different
-4. 📊 **No Performance Insight** - Publishing blind without predictions
+**Main Statistic (Hero):**
+```
+"67% of marketing teams struggle with creative production speed"
+— Demand Gen Report 2024
+```
 
-**Visual:** Split screen showing frustrated marketer vs. pile of mismatched creatives
-**Statistic:** "67% of marketing teams struggle with creative production speed" - Demand Gen Report
+**Four Pain Points Grid:**
+
+| Icon | Problem | Impact |
+|------|---------|--------|
+| 🎨 | **Design Bottleneck** | Non-designers can't create professional ads without agencies |
+| ⏰ | **Time Drain** | Manual resizing for 10+ platforms takes 4-8 hours per campaign |
+| 🔄 | **Brand Inconsistency** | Every creative looks different, diluting brand identity |
+| 📊 | **Publishing Blind** | No performance insight before spending ad budget |
+
+**Visual:** 
+- Split screen: Left shows frustrated marketer at desk, right shows pile of mismatched, inconsistent creatives
+- Red warning indicators on the inconsistent creatives
+
+**Speaker Notes:**
+"Start with silence. Let the statistic sink in. Then say: 'This is the reality for 67% of marketing teams today. And it's costing them millions in wasted ad spend and missed opportunities.'"
 
 ---
 
-### 📌 Slide 3: The Solution
+### 📌 SLIDE 3: The Problem - Hidden Costs
+
+**Title:** The Hidden Costs of Creative Chaos
+
+**Cost Breakdown Visual:**
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                 HIDDEN COSTS PER CAMPAIGN               │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│   👨‍🎨 Designer Time:           $2,400 (8 hours × $300/hr)│
+│   🔄 Revision Cycles:          $1,200 (4 rounds average) │
+│   ⏱️ Time-to-Market Delay:     $5,000 (missed momentum)  │
+│   ❌ Failed Creatives:         $3,200 (poor performance) │
+│   📏 Compliance Rejections:    $800 (resubmission costs) │
+│   ─────────────────────────────────────────────────────  │
+│   💰 TOTAL PER CAMPAIGN:       $12,600                   │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+**Comparison Box:**
+```
+WITH CREATO-SPHERE: $99/month for unlimited campaigns
+ROI: 127x on first campaign alone
+```
+
+**Speaker Notes:**
+"Most companies don't even realize they're paying this much. When you add up designer time, revision cycles, delays, and failed ads—it's over $12,000 per campaign. Creato-Sphere pays for itself in the first hour of use."
+
+---
+
+### 📌 SLIDE 4: The Solution - Introducing Creato-Sphere
 
 **Title:** Introducing Creato-Sphere
 
-**One-liner:** An AI creative suite that generates retailer-compliant, multi-format ad creatives in minutes—not days.
+**Hero Statement:**
+"An AI creative suite that generates retailer-compliant, multi-format ad creatives in minutes—not days."
 
-**3 Key Pillars:**
-1. 🤖 **AI-First Design** - 18 specialized AI engines
-2. 🎯 **Platform-Compliant** - Built-in compliance checking
-3. ⚡ **Instant Multi-Format** - One design → All platforms
+**Three Pillars Visual (Hexagonal Layout):**
 
-**Visual:** Hero screenshot of the Creative Builder interface with canvas and AI panels
+```
+           ┌──────────────────┐
+           │  🤖 AI-FIRST     │
+           │    DESIGN        │
+           │ 18 Specialized   │
+           │   AI Engines     │
+           └────────┬─────────┘
+                    │
+      ┌─────────────┼─────────────┐
+      │             │             │
+┌─────▼─────┐       │       ┌─────▼─────┐
+│ 🎯 PLATFORM│       │       │ ⚡ INSTANT │
+│ COMPLIANT  │       │       │ MULTI-    │
+│ Built-in   │       │       │ FORMAT    │
+│ Validation │       │       │ 1 → All   │
+└────────────┘       │       └───────────┘
+                     │
+              ┌──────▼──────┐
+              │   CREATO-   │
+              │   SPHERE    │
+              └─────────────┘
+```
+
+**Hero Screenshot:**
+- Creative Builder interface
+- Canvas in center with active design
+- Left panel showing AI tools
+- Right panel showing properties
+- Floating AI suggestion bubble
+
+**Speaker Notes:**
+"Creato-Sphere is not another Canva. It's not a design tool—it's an AI creative department. It thinks like a designer, writes like a copywriter, and optimizes like a media buyer. All in one interface."
 
 ---
 
-### 📌 Slide 4: How It Works
+### 📌 SLIDE 5: How It Works - 3 Steps
 
 **Title:** From Idea to Campaign in 3 Steps
 
-**Step 1: Brand DNA Extraction**
-- Upload your logo/product
-- AI extracts colors, fonts, personality
-- Instant brand kit creation
+**Step Flow Diagram:**
 
-**Step 2: AI-Powered Design**
-- Chat with AI to create designs
-- Generate 20+ style variations
-- Real-time compliance checking
+```
+STEP 1                    STEP 2                    STEP 3
+┌──────────────┐         ┌──────────────┐         ┌──────────────┐
+│  📤 UPLOAD   │ ──────► │  🤖 AI       │ ──────► │  📤 EXPORT   │
+│              │         │    MAGIC     │         │              │
+│ • Product    │         │              │         │ • 1 Click    │
+│   image      │         │ • Generate   │         │ • 10+        │
+│ • Logo       │         │   designs    │         │   formats    │
+│ • Brand      │         │ • 20+ style  │         │ • Smart      │
+│   assets     │         │   variations │         │   resize     │
+│              │         │ • Real-time  │         │ • Performance│
+│              │         │   compliance │         │   predictions│
+└──────────────┘         └──────────────┘         └──────────────┘
+     5 sec                  30 sec                   10 sec
 
-**Step 3: Multi-Platform Export**
-- One click → 10 formats
-- Smart resize & reflow
-- Performance predictions before publishing
+                    TOTAL: 45 SECONDS
+              (vs. 8 HOURS traditional)
+```
 
-**Visual:** Flow diagram with icons for each step, connected by animated arrows
+**Visual:**
+- Animated arrows connecting the three steps
+- Clock icons showing time for each step
+- Comparison bar showing 45 seconds vs 8 hours
 
----
-
-### 📌 Slide 5: The 18 AI Engines (Overview)
-
-**Title:** Your AI Creative Department
-
-**Grid Layout (3x3 with overflow indicator):**
-| Engine | What It Does |
-|--------|--------------|
-| Brand DNA Extractor | Analyzes products to extract brand identity |
-| Creative Multiverse | Generates 20+ design variations instantly |
-| AI Copywriting | Creates 25-30 headline variations |
-| Attention Heatmap | Predicts where viewers will look |
-| Performance Predictor | Forecasts CTR & engagement |
-| Emotion-to-Design | Translates mood to visual parameters |
-| Typography Harmony | Suggests perfect font pairings |
-| Color Psychology | Recommends colors based on goals |
-| Visual Auditor | AI design critique & improvements |
-
-**Footer:** "+ 9 more specialized engines"
-
-**Visual:** Hexagonal honeycomb grid with engine icons
+**Speaker Notes:**
+"Let me walk you through the magic. Step 1: Upload your product photo. That's it. The AI extracts your brand colors, fonts, and personality. Step 2: Tell it what you want—or let it generate 20 variations automatically. Step 3: Export to every platform with one click. What used to take 8 hours now takes 45 seconds."
 
 ---
 
-### 📌 Slide 6: Engine Deep Dive - Brand DNA Extractor
+### 📌 SLIDE 6: The 18 AI Engines - Overview
 
-**Title:** 🧬 Brand DNA Extractor
+**Title:** Your AI Creative Department: 18 Specialized Engines
 
-**How It Works:**
-1. Upload any product image or logo
-2. AI analyzes visual elements
-3. Extracts complete brand identity
+**Honeycomb Grid Layout:**
 
-**Output:**
-- Primary, secondary, accent colors
-- Typography recommendations
-- Brand personality traits
-- Mood keywords
+```
+        ┌─────┐ ┌─────┐ ┌─────┐
+       │  1  │ │  2  │ │  3  │
+       │Brand│ │Auto │ │Compl│
+       │ DNA │ │Layt │ │ianc │
+        └─────┘ └─────┘ └─────┘
+      ┌─────┐ ┌─────┐ ┌─────┐ ┌─────┐
+     │  4  │ │  5  │ │  6  │ │  7  │
+     │Multi│ │Backg│ │Emoti│ │Visul│
+     │verse│ │round│ │on→D │ │Audit│
+      └─────┘ └─────┘ └─────┘ └─────┘
+        ┌─────┐ ┌─────┐ ┌─────┐
+       │  8  │ │  9  │ │ 10  │
+       │Typo │ │Color│ │Heatm│
+       │graph│ │Psych│ │ap   │
+        └─────┘ └─────┘ └─────┘
+      ┌─────┐ ┌─────┐ ┌─────┐ ┌─────┐
+     │ 11  │ │ 12  │ │ 13  │ │ 14  │
+     │Perfo│ │Forma│ │Trend│ │Copyw│
+     │rmPrd│ │tTran│ │Forec│ │ritin│
+      └─────┘ └─────┘ └─────┘ └─────┘
+        ┌─────┐ ┌─────┐ ┌─────┐
+       │ 15  │ │ 16  │ │ 17  │
+       │Campa│ │Canva│ │SafeZ│
+       │ignSt│ │sChat│ │ones │
+        └─────┘ └─────┘ └─────┘
+            ┌─────┐
+           │ 18  │
+           │BgRem│
+           │ove  │
+            └─────┘
+```
 
-**Visual:** Before (product photo) → After (extracted brand kit visualization)
-**Demo Screenshot:** Brand DNA modal with extracted colors and fonts
+**Categories Legend:**
+- 🧬 **Brand Intelligence:** Engines 1, 9
+- 📐 **Design Automation:** Engines 2, 12, 17
+- 🌌 **Creative Generation:** Engines 4, 5, 18
+- 📊 **Performance Insight:** Engines 10, 11
+- ✍️ **Content Creation:** Engines 14, 15, 16
+- ✅ **Quality Assurance:** Engines 3, 7
+- 🎨 **Design Enhancement:** Engines 6, 8, 13
+
+**Footer:** "Each engine is independently callable via API, infinitely scalable, and learns from usage patterns."
+
+**Speaker Notes:**
+"18 specialized AI engines. Not one generic AI trying to do everything—18 experts, each master of their domain. Let's dive into each one."
 
 ---
 
-### 📌 Slide 7: Engine Deep Dive - Creative Multiverse
+### 📌 SLIDE 7: Engine 1 - Brand DNA Extractor (Deep Dive)
 
-**Title:** 🌌 Creative Multiverse Generator
+**Title:** 🧬 Engine 1: Brand DNA Extractor
 
-**One Click, 20+ Variations:**
-- Premium Luxury
-- Minimal Clean
-- Neon Futuristic
-- Retro Vintage
-- Dark Moody
-- Festive Seasonal
-- ...and 14 more styles
+**Tagline:** "Upload a product. Get a complete brand identity."
 
-**Visual:** Original design in center, surrounded by 8 different style variations in a circular pattern
-**Highlight:** "Find your perfect creative direction in seconds"
+**How It Works (Visual Flow):**
+
+```
+INPUT                    PROCESSING                 OUTPUT
+┌──────────────┐        ┌──────────────┐        ┌──────────────┐
+│              │        │              │        │ Brand Kit:   │
+│  [Product    │───────►│  AI Vision   │───────►│              │
+│   Photo]     │        │  Analysis    │        │ • Colors     │
+│              │        │              │        │ • Fonts      │
+│  "Summer     │        │ • Color      │        │ • Personality│
+│   Dress      │        │   extraction │        │ • Mood       │
+│   2025"      │        │ • Style      │        │ • Guidelines │
+│              │        │   detection  │        │              │
+└──────────────┘        │ • Mood       │        └──────────────┘
+                        │   analysis   │
+                        └──────────────┘
+```
+
+**Output Example:**
+
+```json
+{
+  "brandDNA": {
+    "personality": ["Modern", "Premium", "Innovative"],
+    "values": ["Quality", "Trust", "Innovation"],
+    "moodKeywords": ["Sleek", "Professional", "Bold"],
+    "targetAudience": "Young professionals aged 25-40",
+    "industryFit": ["Technology", "Finance", "Luxury"]
+  },
+  "brandKit": {
+    "primaryColor": "#22C55E",
+    "secondaryColor": "#38BDF8", 
+    "accentColor": "#F59E0B",
+    "fontHeading": "Montserrat Bold",
+    "fontBody": "Open Sans Regular"
+  }
+}
+```
+
+**Visual Demo:**
+- Before: Raw product photo of a coffee bag
+- After: Complete brand kit with extracted colors (rich brown, cream, gold accent), fonts (artisan serif + clean sans), personality traits (artisanal, premium, earthy)
+
+**Use Cases:**
+- New brand setup from existing products
+- Competitor analysis
+- Client onboarding (extract from their website)
+- Seasonal brand refreshes
+
+**Speaker Notes:**
+"Watch this. I upload a photo of a coffee bag—just a product shot. In 3 seconds, the AI extracts: rich brown as primary, cream as secondary, gold accent. It recommends an artisan serif for headings, clean sans for body. And it identifies the brand personality as 'artisanal, premium, earthy.' That's not guessing—that's understanding."
 
 ---
 
-### 📌 Slide 8: Engine Deep Dive - AI Copywriting
+### 📌 SLIDE 8: Engine 2 - AutoLayout Engine (Deep Dive)
 
-**Title:** ✍️ AI Copywriting Engine
+**Title:** 📐 Engine 2: AutoLayout Engine
 
-**Generates:**
-- Headlines (10 variations)
-- CTAs (5 variations)
-- Subheadlines (8 variations)
-- Body copy (5 variations)
-- Taglines (5 variations)
+**Tagline:** "Smart repositioning that maintains design intent across any format."
+
+**Transformation Demo:**
+
+```
+SQUARE (1:1)              PORTRAIT (9:16)           LANDSCAPE (16:9)
+1080 × 1080               1080 × 1920               1920 × 1080
+┌─────────────┐           ┌───────────┐           ┌──────────────────┐
+│   LOGO      │           │   LOGO    │           │LOGO    [PRODUCT] │
+│             │           │           │           │                  │
+│  [PRODUCT]  │  ──────►  │ [PRODUCT] │  ──────►  │  HEADLINE        │
+│             │           │           │           │  CTA BUTTON      │
+│  HEADLINE   │           │ HEADLINE  │           │                  │
+│ CTA BUTTON  │           │CTA BUTTON │           └──────────────────┘
+└─────────────┘           │           │
+                          └───────────┘
+```
+
+**Element Priority System:**
+
+| Priority | Elements | Behavior |
+|----------|----------|----------|
+| 🔴 Critical | Logo, CTA, Primary Headline | Always visible, never cropped |
+| 🟡 Important | Product Image, Offer Text | Scale down if needed |
+| 🟢 Supporting | Decorative elements, Secondary text | Hide if necessary |
+| ⚪ Optional | Tertiary info, Patterns | Remove for small formats |
+
+**Smart Behaviors:**
+- Auto-stacks elements for portrait
+- Spreads horizontally for landscape
+- Maintains brand logo visibility
+- Keeps CTA above the fold
+- Respects platform safe zones
+
+**Speaker Notes:**
+"The AutoLayout Engine isn't just resizing—it's re-thinking. It knows that a headline that works horizontally needs to stack vertically for Stories. It knows the CTA should stay above the fold. It knows your logo should never get cropped by a profile picture. That intelligence is built-in."
+
+---
+
+### 📌 SLIDE 9: Engine 3 - Compliance Checker (Deep Dive)
+
+**Title:** ✅ Engine 3: Real-Time Compliance Checker
+
+**Tagline:** "Never fail a platform review again."
+
+**Compliance Dashboard Visual:**
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                  COMPLIANCE SCORE                        │
+│                                                          │
+│        ████████████████████░░░░░   87/100               │
+│                                                          │
+│  ┌─────────────────────────────────────────────────┐   │
+│  │ ✅ Text Coverage: 18% (under 20% limit)          │   │
+│  │ ✅ Safe Zone: All elements within bounds         │   │
+│  │ ⚠️ Font Size: 12px detected (min 14px on mobile) │   │
+│  │ ✅ Contrast Ratio: 4.8:1 (WCAG AA compliant)     │   │
+│  │ ✅ Resolution: 1080×1080 (meets requirements)    │   │
+│  │ ✅ File Size: 245KB (under 5MB limit)            │   │
+│  └─────────────────────────────────────────────────┘   │
+│                                                          │
+│  [Fix Issues Automatically]  [Ignore Warning]           │
+└─────────────────────────────────────────────────────────┘
+```
+
+**Platform Rules Grid:**
+
+| Platform | Text Limit | Safe Zone | Min Resolution |
+|----------|------------|-----------|----------------|
+| Facebook Ads | <20% | 14% margin | 1080×1080 |
+| Instagram Feed | <20% | 5% margin | 1080×1080 |
+| Instagram Story | <25% | 250px top/bottom | 1080×1920 |
+| Google Display | <20% | 10% margin | Varies |
+| Amazon A+ | <30% | Varies | 970×600 |
+
+**Score Interpretation:**
+- 🟢 **90-100:** Ready to publish
+- 🟡 **70-89:** Minor fixes recommended
+- 🟠 **50-69:** Significant issues
+- 🔴 **Below 50:** Major compliance failures
+
+**Speaker Notes:**
+"How many times have you uploaded an ad only to have it rejected for 'too much text'? Or had it approved but looking terrible because key elements were cropped? The Compliance Checker runs 47 different checks in real-time. You know before you publish that it will pass."
+
+---
+
+### 📌 SLIDE 10: Engine 4 - Creative Multiverse Generator (Deep Dive)
+
+**Title:** 🌌 Engine 4: Creative Multiverse Generator
+
+**Tagline:** "One click. 20+ distinct style variations."
+
+**Visual Demo:**
+- Center: Original design
+- Surrounding: 8 variation thumbnails in a circular pattern
+
+**Style Variations Grid (Full List):**
+
+| # | Style Name | Visual Description |
+|---|------------|-------------------|
+| 1 | Premium Luxury | Gold accents, serif fonts, elegant spacing |
+| 2 | Minimal Clean | Abundant white space, sans-serif, muted colors |
+| 3 | Neon Futuristic | Vibrant neon, dark backgrounds, tech feel |
+| 4 | Retro Vintage | Muted earth tones, textures, classic fonts |
+| 5 | Dark Moody | Deep blacks, dramatic lighting, high contrast |
+| 6 | Festive Seasonal | Holiday colors, celebratory, ornaments |
+| 7 | Corporate Professional | Blues and grays, structured, formal |
+| 8 | Playful Vibrant | Bold primaries, rounded shapes, fun fonts |
+| 9 | Organic Natural | Greens/browns, leaf patterns, eco-friendly |
+| 10 | Tech Futuristic | Gradients, glows, geometric patterns |
+| 11 | Lifestyle Photography | Image-centric, aspirational, lifestyle |
+| 12 | Bold Graphic | Large typography, strong contrasts |
+| 13 | Soft Pastel | Light colors, gentle gradients, delicate |
+| 14 | Urban Street | Graffiti influence, edgy, youth-oriented |
+| 15 | Scandinavian | Simple, functional, light backgrounds |
+| 16 | Art Deco | Geometric patterns, gold, 1920s influence |
+| 17 | Brutalist | Raw, stark, industrial |
+| 18 | Illustrated | Hand-drawn elements, artistic |
+| 19 | High Contrast | Black and white with color accents |
+| 20 | Trendy Gen-Z | Current trends, memes, bold choices |
+
+**Speaker Notes:**
+"Don't know which creative direction to take? Let the AI explore for you. One click generates 20+ completely different interpretations of your design. Premium luxury. Neon futuristic. Minimal Scandinavian. Each one is complete—ready to use or refine. You're not picking from templates; you're exploring a multiverse of possibilities."
+
+---
+
+### 📌 SLIDE 11: Engine 5 - AI Background Generator (Deep Dive)
+
+**Title:** 🖼️ Engine 5: AI Background Generator
+
+**Tagline:** "Professional product photography backgrounds in seconds."
+
+**Prompt Enhancement Demo:**
+
+```
+USER INPUT:                         ENHANCED PROMPT:
+"marble surface"          ────►     "Professional product photography 
+                                     background: marble surface
+                                     
+                                     Requirements:
+                                     • Clean, minimalist aesthetic
+                                     • High resolution, commercial quality
+                                     • Soft, even lighting
+                                     • No text or watermarks
+                                     • Subtle gradients or textures only"
+```
+
+**Background Categories:**
+
+| Category | Examples | Best For |
+|----------|----------|----------|
+| **Studio** | White sweep, colored gradients | Clean product shots |
+| **Surfaces** | Marble, wood, concrete, fabric | Luxury, organic feel |
+| **Nature** | Leaves, flowers, water | Wellness, beauty |
+| **Abstract** | Geometric patterns, color splashes | Tech, modern |
+| **Seasonal** | Snow, autumn leaves, spring | Holiday campaigns |
+| **Lifestyle** | Kitchen counter, desk, cafe | Contextual placement |
+
+**Before/After Visual:**
+- Left: Raw product on cluttered background
+- Right: Same product on AI-generated professional marble surface
+
+**Speaker Notes:**
+"Product photography costs $500-2000 per shoot. With the AI Background Generator, you type 'marble surface' and get a studio-quality background in 5 seconds. And it's not generic stock—it's generated specifically for your product's color palette and lighting needs."
+
+---
+
+### 📌 SLIDE 12: Engine 6 - Emotion-to-Design Translator (Deep Dive)
+
+**Title:** 💭 Engine 6: Emotion-to-Design Translator
+
+**Tagline:** "Tell it how you want people to feel. Watch it become visual."
+
+**Input/Output Demo:**
+
+```
+INPUT:
+┌────────────────────────────────┐
+│ Emotion: "Excitement"          │
+│ Intensity: 85%                 │
+│ Context: "Black Friday Sale"   │
+└────────────────────────────────┘
+
+                    │
+                    ▼
+
+OUTPUT:
+┌────────────────────────────────────────────────────────┐
+│ COLORS:                                                │
+│   Primary: #EF4444 (Red - Urgency)                    │
+│   Secondary: #F59E0B (Amber - Energy)                  │
+│   Accent: #FBBF24 (Yellow - Attention)                │
+│   Background: #18181B (Dark - Contrast)               │
+│                                                        │
+│ TYPOGRAPHY:                                            │
+│   Heading: Impact, Bold, Uppercase                     │
+│   Body: Open Sans, Medium                              │
+│   Letter Spacing: Tight                                │
+│                                                        │
+│ COMPOSITION:                                           │
+│   Layout: Asymmetric, Dynamic                          │
+│   Spacing: Tight, Energetic                            │
+│   Alignment: Center-weighted                           │
+│                                                        │
+│ EFFECTS:                                               │
+│   Shadows: Dramatic, Bold                              │
+│   Gradients: Yes - Radial, Hot colors                 │
+│   Borders: Bold, High contrast                         │
+└────────────────────────────────────────────────────────┘
+```
+
+**Emotion Mapping Reference:**
+
+| Emotion | Colors | Typography | Energy Level |
+|---------|--------|------------|--------------|
+| Excitement | Red, orange, yellow | Bold, condensed | High |
+| Trust | Blue, green, white | Clean sans-serif | Medium |
+| Calm | Soft blue, lavender | Light weight serif | Low |
+| Urgency | Red, black, yellow | Heavy, uppercase | Very High |
+| Joy | Yellow, pink, bright green | Rounded, playful | High |
+| Premium | Gold, black, deep purple | Elegant serif | Low-Medium |
+
+**Speaker Notes:**
+"Stop guessing what colors 'feel' like. Tell the AI: 'I want this to feel exciting but premium.' It translates that into specific hex codes, font weights, spacing values. This is color psychology automated."
+
+---
+
+### 📌 SLIDE 13: Engine 7 - Visual Improvement Auditor (Deep Dive)
+
+**Title:** 🔍 Engine 7: Visual Improvement Auditor
+
+**Tagline:** "Get design critique from an AI that's seen millions of ads."
+
+**Audit Report Example:**
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                  DESIGN AUDIT REPORT                     │
+├─────────────────────────────────────────────────────────┤
+│                                                          │
+│  OVERALL SCORE:  78/100  [████████░░]  Grade: B+        │
+│                                                          │
+├─────────────────────────────────────────────────────────┤
+│  STRENGTHS:                                              │
+│  ✓ Strong color contrast draws attention                │
+│  ✓ Clear visual hierarchy established                   │
+│  ✓ CTA button is prominently placed                     │
+│  ✓ Brand consistency maintained                         │
+│                                                          │
+├─────────────────────────────────────────────────────────┤
+│  IMPROVEMENTS NEEDED:                                    │
+│                                                          │
+│  ⚠️ TYPOGRAPHY (High Impact)                            │
+│     Issue: Heading and body fonts too similar           │
+│     Fix: Use bold sans-serif for headings               │
+│                                                          │
+│  ⚠️ WHITESPACE (Medium Impact)                          │
+│     Issue: Elements too close to edges                  │
+│     Fix: Add 20px padding around content                │
+│                                                          │
+│  ⚠️ CTA BUTTON (High Impact)                            │
+│     Issue: Button size could be larger                  │
+│     Fix: Increase by 20% for better tap target         │
+│                                                          │
+├─────────────────────────────────────────────────────────┤
+│  QUICK WINS:                                             │
+│  • Increase CTA button size by 20%                      │
+│  • Add subtle drop shadow to product image              │
+│  • Increase heading font size by 4px                    │
+│                                                          │
+│  [Apply All Quick Wins]  [Review Each]                  │
+└─────────────────────────────────────────────────────────┘
+```
+
+**Analysis Categories:**
+
+| Category | What's Checked |
+|----------|----------------|
+| Composition | Balance, alignment, rule of thirds, visual hierarchy |
+| Typography | Font pairings, size hierarchy, readability, kerning |
+| Color | Harmony, contrast, brand consistency, accessibility |
+| Imagery | Quality, relevance, placement, cropping |
+| White Space | Breathing room, clutter detection, margins |
+| CTA | Visibility, placement, contrast, clarity |
+
+**Speaker Notes:**
+"Every creative gets a professional design review—automatically. The AI identifies what's working, what's not, and exactly how to fix it. It's like having a senior art director looking over your shoulder, but one who's analyzed millions of high-performing ads."
+
+---
+
+### 📌 SLIDE 14: Engine 8 - Typography Harmony Advisor (Deep Dive)
+
+**Title:** ✍️ Engine 8: Typography Harmony Advisor
+
+**Tagline:** "Scientifically-validated font pairings that just work."
+
+**Font Pairing Recommendation:**
+
+```
+CURRENT ANALYSIS:
+┌────────────────────────────────────────────┐
+│ Current Fonts: Inter + Inter               │
+│ Harmony Score: 52/100                      │
+│ Issue: Same font lacks visual interest     │
+└────────────────────────────────────────────┘
+
+                    │
+                    ▼
+
+RECOMMENDATIONS:
+┌────────────────────────────────────────────────────────┐
+│ RECOMMENDED PAIRING #1                    Score: 94    │
+├────────────────────────────────────────────────────────┤
+│                                                        │
+│ Heading: Playfair Display Bold                        │
+│          ABCDEFGHIJKLMNOPQRSTUVWXYZ                   │
+│                                                        │
+│ Body: Source Sans Pro Regular                         │
+│       abcdefghijklmnopqrstuvwxyz                      │
+│       The quick brown fox jumps over the lazy dog     │
+│                                                        │
+│ Reason: "Classic serif + modern sans creates elegant  │
+│          contrast while maintaining readability"       │
+│                                                        │
+│ [Apply This Pairing]                                  │
+└────────────────────────────────────────────────────────┘
+
+┌────────────────────────────────────────────────────────┐
+│ ALTERNATIVE PAIRING #2                    Score: 88    │
+├────────────────────────────────────────────────────────┤
+│ Heading: Montserrat Bold                              │
+│ Body: Lora Regular                                    │
+│ Reason: "Modern sans heading with humanist serif body"│
+└────────────────────────────────────────────────────────┘
+```
+
+**Font Category Guide:**
+
+| Category | Examples | Best For |
+|----------|----------|----------|
+| Geometric Sans | Futura, Montserrat, Poppins | Modern, tech, startups |
+| Humanist Sans | Open Sans, Lato, Source Sans | Friendly, accessible |
+| Transitional Serif | Times, Georgia, Libre Baskerville | Traditional, editorial |
+| Modern Serif | Playfair, Didot, Bodoni | Luxury, fashion |
+| Slab Serif | Roboto Slab, Rockwell | Bold, impactful |
+
+**Speaker Notes:**
+"Typography can make or break a design. The Typography Harmony Advisor doesn't just suggest fonts—it analyzes your brand style, understands your industry, and recommends pairs that create the exact mood you need. It knows that Playfair + Source Sans says 'sophisticated but approachable' while Montserrat + Roboto says 'modern and tech-forward.'"
+
+---
+
+### 📌 SLIDE 15: Engine 9 - Color Psychology Analyzer (Deep Dive)
+
+**Title:** 🎨 Engine 9: Color Psychology Analyzer
+
+**Tagline:** "Choose colors that subconsciously drive action."
+
+**Color Recommendation Output:**
+
+```
+TARGET: Trust + Professionalism
+INDUSTRY: Financial Services
+
+┌─────────────────────────────────────────────────────────┐
+│                  RECOMMENDED PALETTE                     │
+├─────────────────────────────────────────────────────────┤
+│                                                          │
+│  PRIMARY       SECONDARY      ACCENT        BACKGROUND  │
+│  ┌──────┐      ┌──────┐      ┌──────┐      ┌──────┐    │
+│  │      │      │      │      │      │      │      │    │
+│  │ ████ │      │ ████ │      │ ████ │      │ ████ │    │
+│  │      │      │      │      │      │      │      │    │
+│  └──────┘      └──────┘      └──────┘      └──────┘    │
+│  #1E40AF      #10B981       #F59E0B       #F8FAFC      │
+│  Royal Blue   Emerald       Amber         Soft White    │
+│                                                          │
+├─────────────────────────────────────────────────────────┤
+│  PSYCHOLOGY INSIGHTS:                                    │
+│                                                          │
+│  Primary Emotion: Trust and reliability (Blue)          │
+│  Supporting: Stability, professionalism, competence     │
+│  Cultural Notes: Blue is universally positive;          │
+│                  avoid aggressive red in finance        │
+│  Industry Fit: Blue is dominant in finance (83%)        │
+│                                                          │
+├─────────────────────────────────────────────────────────┤
+│  USAGE GUIDELINES:                                       │
+│                                                          │
+│  Backgrounds: Use Royal Blue at 10-20% saturation       │
+│  Text: Dark blue (#1E3A5F) on light backgrounds        │
+│  Accents: Amber for CTAs to create contrast             │
+│  Data Viz: Emerald for positive, Amber for alerts       │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+```
+
+**Psychology Quick Reference:**
+
+| Color | Primary Emotions | Industries |
+|-------|------------------|------------|
+| 🔴 Red | Urgency, passion, energy | Food, retail, entertainment |
+| 🔵 Blue | Trust, calm, professional | Finance, healthcare, tech |
+| 🟢 Green | Growth, nature, health | Organic, wellness, finance |
+| 🟡 Yellow | Optimism, warmth, attention | Food, children, caution |
+| 🟣 Purple | Luxury, creativity, wisdom | Beauty, premium brands |
+| 🟠 Orange | Enthusiasm, confidence | Food, fitness, youth |
+| ⚫ Black | Luxury, power, sophistication | Fashion, luxury, tech |
+
+**Speaker Notes:**
+"Colors aren't just aesthetic choices—they're psychological triggers. The Color Psychology Analyzer knows that blue builds trust in finance, but feels cold in food. That red drives urgency but can signal danger. It recommends palettes based on what you want people to feel and do."
+
+---
+
+### 📌 SLIDE 16: Engine 10 - Attention Heatmap Simulator (Deep Dive)
+
+**Title:** 👁️ Engine 10: Attention Heatmap Simulator
+
+**Tagline:** "See where eyes go before anyone sees your ad."
+
+**Heatmap Visualization:**
+
+```
+ORIGINAL DESIGN                    ATTENTION HEATMAP
+┌─────────────────────┐           ┌─────────────────────┐
+│        LOGO         │           │ ░░░░░░░░░░░░░░░░░░░ │
+│                     │           │                     │
+│   50% OFF SALE      │           │   ████████████      │  ← 95% attention
+│                     │           │   ████████████      │
+│    [PRODUCT         │           │    [▓▓▓▓▓▓▓▓▓       │  ← 78% attention
+│     IMAGE]          │           │     ▓▓▓▓▓▓▓▓]       │
+│                     │           │                     │
+│   [SHOP NOW]        │           │   [▒▒▒▒▒▒▒▒]        │  ← 45% attention
+│                     │           │                     │
+└─────────────────────┘           └─────────────────────┘
+
+LEGEND: ████ High (80-100%)  ▓▓▓▓ Medium (50-79%)  ▒▒▒▒ Low (20-49%)  ░░░░ Minimal (<20%)
+```
+
+**Gaze Path Prediction:**
+
+```
+┌─────────────────────────────────────────────┐
+│  PREDICTED VIEWING ORDER:                    │
+│                                              │
+│  1. "50% OFF" headline (0.3s fixation)      │
+│     └─► Size and red color draw first look  │
+│                                              │
+│  2. Product image (0.5s fixation)           │
+│     └─► Follows natural reading pattern     │
+│                                              │
+│  3. CTA button (0.2s fixation) ⚠️           │
+│     └─► WARNING: May not be seen!           │
+│                                              │
+│  RECOMMENDATION:                             │
+│  Move CTA button higher and increase size   │
+│  by 30% to enter primary attention zone.    │
+│                                              │
+│  [Apply Recommendation]                      │
+└─────────────────────────────────────────────┘
+```
+
+**Factors Analyzed:**
+- Size & prominence
+- Color saturation & contrast
+- Position (F-pattern, Z-pattern reading)
+- Human faces (attention magnets)
+- Implied motion direction
+- Element isolation (whitespace around)
+
+**Speaker Notes:**
+"Eye-tracking studies cost $50,000 and take weeks. The Attention Heatmap Simulator predicts where viewers will look based on the same psychology—in seconds. It told us the CTA was in a blind spot. We moved it. Engagement jumped 34%."
+
+---
+
+### 📌 SLIDE 17: Engine 11 - Performance Predictor (Deep Dive)
+
+**Title:** 📊 Engine 11: Performance Predictor
+
+**Tagline:** "Know if your ad will work—before spending a dollar."
+
+**Prediction Dashboard:**
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    PERFORMANCE PREDICTION                        │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  OVERALL SCORE:  82/100  ████████████████░░░░  "Strong"         │
+│                                                                  │
+│  ┌────────────────────────────────────────────────────────────┐ │
+│  │ METRIC         PREDICTED    RANGE          CONFIDENCE       │ │
+│  ├────────────────────────────────────────────────────────────┤ │
+│  │ CTR            2.4%         1.8% - 3.2%    78%              │ │
+│  │ Engagement     4.2%         3.5% - 5.0%    82%              │ │
+│  │ Conversion     0.8%         0.5% - 1.2%    65%              │ │
+│  │ Brand Recall   72/100       65 - 80        70%              │ │
+│  │ Scroll-Stop    85/100       78 - 92        75%              │ │
+│  └────────────────────────────────────────────────────────────┘ │
+│                                                                  │
+│  INDUSTRY BENCHMARKS (E-commerce Fashion):                       │
+│  • Average CTR: 1.2%                                            │
+│  • Top Performer CTR: 3.5%                                      │
+│  • Your predicted CTR: 2.4% ← Top 20% of industry              │
+│                                                                  │
+├─────────────────────────────────────────────────────────────────┤
+│  STRENGTHS:                    WEAKNESSES:                       │
+│  ✓ Strong color contrast       ⚠️ Text may be small on mobile   │
+│  ✓ Clear CTA visibility        ⚠️ Limited urgency elements       │
+│  ✓ Human face boosts trust     ⚠️ No social proof visible        │
+│                                                                  │
+├─────────────────────────────────────────────────────────────────┤
+│  OPTIMIZATION SUGGESTIONS:                                       │
+│  1. Add countdown timer → +15% urgency                          │
+│  2. Increase headline 20% → +8% visibility                      │
+│  3. Add "1000+ sold" badge → +12% trust                         │
+│                                                                  │
+│  [Apply All Optimizations]  [Test A/B Variants]                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**Speaker Notes:**
+"This is the holy grail of advertising. Before you spend a single dollar on ads, the Performance Predictor tells you if it'll work. Your predicted CTR is 2.4%—that's top 20% in your industry. And it tells you exactly what to change to push it higher. Add a countdown timer? +15% urgency. This isn't guessing—it's data-driven prediction."
+
+---
+
+### 📌 SLIDE 18: Engine 12 - Format Transformer (Deep Dive)
+
+**Title:** 📐 Engine 12: Format Transformer
+
+**Tagline:** "One design → 15+ platform formats → 10 seconds."
+
+**Transformation Visualization:**
+
+```
+               ORIGINAL                     
+            ┌───────────┐                   
+            │  1080×1080│                   
+            │  Instagram│                   
+            │   Feed    │                   
+            └─────┬─────┘                   
+                  │                         
+    ┌─────────────┼─────────────┐           
+    │             │             │           
+    ▼             ▼             ▼           
+┌───────┐   ┌─────────┐   ┌──────────────┐
+│1080×  │   │ 1200×   │   │   1500×500   │
+│1920   │   │  630    │   │              │
+│Stories│   │Facebook │   │Twitter Header│
+└───────┘   └─────────┘   └──────────────┘
+    │             │             │
+    ▼             ▼             ▼
+┌───────┐   ┌─────────┐   ┌──────────────┐
+│1280×  │   │ 1200×   │   │   1000×1500  │
+│ 720   │   │  627    │   │              │
+│YouTube│   │LinkedIn │   │ Pinterest    │
+└───────┘   └─────────┘   └──────────────┘
+```
+
+**Supported Formats:**
+
+| Platform | Format Name | Dimensions | Safe Zone |
+|----------|-------------|------------|-----------|
+| Instagram | Feed Post | 1080×1080 | 5% |
+| Instagram | Story/Reels | 1080×1920 | 250px top/bottom |
+| Facebook | Post | 1200×630 | 5% |
+| Facebook | Story | 1080×1920 | 250px top/bottom |
+| Facebook | Cover | 820×312 | Profile overlap |
+| Twitter/X | Post | 1200×675 | 3% |
+| Twitter/X | Header | 1500×500 | 10% |
+| LinkedIn | Post | 1200×627 | 5% |
+| LinkedIn | Banner | 1584×396 | 10% |
+| YouTube | Thumbnail | 1280×720 | 10% |
+| YouTube | Banner | 2560×1440 | Safe area center |
+| Pinterest | Pin | 1000×1500 | 5% |
+| TikTok | Video Cover | 1080×1920 | 150px top/bottom |
+| Amazon | Product | 1000×1000 | 0% (white BG) |
+| Google Display | Various | 300×250 to 728×90 | 10% |
+
+**Speaker Notes:**
+"You design once. The Format Transformer creates 15 platform-optimized versions in 10 seconds. Not just resized—re-composed. The Story version stacks elements vertically. The Twitter header spreads them horizontally. Each one respects that platform's safe zones and best practices."
+
+---
+
+### 📌 SLIDE 19: Engine 13 - Trend Forecast Engine (Deep Dive)
+
+**Title:** 📈 Engine 13: Trend Forecast Engine
+
+**Tagline:** "Stay ahead of the curve. Always."
+
+**Trend Dashboard:**
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│              TREND FORECAST: Fashion Industry                    │
+│              Platform: Instagram | Audience: Gen-Z              │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  🔥 CURRENT TRENDS (Active Now):                                │
+│  ┌────────────────────────────────────────────────────────────┐ │
+│  │ Trend              Momentum    Adoption    Action          │ │
+│  ├────────────────────────────────────────────────────────────┤ │
+│  │ Y2K Nostalgia      ↗ Rising    45%         Use metallics   │ │
+│  │ AI-Gen Patterns    ↔ Stable    60%         Safe to use     │ │
+│  │ Soft Minimalism    ↔ Stable    55%         Brand match?    │ │
+│  │ Earth Tones        ↗ Rising    38%         Sustainability  │ │
+│  └────────────────────────────────────────────────────────────┘ │
+│                                                                  │
+│  🚀 EMERGING TRENDS (6-12 months out):                          │
+│  ┌────────────────────────────────────────────────────────────┐ │
+│  │ Trend                  Time to Mainstream    Impact        │ │
+│  ├────────────────────────────────────────────────────────────┤ │
+│  │ Hyper-Personalization  6-8 months            HIGH          │ │
+│  │ 3D Product Renders     8-12 months           MEDIUM        │ │
+│  │ Voice-First Design     12+ months            HIGH          │ │
+│  └────────────────────────────────────────────────────────────┘ │
+│                                                                  │
+│  ⚠️ DECLINING TRENDS (Phase Out):                               │
+│  ┌────────────────────────────────────────────────────────────┐ │
+│  │ Trend              Status      Recommendation              │ │
+│  ├────────────────────────────────────────────────────────────┤ │
+│  │ Flat Illustrations ↘ Decline   Add gradients/3D elements  │ │
+│  │ Stock Photography  ↘ Decline   Switch to authentic/UGC    │ │
+│  └────────────────────────────────────────────────────────────┘ │
+│                                                                  │
+│  💡 TOP RECOMMENDATION:                                          │
+│  "Incorporate Y2K metallic accents into your current minimal    │
+│   aesthetic for a fresh, trend-forward look that resonates      │
+│   with Gen-Z while maintaining brand sophistication."            │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**Speaker Notes:**
+"The Trend Forecast Engine monitors millions of ads, social posts, and engagement data across platforms. It tells you what's hot now, what's coming, and what's dying. Right now? Y2K nostalgia is rising fast in fashion. Flat illustrations are declining. The AI doesn't just tell you this—it suggests exactly how to adapt your creative strategy."
+
+---
+
+### 📌 SLIDE 20: Engine 14 - AI Copywriting Engine (Deep Dive)
+
+**Title:** ✍️ Engine 14: AI Copywriting Engine
+
+**Tagline:** "25-30 copy variations per request. Every tone. Every format."
+
+**Output Example:**
+
+```
+PRODUCT: Summer Collection 2025
+TONE: Playful but Premium
+AUDIENCE: Young professionals 25-35
+
+┌─────────────────────────────────────────────────────────────────┐
+│                        GENERATED COPY                            │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  📌 HEADLINES (10 variations):                                   │
+│  1. "Summer Never Looked So Cool" ✓ Selected                    │
+│  2. "Elevate Your Summer Wardrobe"                              │
+│  3. "Beat the Heat in Style"                                    │
+│  4. "Your Summer Upgrade Awaits"                                │
+│  5. "Hot Season. Cool Looks."                                   │
+│  6. "Dress for the Weather You Want"                            │
+│  7. "Summer Essentials, Elevated"                               │
+│  8. "Light Fabrics. Heavy Compliments."                         │
+│  9. "The Art of Looking Effortless"                             │
+│  10. "Where Comfort Meets Statement"                            │
+│                                                                  │
+├─────────────────────────────────────────────────────────────────┤
+│  🎯 CTAs (5 variations):                                         │
+│  1. "Shop the Collection" (Low urgency)                         │
+│  2. "Get Yours Now" (Medium urgency)                            │
+│  3. "Limited Time - Shop Now" (High urgency)                    │
+│  4. "Explore Summer Styles"                                     │
+│  5. "Upgrade Your Wardrobe"                                     │
+│                                                                  │
+├─────────────────────────────────────────────────────────────────┤
+│  📝 SUBHEADLINES (8 variations):                                 │
+│  1. "Breathable fabrics meet timeless design"                   │
+│  2. "From beach to brunch—always on point"                      │
+│  3. "Lightweight luxury for endless summer days"                │
+│  ... and 5 more                                                 │
+│                                                                  │
+├─────────────────────────────────────────────────────────────────┤
+│  🏷️ TAGLINES (5 variations):                                    │
+│  1. "Where Comfort Meets Style"                                 │
+│  2. "Designed for the Season Ahead"                             │
+│  3. "Summer, Simplified."                                       │
+│  ... and 2 more                                                 │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
 
 **Tone Options:**
-Professional | Casual | Urgent | Luxurious | Playful | Inspirational
+- Professional | Casual | Urgent | Luxurious | Playful | Inspirational
 
-**Visual:** Chat bubble showing copy generation, with multiple headline cards fanning out
-**Example:** "Summer Sale" → "Sizzling Summer Savings" / "Hot Deals, Cool Prices" / "Your Summer Upgrade Awaits"
-
----
-
-### 📌 Slide 9: Engine Deep Dive - Attention Heatmap
-
-**Title:** 👁️ Attention Heatmap Simulator
-
-**Predicts Viewer Gaze:**
-- Based on visual psychology
-- Size, color, position analysis
-- Gaze path prediction
-- Optimization recommendations
-
-**Visual:** Split screen - Left: Original design, Right: Same design with red/yellow/green heatmap overlay
-**Insight Box:** "Move CTA higher to increase engagement by 23%"
+**Speaker Notes:**
+"Stuck on copy? The AI Copywriting Engine generates 25-30 variations in seconds. Headlines, CTAs, subheadlines, body text, taglines—all in your specified tone. You're not starting from blank. You're curating from abundance."
 
 ---
 
-### 📌 Slide 10: Engine Deep Dive - Performance Predictor
+### 📌 SLIDE 21: Engine 15 - Campaign Set Creator (Deep Dive)
 
-**Title:** 📈 Performance Predictor
+**Title:** 🎯 Engine 15: Campaign Set Creator
 
-**Metrics Forecasted:**
-| Metric | Description |
-|--------|-------------|
-| CTR | Click-through rate |
-| Engagement | Likes, comments, shares |
-| Conversion | Purchase likelihood |
-| Brand Recall | Memory retention |
-| Scroll-Stop | Feed standout ability |
+**Tagline:** "Hero creative + 8 channel variations. One click."
 
-**Visual:** Dashboard-style display with gauges and scores
-**Call-out:** "Know your creative's potential before publishing"
+**Campaign Output Visualization:**
 
----
+```
+                    ┌─────────────────────┐
+                    │   🏆 HERO CREATIVE   │
+                    │      1080×1080      │
+                    │                     │
+                    │   BLACK FRIDAY      │
+                    │      50% OFF        │
+                    │    [PRODUCT]        │
+                    │   [SHOP NOW]        │
+                    │                     │
+                    └──────────┬──────────┘
+                               │
+          ┌────────────────────┼────────────────────┐
+          │                    │                    │
+    ┌─────▼─────┐        ┌─────▼─────┐        ┌─────▼─────┐
+    │ IG Story  │        │ FB Cover  │        │ Twitter   │
+    │ 1080×1920 │        │ 820×312   │        │ 1200×675  │
+    │           │        │           │        │           │
+    │ Swipe-up  │        │ Profile   │        │ Optimized │
+    │ CTA added │        │ safe zone │        │ preview   │
+    └───────────┘        └───────────┘        └───────────┘
+          │                    │                    │
+    ┌─────▼─────┐        ┌─────▼─────┐        ┌─────▼─────┐
+    │ LinkedIn  │        │ YouTube   │        │ Pinterest │
+    │ 1200×627  │        │ 1280×720  │        │ 1000×1500 │
+    │           │        │           │        │           │
+    │ Professional│      │ Thumbnail │        │ Long      │
+    │ tone      │        │ text size │        │ format    │
+    └───────────┘        └───────────┘        └───────────┘
+```
 
-### 📌 Slide 11: Multi-Platform Magic
-
-**Title:** One Design, Every Platform
-
-**Supported Platforms Grid:**
-| Platform | Formats |
-|----------|---------|
-| Instagram | Feed, Story, Reels |
-| Facebook | Post, Story, Cover |
-| LinkedIn | Post, Banner |
-| Twitter/X | Post, Header |
-| YouTube | Thumbnail, Banner |
-| Pinterest | Pin, Board Cover |
-| TikTok | Video Cover |
-| Amazon | Product Image |
-
-**Visual:** Central design with 8 arrows pointing to different platform mockups
-**Stat:** "10 formats generated in 30 seconds"
-
----
-
-### 📌 Slide 12: Compliance Built-In
-
-**Title:** ✅ Never Fail Platform Review Again
-
-**Real-Time Checking:**
-- Text-to-image ratio (< 20%)
+**What Each Variation Gets:**
+- Platform-specific dimensions
 - Safe zone compliance
-- Resolution requirements
-- Accessibility standards
-- File size limits
+- Optimized element positioning
+- Platform-appropriate tone adjustments
+- Native CTA placement (swipe-up, etc.)
 
-**Compliance Score:** 0-100 scale with color indicators
-- 90-100: ✅ Ready to publish
-- 70-89: ⚠️ Minor fixes needed
-- Below 70: ❌ Major issues
-
-**Visual:** Compliance panel screenshot showing score and issue list
+**Speaker Notes:**
+"One campaign brief. One click. The Campaign Set Creator generates your hero creative plus perfectly optimized versions for every channel—Instagram Story with swipe-up area, Facebook Cover avoiding the profile picture, YouTube thumbnail with readable text. It's not just resizing; it's reimagining for each platform."
 
 ---
 
-### 📌 Slide 13: Technology Stack
+### 📌 SLIDE 22: Engine 16 - Interactive Creative Chat (Deep Dive)
 
-**Title:** Built for Scale
+**Title:** 💬 Engine 16: Interactive Creative Chat
 
-**Frontend:**
-- React 18 + TypeScript
-- Fabric.js Canvas Engine
-- Tailwind CSS + shadcn/ui
-- Framer Motion Animations
+**Tagline:** "Control your canvas with conversation."
 
-**Backend (Lovable Cloud):**
-- Supabase (PostgreSQL, Auth, Storage)
-- Edge Functions (Serverless AI)
-- Lovable AI Gateway (Gemini, GPT-5)
+**Chat Interface Demo:**
 
-**Visual:** Tech stack logos in layered architecture diagram
-**Badge:** "Enterprise-Grade Security"
-
----
-
-### 📌 Slide 14: Architecture Overview
-
-**Title:** How It All Connects
-
-**Diagram:**
 ```
-User → React Frontend → Supabase Client
-                             ↓
-                      Edge Functions (18 AI Engines)
-                             ↓
-                      Lovable AI Gateway
-                             ↓
-                      Gemini / GPT-5 Models
+┌─────────────────────────────────────────────────────────────────┐
+│                     AI CANVAS ASSISTANT                          │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  USER: "Add a red circle in the top right corner"               │
+│                                                                  │
+│  🤖 AI: "Done! I've added a red circle (150px diameter)         │
+│          in the top right corner at position (950, 130)."       │
+│                                                                  │
+│  ────────────────────────────────────────                       │
+│                                                                  │
+│  USER: "Make the headline bigger and more bold"                 │
+│                                                                  │
+│  🤖 AI: "I've increased the headline from 36px to 48px and     │
+│          changed the font weight to Extra Bold. Better?"        │
+│                                                                  │
+│  ────────────────────────────────────────                       │
+│                                                                  │
+│  USER: "This feels too cluttered. Make it more minimal"         │
+│                                                                  │
+│  🤖 AI: "I've made these changes to achieve a minimal look:     │
+│          • Removed decorative elements (2 shapes, 1 line)       │
+│          • Increased whitespace by 30%                          │
+│          • Simplified color palette to 3 colors                 │
+│          • Centered all remaining elements                      │
+│          The design now has more breathing room."               │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
-**Key Points:**
-- Serverless = infinite scale
-- No AI key management for users
-- Sub-second response times
-- Global CDN distribution
+**Supported Commands:**
+
+| Category | Example Commands |
+|----------|------------------|
+| Add | "Add a blue rectangle", "Put text saying 'Sale'" |
+| Modify | "Make the headline bigger", "Change button color" |
+| Position | "Center the logo", "Align text to the left" |
+| Delete | "Remove the background", "Delete all circles" |
+| Style | "Make it more minimal", "Add shadows" |
+| Complex | "This looks like a 90s website, modernize it" |
+
+**Speaker Notes:**
+"No more hunting through menus. Just tell the AI what you want. 'Add a red circle in the corner.' Done. 'Make it more minimal.' It removes clutter, increases whitespace, simplifies the palette. 'Make the headline pop more.' It knows what that means. This is design by conversation."
 
 ---
 
-### 📌 Slide 15: User Journey
+### 📌 SLIDE 23: Engine 17 - Safe Zones Overlay (Deep Dive)
 
-**Title:** A Day in the Life
+**Title:** 📏 Engine 17: Safe Zones Overlay
 
-**Scenario: Marketing Manager creating Black Friday campaign**
+**Tagline:** "Never get cropped again."
 
-1. **9:00 AM** - Upload product photo → Brand DNA extracted
-2. **9:05 AM** - AI generates hero creative + 20 variations
-3. **9:10 AM** - Select favorite, request copy suggestions
-4. **9:15 AM** - Check attention heatmap, optimize CTA placement
-5. **9:20 AM** - Generate 10 platform formats
-6. **9:25 AM** - Review compliance (all green ✅)
-7. **9:30 AM** - Export all assets, ready to publish
+**Safe Zone Visualization:**
 
-**Time Saved:** 8 hours → 30 minutes
+```
+INSTAGRAM STORY (1080×1920)
+┌─────────────────────────────────────┐
+│░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░│ ← Username overlay (250px)
+│░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░│
+│                                     │
+│  ┌─────────────────────────────┐   │
+│  │                             │   │
+│  │                             │   │
+│  │      SAFE CONTENT AREA      │   │ ← Your content here
+│  │                             │   │
+│  │                             │   │
+│  │                             │   │
+│  └─────────────────────────────┘   │
+│                                     │
+│░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░│ ← Swipe up / Reply (250px)
+│░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░│
+└─────────────────────────────────────┘
+
+LEGEND: ░░░ Danger Zone (will be obscured)
+```
+
+**Platform Safe Zones:**
+
+| Platform | Top | Bottom | Left | Right | Special |
+|----------|-----|--------|------|-------|---------|
+| IG Story | 250px | 250px | 5% | 5% | Username, Reply bar |
+| IG Feed | 5% | 5% | 5% | 5% | Caption preview |
+| FB Cover | 20px | 20px | 20px | 20px | Profile overlap |
+| YT Thumb | 10% | 10% | 10% | 10% | Duration overlay |
+| LinkedIn | 10% | 10% | 10% | 10% | Profile overlap |
+
+**Visual Indicators:**
+- 🟢 Green: Completely safe, always visible
+- 🟡 Yellow: Mostly safe, may crop on some devices
+- 🔴 Red: Danger zone, likely to be obscured
+
+**Speaker Notes:**
+"Every platform has different overlay positions—usernames, timestamps, CTAs, profile pictures. The Safe Zones Overlay shows you exactly where not to put critical content. Toggle it on, and you see the danger zones highlighted. Your logo won't get covered by a profile picture. Your CTA won't get cut off by a swipe-up bar."
 
 ---
 
-### 📌 Slide 16: Competitive Advantage
+### 📌 SLIDE 24: Engine 18 - AI Background Removal (Deep Dive)
+
+**Title:** ✂️ Engine 18: AI Background Removal
+
+**Tagline:** "Isolate your product in one click."
+
+**Before/After Demo:**
+
+```
+BEFORE                              AFTER
+┌─────────────────────────┐        ┌─────────────────────────┐
+│                         │        │                         │
+│   ┌─────────────────┐   │        │   ┌─────────────────┐   │
+│   │                 │   │        │   │                 │   │
+│   │    [PRODUCT     │   │   ──►  │   │    [PRODUCT     │   │
+│   │     ON MESSY    │   │        │   │     ISOLATED]   │   │
+│   │     BACKGROUND] │   │        │   │                 │   │
+│   │                 │   │        │   │                 │   │
+│   └─────────────────┘   │        │   └─────────────────┘   │
+│                         │        │    ░░░ TRANSPARENT ░░░  │
+│   [DISTRACTING BG]     │        │                         │
+└─────────────────────────┘        └─────────────────────────┘
+```
+
+**Technical Details:**
+- Runs client-side (browser-based)
+- No data sent to servers (privacy)
+- Uses HuggingFace Transformers
+- Model: Xenova/modnet (optimized for web)
+- Outputs PNG with alpha channel
+
+**Best Results With:**
+- Clear subject/background separation
+- Good lighting
+- Single dominant subject
+- Contrasting colors
+
+**Use Cases:**
+- Product photography cleanup
+- Profile picture extraction
+- Creating composite images
+- Preparing assets for transparent overlays
+
+**Speaker Notes:**
+"Product photography often has imperfect backgrounds. The AI Background Removal engine isolates your product in one click—right in the browser. No Photoshop. No manual masking. It runs locally for privacy, and the result is a clean PNG with transparent background, ready for any design."
+
+---
+
+### 📌 SLIDE 25: All 18 Engines - Summary Grid
+
+**Title:** 18 AI Engines: Your Complete Creative Department
+
+**Complete Engine Grid:**
+
+| # | Engine | Category | Key Benefit |
+|---|--------|----------|-------------|
+| 1 | Brand DNA Extractor | 🧬 Intelligence | Instant brand kit from any image |
+| 2 | AutoLayout Engine | 📐 Automation | Smart repositioning across formats |
+| 3 | Compliance Checker | ✅ Quality | Never fail platform review |
+| 4 | Creative Multiverse | 🌌 Generation | 20+ style variations in seconds |
+| 5 | AI Background Gen | 🖼️ Generation | Professional backgrounds instantly |
+| 6 | Emotion-to-Design | 💭 Enhancement | Translate feelings to visuals |
+| 7 | Visual Auditor | 🔍 Quality | AI design critique & fixes |
+| 8 | Typography Harmony | ✍️ Enhancement | Perfect font pairings |
+| 9 | Color Psychology | 🎨 Intelligence | Colors that drive action |
+| 10 | Attention Heatmap | 👁️ Insight | Predict viewer gaze patterns |
+| 11 | Performance Predictor | 📊 Insight | Forecast CTR before publishing |
+| 12 | Format Transformer | 📐 Automation | One design → 15+ formats |
+| 13 | Trend Forecast | 📈 Intelligence | Stay ahead of the curve |
+| 14 | AI Copywriting | ✍️ Content | 25-30 copy variations |
+| 15 | Campaign Set Creator | 🎯 Content | Hero + all channel variations |
+| 16 | Interactive Chat | 💬 Automation | Design by conversation |
+| 17 | Safe Zones Overlay | 📏 Quality | Never get cropped |
+| 18 | Background Removal | ✂️ Generation | Isolate products instantly |
+
+**Value Statement:**
+"Hiring this team would cost $500,000+/year. Creato-Sphere: $29/month."
+
+**Speaker Notes:**
+"18 specialized engines. Each one replaces a role you'd otherwise need to hire or outsource. Brand strategist. Designer. Copywriter. Art director. Performance analyst. Media buyer. All in one platform. All for the price of a nice lunch."
+
+---
+
+### 📌 SLIDE 26: Multi-Platform Export
+
+**Title:** One Design → Every Platform
+
+**Export Visualization:**
+
+```
+         ┌────────────────────────────┐
+         │    SOURCE DESIGN           │
+         │       1080×1080            │
+         └──────────────┬─────────────┘
+                        │
+    ┌───────────────────┼───────────────────┐
+    │                   │                   │
+    ▼                   ▼                   ▼
+┌───────┐          ┌────────┐          ┌────────┐
+│  PNG  │          │  JPG   │          │  WEBP  │
+│ 2.3MB │          │ 850KB  │          │ 320KB  │
+└───────┘          └────────┘          └────────┘
+
+         ┌────────────────────────────┐
+         │     PLATFORM VARIATIONS    │
+         └────────────────────────────┘
+
+┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐
+│Instagram│ │Facebook │ │ Twitter │ │LinkedIn │
+│  Feed   │ │  Post   │ │  Post   │ │  Post   │
+└─────────┘ └─────────┘ └─────────┘ └─────────┘
+┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐
+│Instagram│ │Facebook │ │ YouTube │ │Pinterest│
+│  Story  │ │  Cover  │ │Thumbnail│ │   Pin   │
+└─────────┘ └─────────┘ └─────────┘ └─────────┘
+```
+
+**Export Options:**
+- PNG (lossless, supports transparency)
+- JPG (compressed, smaller file size)
+- WEBP (modern format, best compression)
+- PDF (print-ready, vector elements preserved)
+
+**One-Click Batch Export:**
+- Select all desired platforms
+- Click "Export All"
+- Download ZIP with organized folders
+
+**Speaker Notes:**
+"Export isn't an afterthought—it's where the magic becomes real. One click exports to every platform you need, in every format, organized in folders, optimized for each destination. What used to take an hour takes 10 seconds."
+
+---
+
+### 📌 SLIDE 27: Technology Architecture
+
+**Title:** Built for Scale: Technology Architecture
+
+**Architecture Diagram:**
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                         CLIENT LAYER                             │
+│  ┌───────────┐  ┌───────────┐  ┌───────────┐  ┌───────────┐   │
+│  │   React   │  │ Fabric.js │  │  Zustand  │  │ TanStack  │   │
+│  │   18 TS   │  │  Canvas   │  │   State   │  │   Query   │   │
+│  └───────────┘  └───────────┘  └───────────┘  └───────────┘   │
+└─────────────────────────────────────────────────────────────────┘
+                               │
+                               ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                      LOVABLE CLOUD                               │
+│  ┌───────────────────────────────────────────────────────────┐ │
+│  │                     SUPABASE                               │ │
+│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐  │ │
+│  │  │PostgreSQL│  │   Auth   │  │ Storage  │  │  Edge    │  │ │
+│  │  │  + RLS   │  │   JWT    │  │  Buckets │  │ Functions│  │ │
+│  │  └──────────┘  └──────────┘  └──────────┘  └──────────┘  │ │
+│  └───────────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────────┘
+                               │
+                               ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                     AI GATEWAY                                   │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐       │
+│  │ Gemini   │  │  GPT-5   │  │  GPT-5   │  │ Image    │       │
+│  │ 2.5 Pro  │  │  Full    │  │  Mini    │  │   Gen    │       │
+│  └──────────┘  └──────────┘  └──────────┘  └──────────┘       │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**Key Technical Advantages:**
+
+| Feature | Benefit |
+|---------|---------|
+| Serverless Edge Functions | Infinite scale, zero cold starts |
+| Row Level Security (RLS) | Data isolation per user |
+| Global CDN | <50ms response times worldwide |
+| Real-time Subscriptions | Live collaboration support |
+| Unified AI Gateway | No API key management for users |
+
+**Speaker Notes:**
+"This isn't a prototype—it's production infrastructure. Serverless functions that scale to millions of requests. Row-level security that guarantees data isolation. Global CDN for sub-50ms responses. And a unified AI gateway that means users never have to manage API keys. Enterprise-grade from day one."
+
+---
+
+### 📌 SLIDE 28: User Journey
+
+**Title:** A Day in the Life: Marketing Manager Creates Black Friday Campaign
+
+**Timeline:**
+
+```
+9:00 AM ─────────────────────────────────────────────────────────────►
+
+│ 9:00        │ 9:05        │ 9:10        │ 9:15        │ 9:25      │
+│ Upload      │ AI          │ Select      │ Generate    │ Export    │
+│ Product     │ Generates   │ Favorite    │ All         │ Ready     │
+│ Photo       │ 20          │ & Request   │ Platform    │ to        │
+│             │ Variations  │ Copy        │ Formats     │ Publish   │
+│             │             │             │             │           │
+└─────────────┴─────────────┴─────────────┴─────────────┴───────────┘
+
+TOTAL TIME: 25 MINUTES
+
+┌─────────────────────────────────────────────────────────────────────┐
+│                                                                      │
+│  TRADITIONAL PROCESS:                        CREATO-SPHERE:         │
+│                                                                      │
+│  ┌────────────────────────────────┐    ┌────────────────────────┐  │
+│  │ Briefing:        2 hours       │    │ Upload:        5 min   │  │
+│  │ Design:          4 hours       │    │ Generate:      5 min   │  │
+│  │ Revisions:       3 hours       │    │ Customize:     10 min  │  │
+│  │ Copy:            2 hours       │    │ Export:        5 min   │  │
+│  │ Resizing:        3 hours       │    │                        │  │
+│  │ Review:          2 hours       │    │                        │  │
+│  ├────────────────────────────────┤    ├────────────────────────┤  │
+│  │ TOTAL:          16 HOURS       │    │ TOTAL:        25 MIN   │  │
+│  │                 ($4,800)       │    │              ($0.82)   │  │
+│  └────────────────────────────────┘    └────────────────────────┘  │
+│                                                                      │
+│  TIME SAVED: 15 HOURS 35 MINUTES (97% reduction)                    │
+│  COST SAVED: $4,799.18 per campaign                                 │
+│                                                                      │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+**Speaker Notes:**
+"Let me paint a picture. It's 9 AM. Marketing manager Sarah needs a Black Friday campaign by noon. Traditional route? 16 hours and $4,800 in designer costs. With Creato-Sphere? She uploads her product photo at 9:00. By 9:05, she has 20 design variations. By 9:10, she's picked her favorite and generated copy. By 9:25, she has all 10 platform formats exported and ready to publish. 25 minutes. Less than a dollar in AI usage. Campaign done."
+
+---
+
+### 📌 SLIDE 29: Competitive Landscape
 
 **Title:** Why Creato-Sphere Wins
 
-| Feature | Canva | Adobe | Creato-Sphere |
-|---------|-------|-------|---------------|
-| AI Design Generation | ❌ | ⚠️ Limited | ✅ 18 Engines |
-| Natural Language Control | ❌ | ❌ | ✅ Full Canvas |
-| Performance Prediction | ❌ | ❌ | ✅ Before Publish |
-| Multi-Format One-Click | ⚠️ Manual | ⚠️ Complex | ✅ Automatic |
-| Brand DNA Extraction | ❌ | ⚠️ Basic | ✅ Deep Analysis |
-| Compliance Checking | ❌ | ❌ | ✅ Real-Time |
+**Competitive Matrix:**
+
+| Feature | Canva | Adobe Express | Creato-Sphere |
+|---------|-------|---------------|---------------|
+| AI Design Generation | ⚠️ Basic templates | ⚠️ Limited | ✅ 18 specialized engines |
+| Natural Language Control | ❌ No | ❌ No | ✅ Full canvas chat |
+| Performance Prediction | ❌ No | ❌ No | ✅ Before publish |
+| Multi-Format One-Click | ⚠️ Manual resize | ⚠️ Magic resize | ✅ Smart recomposition |
+| Brand DNA Extraction | ❌ No | ⚠️ Basic colors only | ✅ Full identity extraction |
+| Compliance Checking | ❌ No | ❌ No | ✅ Real-time, 47 checks |
+| Attention Heatmap | ❌ No | ❌ No | ✅ AI gaze prediction |
+| Copy Generation | ❌ No | ⚠️ Basic | ✅ 25-30 variations/request |
+| Trend Forecasting | ❌ No | ❌ No | ✅ Industry-specific |
+
+**Positioning Statement:**
+"Canva and Adobe are design tools. Creato-Sphere is an AI creative department."
+
+**Why This Matters:**
+- Canva: You still do the design thinking
+- Adobe: Powerful but complex, steep learning curve
+- Creato-Sphere: AI does the creative work; you curate and approve
+
+**Speaker Notes:**
+"Canva makes design accessible. Adobe makes it powerful. But you're still the designer in both cases. Creato-Sphere is different. The AI is the designer. You're the creative director—reviewing, selecting, approving. That's a fundamentally different value proposition, and it's why we win with non-designers who need professional results."
 
 ---
 
-### 📌 Slide 17: Target Market
+### 📌 SLIDE 30: Market Opportunity
 
-**Title:** Who We Serve
+**Title:** The Market Opportunity
 
-**Primary:**
-- E-commerce brands (D2C, Marketplace sellers)
-- Digital marketing agencies
-- Social media managers
-- Small business owners
+**Market Size Visual:**
 
-**Secondary:**
-- Enterprise marketing teams
-- Retail media networks
-- Advertising agencies
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    MARKET OPPORTUNITY                            │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  DIGITAL ADVERTISING MARKET:              $679B (2024)          │
+│  ███████████████████████████████████████████████████████████   │
+│                                                                  │
+│  CREATIVE PRODUCTION SEGMENT:             $48B (2024)           │
+│  █████████████████                                              │
+│                                                                  │
+│  AI CREATIVE AUTOMATION:                  $8.2B (2024)          │
+│  █████                                                          │
+│        ↓                                                        │
+│  AI CREATIVE AUTOMATION:                  $28B (2028)           │
+│  █████████████████                                              │
+│                                                                  │
+│  CAGR: 36% (2024-2028)                                          │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
 
-**Market Size:**
-- Digital advertising: $600B+
-- Creative automation: $15B (growing 25% YoY)
+**Target Segments:**
+
+| Segment | Size | Pain Level | Willingness to Pay |
+|---------|------|------------|-------------------|
+| E-commerce Brands (D2C) | 2.5M businesses | Very High | High |
+| Digital Marketing Agencies | 150K agencies | High | Very High |
+| Social Media Managers | 500K professionals | High | Medium |
+| Small Business Owners | 30M businesses | Very High | Medium |
+| Enterprise Marketing Teams | 50K teams | Medium | Very High |
+
+**Speaker Notes:**
+"The digital advertising market is $679 billion. But we're not going after all of it—we're targeting the $8 billion AI creative automation segment, growing at 36% annually. By 2028, that's $28 billion. And we're positioned to capture a significant share because we're solving the problem better than anyone else."
 
 ---
 
-### 📌 Slide 18: Business Model
+### 📌 SLIDE 31: Business Model
 
-**Title:** How We Grow
+**Title:** How We Grow: Sustainable Revenue Model
 
 **Pricing Tiers:**
 
-| Tier | Price | Includes |
-|------|-------|----------|
-| Free | $0 | 5 projects, basic AI |
-| Pro | $29/mo | Unlimited projects, all AI engines |
-| Team | $99/mo | 5 seats, collaboration, brand kits |
-| Enterprise | Custom | SSO, API, dedicated support |
+```
+┌───────────────┬───────────────┬───────────────┬───────────────┐
+│     FREE      │      PRO      │     TEAM      │  ENTERPRISE   │
+│      $0       │   $29/month   │   $99/month   │    Custom     │
+├───────────────┼───────────────┼───────────────┼───────────────┤
+│               │               │               │               │
+│ • 5 projects  │ • Unlimited   │ • 5 seats     │ • Unlimited   │
+│ • Basic AI    │   projects    │ • All AI      │   seats       │
+│ • 3 exports/  │ • All 18 AI   │   engines     │ • SSO/SAML    │
+│   day         │   engines     │ • Brand kits  │ • API access  │
+│ • Community   │ • Unlimited   │ • Collaboration│ • Dedicated  │
+│   templates   │   exports     │ • Analytics   │   support     │
+│               │ • Priority    │ • Priority    │ • Custom      │
+│               │   support     │   support     │   integrations│
+│               │               │               │               │
+│  (Lead Gen)   │  (Core)       │  (Growth)     │  (Scale)      │
+└───────────────┴───────────────┴───────────────┴───────────────┘
+```
 
-**Revenue Drivers:**
-- Subscription (primary)
-- AI usage credits (secondary)
-- Enterprise licensing
+**Revenue Mix:**
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                     REVENUE COMPOSITION                          │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  Subscriptions (recurring):                    70%              │
+│  ██████████████████████████████████████████████████████████    │
+│                                                                  │
+│  AI Usage Credits (consumption):               20%              │
+│  ██████████████████                                             │
+│                                                                  │
+│  Enterprise Licensing:                         10%              │
+│  ██████████                                                     │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**Unit Economics:**
+
+| Metric | Value |
+|--------|-------|
+| Average Revenue Per User (ARPU) | $42/month |
+| Customer Acquisition Cost (CAC) | $85 |
+| Lifetime Value (LTV) | $504 (12-month average) |
+| LTV:CAC Ratio | 5.9:1 |
+| Gross Margin | 78% |
+
+**Speaker Notes:**
+"Our business model is built on sustainable unit economics. $29/month Pro plan is our core offering—unlimited projects, all AI engines. We acquire customers at $85 and see an average lifetime value of $504. That's a 6x LTV:CAC ratio—well above the 3x benchmark for healthy SaaS. And with 78% gross margins, every new customer contributes meaningfully to the bottom line."
 
 ---
 
-### 📌 Slide 19: Roadmap
+### 📌 SLIDE 32: Product Roadmap
 
-**Title:** What's Next
+**Title:** What's Next: 12-Month Roadmap
 
-**Q1 2025:**
-- Video ad generation
-- Motion graphics templates
-- API for developers
+**Quarterly Breakdown:**
 
-**Q2 2025:**
-- White-label solution
-- Agency dashboard
-- Advanced analytics
+```
+Q1 2025 (Current)                    Q2 2025
+┌────────────────────────┐          ┌────────────────────────┐
+│ ✅ 18 AI Engines        │          │ 🎬 Video Ad Generation │
+│ ✅ Multi-format Export  │          │ 📊 Advanced Analytics  │
+│ ✅ Brand Kit Management │   ────►  │ 🔗 API for Developers │
+│ ✅ Real-time Compliance │          │ 📱 Mobile App (Beta)   │
+│ ✅ Performance Predict  │          │ 🤝 Shopify Integration │
+└────────────────────────┘          └────────────────────────┘
 
-**Q3 2025:**
-- Mobile app
-- Real-time collaboration (multiplayer)
-- Integrations (Shopify, Meta, Google)
+         │                                    │
+         ▼                                    ▼
 
-**Q4 2025:**
-- AI voice-over generation
-- Automated A/B testing
-- Predictive trend engine
+Q3 2025                              Q4 2025
+┌────────────────────────┐          ┌────────────────────────┐
+│ 👥 Real-time Collab    │          │ 🎙️ AI Voice-over Gen   │
+│ 🏢 White-label Version │          │ 🧪 Automated A/B Test  │
+│ 📊 Agency Dashboard    │   ────►  │ 🔮 Predictive Trends   │
+│ 🔗 Meta Ads Integration│          │ 🌐 Multi-language      │
+│ 🔗 Google Ads Integr.  │          │ 🎥 Motion Graphics     │
+└────────────────────────┘          └────────────────────────┘
+```
+
+**Key Milestones:**
+
+| Quarter | Focus | Impact |
+|---------|-------|--------|
+| Q1 2025 | Core platform maturity | 18 engines, production-ready |
+| Q2 2025 | Video & Integrations | 3x use case expansion |
+| Q3 2025 | Collaboration & Agency | Enterprise-ready |
+| Q4 2025 | Advanced AI & Automation | Full creative automation |
+
+**Speaker Notes:**
+"Our roadmap is aggressive but achievable. Q2 brings video ad generation—that's a 3x expansion in use cases. Q3 adds real-time collaboration and white-label for agencies. By Q4, we're adding AI voice-over and automated A/B testing. Each quarter compounds on the last, building toward full creative automation."
 
 ---
 
-### 📌 Slide 20: Call to Action
+### 📌 SLIDE 33: Call to Action
 
 **Title:** Join the Creative Revolution
 
-**For Investors:**
-"Partner with us to scale AI-powered creativity"
+**For Different Audiences:**
 
-**For Users:**
-"Start creating stunning ads in minutes—free trial available"
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                                                                  │
+│  FOR INVESTORS:                                                  │
+│  "Partner with us to scale AI-powered creativity.                │
+│   We're raising $X to accelerate product development             │
+│   and go-to-market."                                             │
+│                                                                  │
+│  [Schedule Partner Meeting]                                      │
+│                                                                  │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  FOR ENTERPRISE:                                                 │
+│  "See how Fortune 500 companies are cutting creative             │
+│   production time by 97%."                                       │
+│                                                                  │
+│  [Request Enterprise Demo]                                       │
+│                                                                  │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  FOR USERS:                                                      │
+│  "Start creating stunning ads in minutes—free trial available."  │
+│                                                                  │
+│  [Start Free Trial]                                              │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
 
-**Contact:**
-- Website: creato-sphere.com
-- Email: hello@creato-sphere.com
-- Demo: calendly.com/creato-sphere/demo
+**Contact Information:**
 
-**Visual:** QR code to landing page + social media icons
+| Channel | Details |
+|---------|---------|
+| Website | creato-sphere.com |
+| Email | hello@creato-sphere.com |
+| Demo Booking | calendly.com/creato-sphere/demo |
+| LinkedIn | linkedin.com/company/creato-sphere |
+| Twitter | @creatosphere |
+
+**Visual:**
+- Large QR code linking to landing page
+- Social media icons
+- "Try for Free" button graphic
+
+**Speaker Notes:**
+"The future of creative production is AI-powered. The question isn't whether this transition will happen—it's who will lead it. We believe Creato-Sphere is that leader. If you're an investor, let's talk about partnership. If you're an enterprise, let's show you what 97% time savings looks like. If you're a marketer tired of the creative grind, start your free trial today. The creative revolution is here. Will you join us?"
 
 ---
 
-## Design Guidelines for PPT
+## 🎨 Design Guidelines for the Presentation
 
 ### Color Palette
+
 ```
-Primary: #22C55E (Emerald Green)
-Secondary: #38BDF8 (Sky Blue)
-Accent: #F59E0B (Amber)
-Background Dark: #0A0A0B
-Background Card: #18181B
-Text Primary: #FFFFFF
-Text Muted: #A1A1AA
+PRIMARY COLORS:
+┌──────────────────────────────────────────────────────────────────┐
+│  Emerald Green    Sky Blue        Amber           Dark BG       │
+│  #22C55E          #38BDF8         #F59E0B         #0A0A0B       │
+│  ████████         ████████        ████████        ████████      │
+│  Primary action   Secondary       Accent/CTA      Background    │
+└──────────────────────────────────────────────────────────────────┘
+
+EXTENDED PALETTE:
+┌──────────────────────────────────────────────────────────────────┐
+│  Card BG          Muted Text      Border          Success       │
+│  #18181B          #A1A1AA         #27272A         #10B981       │
+│  ████████         ████████        ████████        ████████      │
+│  Containers       Secondary txt   Dividers        Positive      │
+│                                                                  │
+│  Warning          Error           Info            Purple        │
+│  #F59E0B          #EF4444         #3B82F6         #8B5CF6       │
+│  ████████         ████████        ████████        ████████      │
+│  Caution          Negative        Neutral info    Premium       │
+└──────────────────────────────────────────────────────────────────┘
 ```
 
 ### Typography
+
 ```
-Headlines: Inter Bold / Black (48-72pt)
-Subheadlines: Inter SemiBold (28-36pt)
-Body: Inter Regular (18-24pt)
-Code/Technical: JetBrains Mono (16pt)
+HEADINGS:
+  Font: Inter Black (or Inter Bold)
+  Sizes: 
+    - Slide titles: 48-56pt
+    - Section headers: 36-42pt
+    - Subheadings: 28-32pt
+  Color: White (#FFFFFF)
+  Letter spacing: -0.02em (tight)
+
+BODY TEXT:
+  Font: Inter Regular (or Inter Medium)
+  Sizes:
+    - Primary body: 20-24pt
+    - Secondary: 16-18pt
+    - Captions: 14pt
+  Color: #E4E4E7 (slightly off-white)
+  Line height: 1.5
+
+TECHNICAL/CODE:
+  Font: JetBrains Mono
+  Size: 14-16pt
+  Color: #38BDF8 (sky blue)
+  Background: #18181B (card)
+
+SPECIAL:
+  - Statistics/Numbers: Inter Black, 72-96pt
+  - Quotes: Inter Light Italic, 28pt
+  - Labels/Tags: Inter Medium, 12pt, uppercase
 ```
 
-### Visual Style
-- Dark mode primary aesthetic
-- Glassmorphism cards with subtle borders
-- Gradient accents (green → blue → purple flows)
-- 3D floating elements for depth
-- Subtle grid patterns in backgrounds
-- Glowing hover effects on interactive elements
-- Rounded corners (12-16px radius)
+### Visual Style Guide
 
-### Icons
-- Use Lucide icons for consistency
-- Apply gradient fills for feature icons
+**Backgrounds:**
+- Primary: Dark gradient from #0A0A0B to #18181B
+- Secondary: Subtle grid pattern overlay (5% opacity)
+- Accent: Floating gradient orbs (emerald/sky/amber) at 10-20% opacity
+
+**Cards & Containers:**
+- Background: #18181B with 1px border #27272A
+- Border radius: 12-16px
+- Shadow: 0 20px 40px rgba(0,0,0,0.3)
+- Optional: Glass-morphism with backdrop-blur
+
+**Icons:**
+- Style: Lucide icons (outlined, 2px stroke)
 - Size: 48-64px for feature grids
+- Color: Apply gradient fills (emerald → sky blue)
+- Glow: Optional 0 0 20px glow on hover state
 
-### Animations (for Google Slides / PowerPoint)
-- Fade in for bullet points (0.3s delay between)
-- Slide in from right for screenshots
-- Zoom for emphasis on key stats
-- Morph transitions between similar layouts
+**Charts & Data Viz:**
+- Use emerald green for positive metrics
+- Use amber for warnings/attention
+- Use sky blue for neutral/informational
+- Dark backgrounds with light gridlines (10% opacity)
+
+**Imagery:**
+- Screenshots: Rounded corners (12px), subtle shadow, dark frame
+- Icons: Flat with optional gradient fills
+- Diagrams: Clean lines, minimal style, consistent stroke weights
+
+### Animation Guidelines (PowerPoint/Keynote)
+
+**Slide Transitions:**
+- Use Morph transition between similar layouts
+- Fade for topic changes
+- Duration: 0.5-0.8 seconds
+- Avoid spinning, bouncing, or flashy transitions
+
+**Element Animations:**
+- Bullets: Fade in, 0.3s delay between items
+- Screenshots: Slide in from right, 0.5s
+- Statistics: Grow from center, 0.4s
+- Diagrams: Build step-by-step with delays
+
+**Emphasis:**
+- Zoom 110% for key points
+- Color change to accent (amber) for attention
+- Pulse effect (subtle) for live demo indicators
 
 ---
 
-## Appendix Slides (Optional)
+## 📎 Appendix Slides
 
-### A1: Full AI Engine List
-All 18 engines with one-line descriptions
+### A1: Complete API Documentation
 
-### A2: Database Schema
-ER diagram of tables
+One-page summary of all API endpoints with method, path, and description.
+
+### A2: Database Schema Diagram
+
+Full ERD showing all tables, relationships, and RLS policies.
 
 ### A3: Security & Compliance
-RLS policies, encryption, SOC2 readiness
+
+- Row Level Security implementation
+- Data encryption at rest and in transit
+- GDPR compliance measures
+- SOC 2 readiness checklist
 
 ### A4: Team Bios
-Founder/team profiles
+
+Founder and key team member profiles with photos and relevant experience.
 
 ### A5: Case Studies
-Before/after examples from beta users
+
+2-3 detailed before/after examples from beta users with metrics:
+- Time saved
+- Cost reduction
+- Performance improvement
+
+### A6: Technical Deep Dive
+
+Architecture details for technical audiences:
+- Edge function implementation
+- AI model selection and optimization
+- Caching and performance strategies
+- Scalability testing results
 
 ---
 
-## Presenter Notes
+## 🎤 Presenter Notes Summary
 
-### Slide 2 (Problem):
-"Pause on the statistic. Let it sink in. This is the pain point every marketer knows."
+### Key Moments to Emphasize:
 
-### Slide 5 (AI Engines):
-"Don't rush through all 18. Highlight the top 3-4 that resonate with your audience."
+1. **Slide 2 (Problem):** Pause after the 67% statistic. Let it sink in.
 
-### Slide 11 (Multi-Platform):
-"Click through a live demo here if possible. Show the magic of one-click resizing."
+2. **Slide 5 (How It Works):** This is your demo moment. If possible, do a live walkthrough.
 
-### Slide 16 (Competitive):
-"This is your 'so what' moment. Make it clear why we're different."
+3. **Slide 6 (18 Engines):** Don't rush. Highlight 3-4 engines that resonate with your audience.
 
-### Slide 20 (CTA):
-"End strong. Have a clear ask ready—whether it's a demo booking, investment meeting, or trial signup."
+4. **Slide 17 (Performance Predictor):** This is the "holy grail" moment. Emphasize knowing before spending.
+
+5. **Slide 28 (User Journey):** Tell it as a story. Make Sarah real.
+
+6. **Slide 29 (Competitive):** This is your "so what" moment. Make the differentiation crystal clear.
+
+7. **Slide 33 (CTA):** End strong. Have a clear ask ready.
+
+### Audience-Specific Adjustments:
+
+**For Investors:**
+- Emphasize market size and unit economics
+- Focus on scalability and defensibility
+- Highlight team and traction
+
+**For Enterprise:**
+- Emphasize security and compliance
+- Focus on integration capabilities
+- Highlight ROI and time savings
+
+**For Users/Marketers:**
+- Emphasize ease of use and speed
+- Focus on AI capabilities
+- Highlight free trial and quick wins
 
 ---
 
-## Export Formats
+## 📦 Export Formats
 
-- **PowerPoint:** .pptx with embedded fonts
-- **Google Slides:** Share link with edit access for team
-- **PDF:** For email distribution
-- **Keynote:** For Mac presentations
+- **PowerPoint (.pptx):** With embedded fonts, optimized for Windows/Mac
+- **Google Slides:** Share link with comment access for reviewers
+- **PDF:** High-resolution for email distribution
+- **Keynote (.key):** For Mac presentations
+- **Video (.mp4):** Self-playing version with narration for async viewing
 
 ---
 
-*Generated for Creato-Sphere Presentation - 2025*
+*Comprehensive Presentation Prompt for Creato-Sphere*
+*Version 2.0 - January 2025*
+*Total Slides: 33 + 6 Appendix*
+*Estimated Duration: 25-35 minutes*
